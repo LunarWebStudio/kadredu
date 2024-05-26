@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { Toaster } from "~/components/ui/toaster";
+import { ThemeProvider } from "~/components/theme-provider";
 
 const mainFont = Inter({
   subsets: ["latin"],
@@ -24,13 +25,21 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="en"
+      lang="ru"
       className={`${mainFont.variable}`}
+      suppressHydrationWarning
     >
-      <body>
+      <body className="font-sans antialiased">
         <TRPCReactProvider>
-          {children}
-          <Toaster />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+            <Toaster />
+          </ThemeProvider>
         </TRPCReactProvider>
       </body>
     </html>
