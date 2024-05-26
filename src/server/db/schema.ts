@@ -1,5 +1,6 @@
-import { relations, sql } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 import {
+  type AnyPgColumn,
   index,
   integer,
   pgEnum,
@@ -14,6 +15,53 @@ import { createId } from "@paralleldrive/cuid2";
 import { z } from "zod";
 
 export const createTable = pgTableCreator(name => `kadredu_${name}`);
+
+// https://medium.com/@Furki4_4/make-your-image-loading-blurry-in-next-js-0f0e5bf3dc7c
+export const images = createTable("images", {
+  id: text("id")
+    .$defaultFn(() => createId())
+    .notNull()
+    .primaryKey(),
+  storageId: varchar("storageId", { length: 255 }).notNull(),
+  blurPreview: text("blurPreview").notNull(),
+});
+
+export const buildings = createTable("buildings", {
+  id: text("id")
+    .$defaultFn(() => createId())
+    .notNull()
+    .primaryKey(),
+  title: varchar("name", { length: 255 }).notNull(),
+  address: varchar("address", { length: 255 }).notNull(),
+
+  createdById: text("createdById").references(() => users.id),
+  createdAt: timestamp("createdAt", {
+    mode: "date",
+    withTimezone: true,
+  }).defaultNow(),
+});
+
+export const buildingsRelations = relations(buildings, ({ many, one }) => ({
+  groups: many(groups),
+  createdBy: one(users)
+}))
+
+export const groups = createTable("groups", {
+  id: text("id")
+    .$defaultFn(() => createId())
+    .notNull()
+    .primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+
+  buildingId: text("buildingId").references(() => buildings.id).notNull(),
+  imageId: text("imageId").references(() => images.id),
+});
+
+export const groupsRelations = relations(groups, ({ many, one }) => ({
+  users: many(users),
+  image: one(images),
+  building: one(buildings),
+}));
 
 export const rolesEnum = pgEnum("role", [
   "ADMIN",
@@ -31,22 +79,31 @@ export const users = createTable("user", {
     .$defaultFn(() => createId())
     .notNull()
     .primaryKey(),
-  name: varchar("name", { length: 255 }),
   email: varchar("email", { length: 255 }).notNull(),
+
+  name: varchar("name", { length: 255 }),
+  imageId: text("imageId").references(() => images.id),
+  description: text("description"),
+
+  experiencePoints: integer("experiencePoints").notNull().default(0),
+  coins: integer("coins").notNull().default(0),
+
   role: rolesEnum("role").default("UNKNOWN").array().notNull(),
   emailVerified: timestamp("emailVerified", {
     mode: "date",
     withTimezone: true,
-  }).default(sql`CURRENT_TIMESTAMP`),
+  }).defaultNow(),
 
   createdAt: timestamp("createdAt", {
     mode: "date",
     withTimezone: true,
-  }).default(sql`CURRENT_TIMESTAMP`),
+  }).defaultNow(),
+  groupId: text("groupId").references((): AnyPgColumn => groups.id),
 });
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ many, one }) => ({
   accounts: many(accounts),
+  group: one(groups),
 }));
 
 export const accounts = createTable(
