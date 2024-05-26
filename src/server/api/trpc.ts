@@ -62,7 +62,10 @@ export const protectedProcedure = onboardingProcedure.use(({ ctx, next }) => {
 const FORBIDDEN_MESSAGE = "У вас недостаточно прав для данного действия";
 const HIGH_LEVEL_THRESHOLD = 3;
 export const highLevelProcedure = protectedProcedure.use(({ ctx, next }) => {
-  if (ctx.session?.user.role.includes("ADMIN")) {
+  if (
+    ctx.session?.user.role.includes("ADMIN") ||
+    ctx.session.user.role.includes("TEACHER")
+  ) {
     return next({
       ctx: {
         session: { ...ctx.session, user: ctx.session.user }
