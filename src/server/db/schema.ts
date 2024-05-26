@@ -33,7 +33,7 @@ export const users = createTable("user", {
     .primaryKey(),
   name: varchar("name", { length: 255 }),
   email: varchar("email", { length: 255 }).notNull(),
-  role: rolesEnum("role").default("UNKNOWN").notNull(),
+  role: rolesEnum("role").default("UNKNOWN").array().notNull(),
   emailVerified: timestamp("emailVerified", {
     mode: "date",
     withTimezone: true,

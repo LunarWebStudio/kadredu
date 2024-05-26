@@ -34,11 +34,7 @@ export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
 export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
-  if (
-    !ctx.session ||
-    !ctx.session.user ||
-    ctx.session.user.role === "UNKNOWN"
-  ) {
+  if (!ctx.session || !ctx.session.user || ctx.session.user.role.length === 0) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
@@ -49,11 +45,15 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
 });
 
 export const teacherProcedure = protectedProcedure.use(({ ctx, next }) => {
-  if (
-    !["ADMIN", "LEAD_CYCLE_COMISSION", "TEACHER"].includes(
-      ctx.session.user.role
-    )
-  ) {
+  if (ctx.session?.user.role.includes("ADMIN")) {
+    return next({
+      ctx: {
+        session: { ...ctx.session, user: ctx.session.user }
+      }
+    });
+  }
+
+  if (!ctx.session.user.role.includes("TEACHER")) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
@@ -66,7 +66,15 @@ export const teacherProcedure = protectedProcedure.use(({ ctx, next }) => {
 
 export const leadCycleComissionProcedure = protectedProcedure.use(
   ({ ctx, next }) => {
-    if (!["ADMIN", "LEAD_CYCLE_COMISSION"].includes(ctx.session.user.role)) {
+    if (ctx.session?.user.role.includes("ADMIN")) {
+      return next({
+        ctx: {
+          session: { ...ctx.session, user: ctx.session.user }
+        }
+      });
+    }
+
+    if (!ctx.session.user.role.includes("LEAD_CYCLE_COMISSION")) {
       throw new TRPCError({ code: "UNAUTHORIZED" });
     }
 
@@ -79,7 +87,7 @@ export const leadCycleComissionProcedure = protectedProcedure.use(
 );
 
 export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
-  if (ctx.session.user.role !== "ADMIN") {
+  if (!ctx.session.user.role.includes("ADMIN")) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
