@@ -1,24 +1,32 @@
 import "~/styles/globals.css";
 
-import { GeistSans } from "geist/font/sans";
+import { Inter } from "next/font/google";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { Toaster } from "~/components/ui/toaster";
 
+const mainFont = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans"
+});
+
 export const metadata = {
-  title: "KadrEdut",
-  // TODO: "Описание"
+  title: "KadrEdu",
+  // TODO: описание
   description: "",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  icons: [{ rel: "icon", url: "/favicon.ico" }]
 };
 
 export default function RootLayout({
-  children,
+  children
 }: {
-  children: React.ReactNode,
+  children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
+    <html
+      lang="en"
+      className={`${mainFont.variable}`}
+    >
       <body>
         <TRPCReactProvider>
           {children}
