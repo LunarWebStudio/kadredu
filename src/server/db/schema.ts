@@ -9,6 +9,7 @@ import {
   text,
   timestamp,
   varchar,
+  boolean,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 import { createId } from "@paralleldrive/cuid2";
@@ -93,6 +94,9 @@ export const users = createTable("user", {
     mode: "date",
     withTimezone: true,
   }).defaultNow(),
+
+  verified: boolean("verified").notNull().default(false),
+  onboarding: boolean("onboarding").notNull().default(false),
 
   createdAt: timestamp("createdAt", {
     mode: "date",
