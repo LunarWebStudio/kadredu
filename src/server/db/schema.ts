@@ -82,7 +82,7 @@ export const users = createTable("user", {
   email: varchar("email", { length: 255 }).notNull(),
 
   name: varchar("name", { length: 255 }),
-  imageId: text("imageId").references(() => images.id),
+  profilePictureId: text("imageId").references(() => images.id),
   description: text("description"),
 
   experiencePoints: integer("experiencePoints").notNull().default(0),
@@ -103,7 +103,8 @@ export const users = createTable("user", {
 
 export const usersRelations = relations(users, ({ many, one }) => ({
   accounts: many(accounts),
-  group: one(groups),
+  group: one(groups, { fields: [users.groupId], references: [groups.id] }),
+  profilePicture: one(images, { fields: [users.profilePictureId], references: [images.id] }),
 }));
 
 export const accounts = createTable(

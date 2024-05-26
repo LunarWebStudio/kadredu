@@ -1,4 +1,5 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import { eq } from "drizzle-orm";
 import {
   getServerSession,
   type DefaultSession,
@@ -9,7 +10,6 @@ import EmailProvider from "next-auth/providers/email";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
-import { eq } from "drizzle-orm";
 import { createTable, users } from "~/server/db/schema";
 
 declare module "next-auth" {
@@ -22,11 +22,17 @@ declare module "next-auth" {
 const GetUser = async (id: string) => {
   return await db.query.users.findFirst({
     where: eq(users.id, id),
+    with: {
+      profilePicture: true,
+      group: true
+    },
     columns: {
       id: true,
       name: true,
       email: true,
       role: true,
+      experiencePoints: true,
+      coins: true,
     }
   })
 }
@@ -39,10 +45,11 @@ export const authOptions: NextAuthOptions = {
     session: async ({ session, user }) => {
       const dbUser = await GetUser(user.id)
 
-      if (user.email === env.MAIN_ADMIN_EMAIL && dbUser?.role !== "ADMIN") {
+      if (user.email === env.MAIN_ADMIN_EMAIL && !dbUser?.role.includes("ADMIN")) {
+        dbUser?.role.push("ADMIN")
         await db.update(users).set({
-          role: "ADMIN"
-        }).where(eq(users.id, user.id))
+          role: dbUser?.role
+        }).where(eq(users.id, user.id));
       }
 
       return {

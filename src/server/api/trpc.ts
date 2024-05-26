@@ -1,6 +1,7 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import GetLevel from "~/lib/shared/level";
 
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
@@ -33,10 +34,46 @@ export const createTRPCRouter = t.router;
 
 export const publicProcedure = t.procedure;
 
-export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user || ctx.session.user.role.length === 0) {
+export const onboardingProcedure = t.procedure.use(({ ctx, next }) => {
+  if (!ctx.session || !ctx.session.user) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Для выполнения данного действия необходимо авторизоваться"
+    });
+  }
+  return next({
+    ctx: {
+      session: { ...ctx.session, user: ctx.session.user }
+    }
+  });
+});
+
+export const protectedProcedure = onboardingProcedure.use(({ ctx, next }) => {
+  if (ctx.session.user.role.length === 0) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
+  return next({
+    ctx: {
+      session: { ...ctx.session, user: ctx.session.user }
+    }
+  });
+});
+
+const FORBIDDEN_MESSAGE = "У вас недостаточно прав для данного действия";
+const HIGH_LEVEL_THRESHOLD = 3;
+export const highLevelProcedure = protectedProcedure.use(({ ctx, next }) => {
+  if (ctx.session?.user.role.includes("ADMIN")) {
+    return next({
+      ctx: {
+        session: { ...ctx.session, user: ctx.session.user }
+      }
+    });
+  }
+
+  if (GetLevel(ctx.session.user.experiencePoints) < HIGH_LEVEL_THRESHOLD) {
+    throw new TRPCError({ code: "FORBIDDEN", message: FORBIDDEN_MESSAGE });
+  }
+
   return next({
     ctx: {
       session: { ...ctx.session, user: ctx.session.user }
@@ -54,7 +91,7 @@ export const teacherProcedure = protectedProcedure.use(({ ctx, next }) => {
   }
 
   if (!ctx.session.user.role.includes("TEACHER")) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+    throw new TRPCError({ code: "FORBIDDEN", message: FORBIDDEN_MESSAGE });
   }
 
   return next({
@@ -75,7 +112,7 @@ export const leadCycleComissionProcedure = protectedProcedure.use(
     }
 
     if (!ctx.session.user.role.includes("LEAD_CYCLE_COMISSION")) {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
+      throw new TRPCError({ code: "FORBIDDEN", message: FORBIDDEN_MESSAGE });
     }
 
     return next({
@@ -88,7 +125,7 @@ export const leadCycleComissionProcedure = protectedProcedure.use(
 
 export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   if (!ctx.session.user.role.includes("ADMIN")) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+    throw new TRPCError({ code: "FORBIDDEN", message: FORBIDDEN_MESSAGE });
   }
 
   return next({
