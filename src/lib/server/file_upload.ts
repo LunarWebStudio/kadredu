@@ -7,9 +7,14 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { env } from "~/env";
 
-const REGION = "ru-central1";
-const ENDPOINT = "https://storage.yandexcloud.net";
-const s3Client = new S3Client({ region: REGION, endpoint: ENDPOINT });
+const s3Client = new S3Client({
+  region: env.S3_REGION,
+  endpoint: env.S3_ENDPOINT,
+  credentials: {
+    secretAccessKey: env.S3_SECRET_KEY,
+    accessKeyId: env.S3_ACCESS_KEY_ID
+  }
+});
 
 export async function UploadFile(file: Buffer, key: string): Promise<void> {
   await s3Client.send(

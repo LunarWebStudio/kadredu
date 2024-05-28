@@ -18,7 +18,22 @@ export const env = createEnv({
     EMAIL_SERVER: z.string().url(),
     EMAIL_FROM: z.string(),
 
-    S3_BUCKET: z.string()
+    S3_REGION: z
+      .string()
+      .default(
+        process.env.NODE_ENV === "production" ? "ru-central1" : "us-east-1"
+      ),
+    S3_ENDPOINT: z
+      .string()
+      .url()
+      .default(
+        process.env.NODE_ENV === "production"
+          ? "https://storage.yandexcloud.net"
+          : "http://localhost:9000"
+      ),
+    S3_BUCKET: z.string(),
+    S3_ACCESS_KEY_ID: z.string(),
+    S3_SECRET_KEY: z.string()
   },
 
   client: {},
@@ -34,7 +49,11 @@ export const env = createEnv({
     EMAIL_SERVER: process.env.EMAIL_SERVER,
     EMAIL_FROM: process.env.EMAIL_FROM,
 
-    S3_BUCKET: process.env.S3_BUCKET
+    S3_BUCKET: process.env.S3_BUCKET,
+    S3_REGION: process.env.S3_REGION,
+    S3_ENDPOINT: process.env.S3_ENDPOINT,
+    S3_ACCESS_KEY_ID: process.env.S3_ACCESS_KEY_ID,
+    S3_SECRET_KEY: process.env.S3_SECRET_KEY
   },
 
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
