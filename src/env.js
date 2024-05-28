@@ -16,7 +16,9 @@ export const env = createEnv({
     MAIN_ADMIN_EMAIL: z.string().email(),
 
     EMAIL_SERVER: z.string().url(),
-    EMAIL_FROM: z.string()
+    EMAIL_FROM: z.string(),
+
+    S3_BUCKET: z.string()
   },
 
   client: {},
@@ -30,7 +32,9 @@ export const env = createEnv({
     MAIN_ADMIN_EMAIL: process.env.MAIN_ADMIN_EMAIL,
 
     EMAIL_SERVER: process.env.EMAIL_SERVER,
-    EMAIL_FROM: process.env.EMAIL_FROM
+    EMAIL_FROM: process.env.EMAIL_FROM,
+
+    S3_BUCKET: process.env.S3_BUCKET
   },
 
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,

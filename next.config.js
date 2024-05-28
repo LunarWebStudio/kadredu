@@ -1,8 +1,11 @@
-await import("./src/env.js");
+// @ts-check
+import withPlaiceholder from "@plaiceholder/next";
 
-/** @type {import("next").NextConfig} */
+/**
+ * @type {import('next').NextConfig}
+ */
 const config = {
-  swcMinify: true,
+  swcMinify: true
 };
 
-export default config;
+export default withPlaiceholder(config);
