@@ -2,21 +2,22 @@
 const config = {
   parser: "@typescript-eslint/parser",
   parserOptions: {
-    project: true,
+    project: true
   },
   plugins: ["@typescript-eslint", "drizzle", "no-relative-import-paths"],
   extends: [
     "next/core-web-vitals",
     "plugin:@typescript-eslint/recommended-type-checked",
-    "plugin:@typescript-eslint/stylistic-type-checked",
+    "plugin:@typescript-eslint/stylistic-type-checked"
   ],
   rules: {
     "no-relative-import-paths/no-relative-import-paths": [
       "warn",
       {
         allowSameFolder: false,
-        prefix: "~",
-      },
+        rootDir: "src",
+        prefix: "~"
+      }
     ],
     "@typescript-eslint/array-type": "off",
     "@typescript-eslint/consistent-type-definitions": "off",
@@ -24,14 +25,14 @@ const config = {
       "warn",
       {
         prefer: "type-imports",
-        fixStyle: "inline-type-imports",
-      },
+        fixStyle: "inline-type-imports"
+      }
     ],
     "@typescript-eslint/no-unused-vars": [
       "warn",
       {
-        argsIgnorePattern: "^_",
-      },
+        argsIgnorePattern: "^_"
+      }
     ],
     "@typescript-eslint/no-empty-interface": "off",
     "@typescript-eslint/require-await": "off",
@@ -39,22 +40,22 @@ const config = {
       "error",
       {
         checksVoidReturn: {
-          attributes: false,
-        },
-      },
+          attributes: false
+        }
+      }
     ],
     "drizzle/enforce-delete-with-where": [
       "error",
       {
-        drizzleObjectName: ["db"],
-      },
+        drizzleObjectName: ["db"]
+      }
     ],
     "drizzle/enforce-update-with-where": [
       "error",
       {
-        drizzleObjectName: ["db"],
-      },
-    ],
-  },
+        drizzleObjectName: ["db"]
+      }
+    ]
+  }
 };
 module.exports = config;
