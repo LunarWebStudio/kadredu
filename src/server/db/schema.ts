@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   type AnyPgColumn,
   index,
@@ -80,16 +80,18 @@ export const users = createTable("user", {
     .$defaultFn(() => createId())
     .notNull()
     .primaryKey(),
-  email: varchar("email", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
 
   name: varchar("name", { length: 255 }),
-  profilePictureId: text("imageId").references(() => images.id),
+
+  image: varchar("image", { length: 255 }),
+  profilePictureId: text("profilePictureId").references(() => images.id, { onDelete: "set null" }),
   description: text("description"),
 
   experiencePoints: integer("experiencePoints").notNull().default(0),
   coins: integer("coins").notNull().default(0),
 
-  role: rolesEnum("role").default("UNKNOWN").array().notNull(),
+  role: rolesEnum("role").default("UNKNOWN").array().notNull().default(sql`ARRAY[]::role[]`),
   emailVerified: timestamp("emailVerified", {
     mode: "date",
     withTimezone: true,

@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import {
   getServerSession,
   type DefaultSession,
-  type NextAuthOptions,
+  type NextAuthOptions
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
 import EmailProvider from "next-auth/providers/email";
@@ -14,8 +14,12 @@ import { createTable, users } from "~/server/db/schema";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
-    user: NonNullable<Awaited<ReturnType<typeof GetUser>>>
-    & DefaultSession["user"];
+    user: NonNullable<Awaited<ReturnType<typeof GetUser>>> &
+    DefaultSession["user"];
+  }
+
+  export interface User {
+    image: number;
   }
 }
 
@@ -33,39 +37,49 @@ const GetUser = async (id: string) => {
       role: true,
       experiencePoints: true,
       coins: true,
+      verified: true,
+      onboarding: true
     }
-  })
-}
+  });
+};
 
 export const authOptions: NextAuthOptions = {
   callbacks: {
     redirect({ baseUrl }) {
-      return baseUrl
+      return baseUrl;
     },
     session: async ({ session, user }) => {
-      const dbUser = await GetUser(user.id)
+      const dbUser = await GetUser(user.id);
 
-      if (user.email === env.MAIN_ADMIN_EMAIL && !dbUser?.role.includes("ADMIN")) {
-        dbUser?.role.push("ADMIN")
-        await db.update(users).set({
-          role: dbUser?.role
-        }).where(eq(users.id, user.id));
+      if (
+        user.email === env.MAIN_ADMIN_EMAIL &&
+        !dbUser?.role.includes("ADMIN")
+      ) {
+        dbUser?.role.push("ADMIN");
+        await db
+          .update(users)
+          .set({
+            role: dbUser?.role,
+            verified: true,
+            name: "Администратор"
+          })
+          .where(eq(users.id, user.id));
       }
 
       return {
         ...session,
         user: dbUser
-      }
-    },
+      };
+    }
   },
   adapter: DrizzleAdapter(db, createTable) as Adapter,
   providers: [
     EmailProvider({
       server: env.EMAIL_SERVER,
       from: env.EMAIL_FROM,
-      maxAge: 10 * 60,
-    }),
-  ],
+      maxAge: 10 * 60
+    })
+  ]
 };
 
 export const getServerAuthSession = () => getServerSession(authOptions);

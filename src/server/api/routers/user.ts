@@ -3,12 +3,13 @@ import { z } from "zod";
 import { UploadFile } from "~/lib/server/file_upload";
 import { ProcessImage } from "~/lib/server/images";
 
-import { createTRPCRouter, onboardingProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, verificationProcedure } from "~/server/api/trpc";
 import { images, users } from "~/server/db/schema";
 import { DESCRIPTION_LIMIT, MAX_PROFILE_PICTURE_SIZE, NAME_LIMIT } from "~/lib/shared/const";
+import { TRPCError } from "@trpc/server";
 
 export const userRouter = createTRPCRouter({
-  updadeSelf: onboardingProcedure
+  updadeSelf: verificationProcedure
     .input(
       z.object({
         name: z
@@ -37,16 +38,23 @@ export const userRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.transaction(async (tx) => {
-        let imageId = "";
+        let imageId: string | undefined = undefined
         if (input.profilePictureImage) {
-          const processed_image = await ProcessImage(input.profilePictureImage);
-          const storageId = `profile_picture_${ctx.session.user.id}`
-          await UploadFile(processed_image.file, storageId);
+          try {
+            const processed_image = await ProcessImage(input.profilePictureImage);
+            const storageId = `profile_picture_${ctx.session.user.id}`
+            await UploadFile(processed_image.file, storageId);
 
-          imageId = (await tx.insert(images).values({
-            blurPreview: processed_image.blurPreview,
-            storageId
-          }).returning())[0]!.id;
+            imageId = (await tx.insert(images).values({
+              blurPreview: processed_image.blurPreview,
+              storageId
+            }).returning())[0]!.id;
+          } catch (err) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Не удалось загрузить фото профиля"
+            })
+          }
         }
 
         await tx.update(users).set({
@@ -55,5 +63,12 @@ export const userRouter = createTRPCRouter({
           profilePictureId: imageId
         }).where(eq(users.id, ctx.session.user.id));
       })
+    }),
+  completeOnboarding: protectedProcedure
+    .mutation(async ({ ctx }) => {
+      await ctx.db
+        .update(users)
+        .set({ onboarding: true })
+        .where(eq(users.id, ctx.session.user.id));
     })
 });

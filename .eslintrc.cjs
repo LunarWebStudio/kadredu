@@ -11,6 +11,7 @@ const config = {
     "plugin:@typescript-eslint/stylistic-type-checked"
   ],
   rules: {
+    "@typescript-eslint/no-explicit-any": "off",
     "no-relative-import-paths/no-relative-import-paths": [
       "warn",
       {

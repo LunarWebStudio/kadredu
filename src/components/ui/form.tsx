@@ -101,6 +101,26 @@ const FormLabel = React.forwardRef<
 })
 FormLabel.displayName = "FormLabel"
 
+const RequiredFormLabel = React.forwardRef<
+  React.ElementRef<typeof LabelPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
+>(({ className, ...props }, ref) => {
+  const { error, formItemId } = useFormField()
+
+  return (
+    <>
+      <Label
+        ref={ref}
+        className={cn(error && "text-destructive", className)}
+        htmlFor={formItemId}
+        {...props}
+      />
+      <span className="text-destructive">*</span>
+    </>
+  )
+})
+RequiredFormLabel.displayName = "RequiredFormLabel"
+
 const FormControl = React.forwardRef<
   React.ElementRef<typeof Slot>,
   React.ComponentPropsWithoutRef<typeof Slot>
@@ -169,6 +189,7 @@ export {
   Form,
   FormItem,
   FormLabel,
+  RequiredFormLabel,
   FormControl,
   FormDescription,
   FormMessage,

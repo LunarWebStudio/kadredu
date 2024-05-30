@@ -34,7 +34,7 @@ export const createTRPCRouter = t.router;
 
 export const publicProcedure = t.procedure;
 
-export const onboardingProcedure = t.procedure.use(({ ctx, next }) => {
+export const verificationProcedure = t.procedure.use(({ ctx, next }) => {
   if (!ctx.session || !ctx.session.user) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
@@ -48,7 +48,7 @@ export const onboardingProcedure = t.procedure.use(({ ctx, next }) => {
   });
 });
 
-export const protectedProcedure = onboardingProcedure.use(({ ctx, next }) => {
+export const protectedProcedure = verificationProcedure.use(({ ctx, next }) => {
   if (ctx.session.user.role.length === 0) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }

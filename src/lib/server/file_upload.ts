@@ -12,16 +12,21 @@ const s3Client = new S3Client({
   endpoint: env.S3_ENDPOINT,
   credentials: {
     secretAccessKey: env.S3_SECRET_KEY,
-    accessKeyId: env.S3_ACCESS_KEY_ID
+    accessKeyId: env.S3_ACCESS_KEY
   }
 });
 
-export async function UploadFile(file: Buffer, key: string): Promise<void> {
+export async function UploadFile(
+  file: Buffer,
+  key: string,
+  metadata?: Record<string, string>
+): Promise<void> {
   await s3Client.send(
     new PutObjectCommand({
       Bucket: env.S3_BUCKET,
       Key: key,
-      Body: file
+      Body: file,
+      Metadata: metadata
     })
   );
 }
