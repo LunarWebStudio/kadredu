@@ -1,15 +1,30 @@
+import { cn } from "~/lib/utils";
 import LogoImage from "../../public/logo.svg";
 import Image, { type StaticImageData } from "next/image";
 
-export default function Logo() {
+export default function Logo({
+  dark,
+  size
+}: {
+  dark?: boolean,
+  size?: "icon" | "full"
+}) {
   return (
     <div className="flex select-none flex-row items-center gap-2">
       <Image
         src={LogoImage as StaticImageData}
         alt="Logo"
-        className="size-12"
+        className="size-10"
       />
-      <p className="text-lg font-bold text-white">KadrEdu</p>
+      <p
+        className={cn(
+          "text-lg font-bold text-white",
+          dark ? "text-white" : "text-black",
+          size === "icon" ? "hidden" : "block"
+        )}
+      >
+        KadrEdu
+      </p>
     </div>
   );
 }

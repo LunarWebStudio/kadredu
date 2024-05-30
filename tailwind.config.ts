@@ -24,16 +24,21 @@ const config = {
       },
       height: {
         "screen-nav": "calc(100vh - var(--nav-height))",
-        nav: "var(--nav-height)"
+        nav: "var(--nav-height)",
+        "nav-dashboard": "var(--dashboard-nav-height)",
+        "screen-nav-dashboard": "calc(100vh - var(--dashboard-nav-height))"
       },
       minHeight: {
-        "screen-nav": "calc(100vh - var(--nav-height))"
+        "screen-nav": "calc(100vh - var(--nav-height))",
+        "screen-nav-dashboard": "calc(100vh - var(--dashboard-nav-height))"
       },
       margin: {
-        nav: "var(--nav-height)"
+        nav: "var(--nav-height)",
+        "nav-dashboard": "var(--dashboard-nav-height)"
       },
       inset: {
-        nav: "var(--nav-height)"
+        nav: "var(--nav-height)",
+        "nav-dashboard": "var(--dashboard-nav-height)"
       },
       colors: {
         border: "hsl(var(--border))",
