@@ -3,7 +3,7 @@ import Image, { type StaticImageData } from "next/image";
 
 export default function Logo() {
   return (
-    <div className="flex flex-row items-center gap-2">
+    <div className="flex select-none flex-row items-center gap-2">
       <Image
         src={LogoImage as StaticImageData}
         alt="Logo"
