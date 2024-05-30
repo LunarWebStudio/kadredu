@@ -72,6 +72,12 @@ export const authOptions: NextAuthOptions = {
       };
     }
   },
+  pages: {
+    signIn: "/auth",
+    signOut: "/auth/logout",
+    error: "/auth/error",
+    verifyRequest: "/auth/verify",
+  },
   adapter: DrizzleAdapter(db, createTable) as Adapter,
   providers: [
     EmailProvider({
