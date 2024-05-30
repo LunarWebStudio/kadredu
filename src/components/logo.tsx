@@ -9,7 +9,7 @@ export default function Logo() {
         alt="Logo"
         className="size-12"
       />
-      <p className="text-lg font-bold text-background">KadrEdu</p>
+      <p className="text-lg font-bold text-white">KadrEdu</p>
     </div>
   );
 }
