@@ -17,7 +17,6 @@ import { z } from "zod";
 
 export const createTable = pgTableCreator(name => `kadredu_${name}`);
 
-// https://medium.com/@Furki4_4/make-your-image-loading-blurry-in-next-js-0f0e5bf3dc7c
 export const images = createTable("images", {
   id: text("id")
     .$defaultFn(() => createId())

@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { api } from "~/trpc/react";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
-import Image from "next/image";
+import S3Image from "~/components/s3Image";
 
 export default function UserAvatar({
   image,
@@ -17,27 +15,14 @@ export default function UserAvatar({
   className?: string,
   name: string
 }) {
-  const [key, setKey] = useState("");
-
-  useEffect(() => {
-    setKey(image?.storageId ?? "");
-  }, [image]);
-
-  const signedUrl = api.image.getPresignedURL.useQuery(
-    { key },
-    {
-      enabled: !!image
-    }
-  );
-
   return (
     <Avatar className={className}>
       <AvatarImage
         asChild
-        src={signedUrl.data ?? ""}
+        src={""}
       >
-        <Image
-          src={signedUrl.data ?? ""}
+        <S3Image
+          src={image?.storageId ?? ""}
           alt="ProfilePicture"
           blurDataURL={image?.blurPreview}
           placeholder="blur"
