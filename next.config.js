@@ -5,7 +5,20 @@ import withPlaiceholder from "@plaiceholder/next";
  * @type {import('next').NextConfig}
  */
 const config = {
-  swcMinify: true
+  swcMinify: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "shoppoker-nextjs.storage.yandexcloud.net"
+      },
+      {
+        protocol: "http",
+        hostname: "127.0.0.1"
+      }
+    ]
+  },
+
 };
 
 export default withPlaiceholder(config);

@@ -24,6 +24,31 @@ export const BuildingInputSchema = z.object({
     .max(255, "Адрес слишком длинный")
 });
 
+// group
+
+export type Group = inferProcedureOutput<AppRouter["group"]["getAll"]>[number];
+
+export const GroupInputSchema = z.object({
+  title: z
+    .string({
+      required_error: "Название не заполнено",
+      invalid_type_error: "Название не является строкой"
+    })
+    .min(1, "Название не заполнено")
+    .max(255, "Название слишком длинное"),
+  image: z.string({
+    required_error: "Фото не задано",
+    invalid_type_error: "Фото не является строкой"
+  }),
+  buildingId: z
+    .string({
+      required_error: "Не указан ID здания",
+      invalid_type_error: "ID здания не является строкой"
+    })
+    .min(1, "ID здания не заполнен")
+    .max(255, "ID здания слишком длинный")
+});
+
 export const IdInputSchema = z.object({
   id: z
     .string({

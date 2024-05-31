@@ -41,7 +41,9 @@ export const userRouter = createTRPCRouter({
         let imageId: string | undefined = undefined
         if (input.profilePictureImage) {
           try {
-            const processed_image = await ProcessImage(input.profilePictureImage);
+            const processed_image = await ProcessImage({
+              imageB64: input.profilePictureImage
+            });
             const storageId = `profile_picture_${ctx.session.user.id}`
             await UploadFile(processed_image.file, storageId);
 

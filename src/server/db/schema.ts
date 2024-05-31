@@ -53,8 +53,8 @@ export const groups = createTable("groups", {
     .primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
 
-  buildingId: text("buildingId").references(() => buildings.id).notNull(),
-  imageId: text("imageId").references(() => images.id),
+  buildingId: text("buildingId").references(() => buildings.id, { onDelete: "cascade" }).notNull(),
+  imageId: text("imageId").references(() => images.id, { onDelete: "cascade" }).notNull(),
 });
 
 export const groupsRelations = relations(groups, ({ many, one }) => ({

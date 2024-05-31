@@ -1,6 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { type Group } from "~/lib/shared/types";
+import { api } from "~/trpc/react";
+import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -13,30 +16,30 @@ import {
   AlertDialogTrigger
 } from "~/components/ui/alert-dialog";
 import { useToast } from "~/components/ui/use-toast";
-import type { Building } from "~/lib/shared/types";
-import { api } from "~/trpc/react";
-import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 
-export default function DeleteBuilding({ building }: { building: Building }) {
+export default function DeleteGroup({
+  group
+}: {
+  group: Group
+}) {
   const router = useRouter();
   const { toast } = useToast();
 
-  const deleteBuildingMutation = api.building.delete.useMutation({
+  const deleteGroupMutation = api.group.delete.useMutation({
     onSuccess: () => {
-      router.refresh();
       toast({
-        title: "Успешно",
-        description: "Здание было удалено"
+        title: "Группа удалена",
+      });
+      router.refresh();
+    },
+    onError: (err) => {
+      toast({
+        title: "Ошибка удаления группы",
+        description: err.message,
+        variant: "destructive",
       });
     },
-    onError: err => {
-      toast({
-        title: "Ошибка",
-        description: err.message,
-        variant: "destructive"
-      });
-    }
-  });
+  })
 
   return (
     <AlertDialog>
@@ -47,17 +50,16 @@ export default function DeleteBuilding({ building }: { building: Building }) {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Удаление здания</AlertDialogTitle>
+          <AlertDialogTitle>Удаление группы</AlertDialogTitle>
         </AlertDialogHeader>
         <AlertDialogDescription>
-          Вы уверены что хотите удалить "{building.title}" по адресу "
-          {building.address}"?
+          Вы уверены что хотите удалить "{group.title}"?
         </AlertDialogDescription>
         <AlertDialogFooter>
           <AlertDialogCancel>Отмена</AlertDialogCancel>
           <AlertDialogAction
-            disabled={deleteBuildingMutation.isPending}
-            onClick={() => deleteBuildingMutation.mutate({ id: building.id })}
+            disabled={deleteGroupMutation.isPending}
+            onClick={() => deleteGroupMutation.mutate({ id: group.id })}
           >
             Удалить
           </AlertDialogAction>
