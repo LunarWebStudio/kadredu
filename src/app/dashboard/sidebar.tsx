@@ -1,6 +1,8 @@
 import { BookA, Building, Crown, Group, Award, Calendar, BookUser, User, Glasses, ClipboardList } from "lucide-react";
 import { type Role } from "~/server/db/schema";
 import SidebarItem from "~/app/dashboard/item";
+import { getServerAuthSession } from "~/server/auth";
+import React from "react";
 
 const iconClassName = "size-4";
 
@@ -21,22 +23,22 @@ const sidebarItems: SidebarItem[] = [
     items: [
       {
         icon: <Building className={iconClassName} />,
-        href: "/buildings",
+        href: "/dashboard/buildings",
         title: "СП"
       },
       {
         icon: <Group className={iconClassName} />,
-        href: "/groups",
+        href: "/dashboard/groups",
         title: "Группы"
       },
       {
         icon: <Crown className={iconClassName} />,
-        href: "/roles",
+        href: "/dashboard/roles",
         title: "Роли в команду"
       },
       {
         icon: <BookA className={iconClassName} />,
-        href: "/themes",
+        href: "/dashboard/themes",
         title: "Темы для статей"
       }
     ]
@@ -47,17 +49,17 @@ const sidebarItems: SidebarItem[] = [
     items: [
       {
         icon: <Award className={iconClassName} />,
-        href: "/awards",
+        href: "/dashboard/awards",
         title: "Награды"
       },
       {
         icon: <Calendar className={iconClassName} />,
-        href: "/events",
+        href: "/dashboard/events",
         title: "События"
       },
       {
         icon: <BookUser className={iconClassName} />,
-        href: "/subjects",
+        href: "/dashboard/subjects",
         title: "Предметы"
       }
     ]
@@ -68,35 +70,40 @@ const sidebarItems: SidebarItem[] = [
     items: [
       {
         icon: <User className={iconClassName} />,
-        href: "/users",
+        href: "/dashboard/users",
         title: "Пользователи"
       },
       {
         icon: <Glasses className={iconClassName} />,
-        href: "/tutorials",
+        href: "/dashboard/tutorials",
         title: "Туториалы"
       },
       {
         icon: <ClipboardList className={iconClassName} />,
-        href: "/tasks",
+        href: "/dashboard/tasks",
         title: "Задания"
       }
     ]
   }
 ];
 
-export default function Sidebar() {
+export default async function Sidebar() {
+  const session = await getServerAuthSession();
   return (
-    <aside className="px-6 py-4 bg-secondary h-screen min-w-[19rem]">
+    <aside className="px-6 py-4 bg-secondary h-screen-nav-dashboard min-w-[19rem]">
       {sidebarItems.map((section, index) => (
-        <div key={index} className="mb-4 space-y-2 px-2">
-          <p className="text-foreground/60">{section.title}</p>
-          <div className="flex flex-col gap-2">
-            {section.items.map((item, index) => (
-              <SidebarItem {...item} key={section.title + index} />
-            ))}
-          </div>
-        </div>
+        <React.Fragment key={index}>
+          {((session?.user.role.includes("ADMIN") ?? false) || (session?.user.role.some((role) => section.roles.includes(role)) ?? false)) && (
+            <div className="mb-4 space-y-2 px-2">
+              <p className="text-foreground/60">{section.title}</p>
+              <div className="flex flex-col gap-2">
+                {section.items.map((item, index) => (
+                  <SidebarItem {...item} key={section.title + index} />
+                ))}
+              </div>
+            </div>
+          )}
+        </React.Fragment>
       ))}
     </aside>
   );

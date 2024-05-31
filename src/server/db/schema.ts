@@ -44,7 +44,7 @@ export const buildings = createTable("buildings", {
 
 export const buildingsRelations = relations(buildings, ({ many, one }) => ({
   groups: many(groups),
-  createdBy: one(users)
+  createdBy: one(users, { fields: [buildings.createdById], references: [users.id] }),
 }))
 
 export const groups = createTable("groups", {
@@ -60,8 +60,8 @@ export const groups = createTable("groups", {
 
 export const groupsRelations = relations(groups, ({ many, one }) => ({
   users: many(users),
-  image: one(images),
-  building: one(buildings),
+  image: one(images, { fields: [groups.imageId], references: [images.id] }),
+  building: one(buildings, { fields: [groups.buildingId], references: [buildings.id] }),
 }));
 
 export const rolesEnum = pgEnum("role", [
