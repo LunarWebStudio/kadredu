@@ -3,10 +3,10 @@ import LogoImage from "../../public/logo.svg";
 import Image, { type StaticImageData } from "next/image";
 
 export default function Logo({
-  dark,
+  inverted,
   size
 }: {
-  dark?: boolean,
+  inverted?: boolean,
   size?: "icon" | "full"
 }) {
   return (
@@ -19,7 +19,7 @@ export default function Logo({
       <p
         className={cn(
           "text-lg font-bold text-white",
-          dark ? "text-white" : "text-black",
+          inverted ? "text-white" : "text-black",
           size === "icon" ? "hidden" : "block"
         )}
       >
