@@ -1,3 +1,4 @@
+import { createId } from "@paralleldrive/cuid2";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
@@ -23,7 +24,8 @@ export const groupRouter = createTRPCRouter({
             },
             fit: "contain"
           });
-          const storageId = `group_${new Date().getTime()}`
+
+          const storageId = `group_${createId()}`
           await UploadFile(processed_image.file, storageId);
 
           imageId = (await tx.insert(images).values({
