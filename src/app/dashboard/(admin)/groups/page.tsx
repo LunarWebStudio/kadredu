@@ -49,6 +49,8 @@ export default async function Groups() {
                     alt={group.title}
                     width={500}
                     height={500}
+                    blurDataURL={group.image.blurPreview}
+                    placeholder="blur"
                     className="size-14 object-contain"
                   />
                 </TableCell>
