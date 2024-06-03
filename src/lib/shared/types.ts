@@ -58,3 +58,8 @@ export const IdInputSchema = z.object({
     .min(1, "ID не заполнен")
     .max(255, "ID слишком длинный")
 });
+
+
+// user
+export type User = inferProcedureOutput<AppRouter["user"]["getAll"]>[number];
+

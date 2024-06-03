@@ -60,6 +60,7 @@ export const authOptions: NextAuthOptions = {
           .update(users)
           .set({
             role: dbUser?.role,
+            username: "admin",
             verified: true,
             name: "Администратор"
           })
