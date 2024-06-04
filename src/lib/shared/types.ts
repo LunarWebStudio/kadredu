@@ -59,7 +59,15 @@ export const IdInputSchema = z.object({
     .max(255, "ID слишком длинный")
 });
 
+export const RoleInputSchema = z.object({
+  name: z
+    .string({
+      required_error: "Имя роли не указано",
+      invalid_type_error: "Только буквы"
+    })
+    .min(1, "Роль не может быть пустой")
+    .max(255, "Роль слишком длинная")
+});
 
 // user
 export type User = inferProcedureOutput<AppRouter["user"]["getAll"]>[number];
-

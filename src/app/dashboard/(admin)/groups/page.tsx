@@ -25,8 +25,8 @@ export default async function Groups({
   searchParams
 }: {
   searchParams: {
-    building?: string;
-    search?: string;
+    building?: string,
+    search?: string
   }
 }) {
   const groups = await api.group.getAll({
@@ -66,9 +66,7 @@ export default async function Groups({
                   />
                 </TableCell>
                 <TableCell>{group.title}</TableCell>
-                <TableCell>
-                  {group.building.title}
-                </TableCell>
+                <TableCell>{group.building.title}</TableCell>
                 <TableCell>
                   <Link href={`/dashboard/users?groupId=${group.id}`}>
                     <Button
@@ -93,7 +91,10 @@ export default async function Groups({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Действия</DropdownMenuLabel>
-                        <CreateUpdateGroup group={group} buildings={buildings} />
+                        <CreateUpdateGroup
+                          group={group}
+                          buildings={buildings}
+                        />
                         <DeleteGroup group={group} />
                       </DropdownMenuContent>
                     </DropdownMenu>
