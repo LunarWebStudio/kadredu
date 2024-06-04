@@ -29,6 +29,7 @@ import { type Session } from "next-auth";
 import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
 import { useToast } from "~/components/ui/use-toast";
+import { GetRoleData } from "~/lib/shared/enums";
 
 function RolesDisplay({ roles }: { roles: Role[] }) {
   return (
@@ -45,7 +46,6 @@ function RolesDisplay({ roles }: { roles: Role[] }) {
     </>
   )
 }
-
 
 export default function RoleSelect({
   user,
@@ -133,13 +133,15 @@ function RoleList({
             .map((role) => (
               <CommandItem
                 key={role}
-                value={role}
-                onSelect={() => {
-                  if (roles.includes(role)) {
-                    setRoles(roles.filter((r) => r !== role))
+                value={GetRoleData(role).name}
+                onSelect={(val) => {
+                  const r = rolesEnum.enumValues.find(rl => GetRoleData(rl).name === val)!
+
+                  if (roles.includes(r)) {
+                    setRoles(roles.filter((rl) => rl !== r))
                     return;
                   }
-                  setRoles([...roles, role])
+                  setRoles([...roles, r])
                 }}
               >
                 <Check className={
