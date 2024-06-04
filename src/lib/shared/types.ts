@@ -69,3 +69,5 @@ export const RoleInputSchema = z.object({
     .max(20, "Максимум 20 символов")
 });
 
+// user
+export type User = inferProcedureOutput<AppRouter["user"]["getAll"]>[number];

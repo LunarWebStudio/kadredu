@@ -9,7 +9,7 @@ export default function AuthOnboardingLayout({
   return (
     <div className="grid grid-cols-2">
       <div className="relative flex h-screen flex-col gap-2 bg-primary p-10 text-white dark:bg-background overflow-hidden">
-        <Logo />
+        <Logo inverted />
         <div className="flex grow flex-col items-center justify-center gap-4">
           <div className="mx-auto flex w-1/2 max-w-[26rem] flex-col items-center justify-center gap-6 pb-[15%]">
             <h2>Lorem ipsum dolor sit amet consectetur</h2>

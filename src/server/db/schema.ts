@@ -71,7 +71,9 @@ export const rolesEnum = pgEnum("role", [
   "STUDENT",
   "UNKNOWN",
 ]);
-export const roleSchema = z.enum(rolesEnum.enumValues);
+export const roleSchema = z.enum(rolesEnum.enumValues, {
+  message: "Недопустимая роль"
+});
 export type Role = z.infer<typeof roleSchema>;
 
 export const users = createTable("user", {
@@ -82,6 +84,7 @@ export const users = createTable("user", {
   email: varchar("email", { length: 255 }).notNull().unique(),
 
   name: varchar("name", { length: 255 }),
+  username: varchar("username", { length: 255 }),
 
   image: varchar("image", { length: 255 }),
   profilePictureId: text("profilePictureId").references(() => images.id, { onDelete: "set null" }),

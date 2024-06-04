@@ -19,9 +19,20 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { Button } from "~/components/ui/button";
 import S3Image from "~/components/s3Image";
+import Link from "next/link";
 
-export default async function Groups() {
-  const groups = await api.group.getAll();
+export default async function Groups({
+  searchParams
+}: {
+  searchParams: {
+    building?: string,
+    search?: string
+  }
+}) {
+  const groups = await api.group.getAll({
+    buildingId: searchParams.building,
+    search: searchParams.search
+  });
   const buildings = await api.building.getAll();
 
   return (
@@ -49,12 +60,23 @@ export default async function Groups() {
                     alt={group.title}
                     width={500}
                     height={500}
+                    blurDataURL={group.image.blurPreview}
+                    placeholder="blur"
                     className="size-14 object-contain"
                   />
                 </TableCell>
                 <TableCell>{group.title}</TableCell>
                 <TableCell>{group.building.title}</TableCell>
-                <TableCell>{group.users.length}</TableCell>
+                <TableCell>
+                  <Link href={`/dashboard/users?groupId=${group.id}`}>
+                    <Button
+                      size="link"
+                      variant="link"
+                    >
+                      {group.users.length}
+                    </Button>
+                  </Link>
+                </TableCell>
                 <TableCell>
                   <div className="flex items-center justify-end">
                     <DropdownMenu modal={false}>

@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, ilike, or } from "drizzle-orm";
 import { z } from "zod";
 import { BuildingInputSchema, IdInputSchema } from "~/lib/shared/types";
 import {
@@ -28,15 +28,23 @@ export const buildingRouter = createTRPCRouter({
   delete: adminProcedure.input(IdInputSchema).mutation(({ ctx, input }) => {
     return ctx.db.delete(buildings).where(eq(buildings.id, input.id));
   }),
-  getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.db.query.buildings.findMany({
-      with: {
-        groups: {
-          columns: {
-            id: true
+  getAll: publicProcedure
+    .input(z.object({
+      search: z.string().optional()
+    }).optional())
+    .query(({ ctx, input }) => {
+      return ctx.db.query.buildings.findMany({
+        where: input?.search ? or(
+          ilike(buildings.title, `%${input.search}%`),
+          ilike(buildings.address, `%${input.search}%`)
+        ) : undefined,
+        with: {
+          groups: {
+            columns: {
+              id: true
+            }
           }
         }
-      }
-    });
-  })
+      });
+    })
 });
