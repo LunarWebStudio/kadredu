@@ -180,3 +180,14 @@ export const verificationTokens = createTable(
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
   }),
 );
+
+export const topics = createTable(
+  "topics",
+  {
+    id: text("id")
+    .$defaultFn(() => createId())
+    .notNull()
+    .primaryKey(),
+    nameTopics: varchar("nameTopics", {length: 200}).notNull().primaryKey()
+  }
+)

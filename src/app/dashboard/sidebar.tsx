@@ -38,7 +38,7 @@ const sidebarItems: SidebarItem[] = [
       },
       {
         icon: <BookA className={iconClassName} />,
-        href: "/dashboard/themes",
+        href: "/dashboard/topics",
         title: "Темы для статей"
       }
     ]

@@ -58,3 +58,14 @@ export const IdInputSchema = z.object({
     .min(1, "ID не заполнен")
     .max(255, "ID слишком длинный")
 });
+
+export type Topic = inferProcedureOutput<AppRouter["topics"]["getAll"]>[number];
+
+export const TopicsInputShema = z.object({
+  nameTopics: z
+    .string({
+      required_error: "название не указано",
+      invalid_type_error: "название не является строкой"
+    })
+})
+
