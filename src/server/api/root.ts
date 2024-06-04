@@ -3,7 +3,7 @@ import { userRouter } from "~/server/api/routers/user";
 import { buildingRouter } from "~/server/api/routers/building";
 import { imageRouter } from "~/server/api/routers/image";
 import { groupRouter } from "~/server/api/routers/group";
-import { TopicsRouter } from "./routers/topics";
+import { TopicsRouter } from "~/server/api/routers/topics";
 
 
 export const appRouter = createTRPCRouter({

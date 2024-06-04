@@ -5,24 +5,21 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "~/components/ui/dialog";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "~/components/ui/select";
 import { Form, FormField, FormItem, FormControl, FormDescription } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import { useToast } from "~/components/ui/use-toast";
-import { type Building, type Topic, TopicsInputShema } from "~/lib/shared/types";
+import {type Topic, TopicsInputShema } from "~/lib/shared/types";
 import { api } from "~/trpc/react";
 import { OnError } from "~/lib/shared/onError";
-import { string, type z } from "zod";
+import {type z } from "zod";
 
 
 export default function CreateUpdateTopics({
     topics, 
-    building
     } : {
         topics? : Topic;
-        building : Building[];
     }) {
         const [open, setOpen] = useState(false);
 

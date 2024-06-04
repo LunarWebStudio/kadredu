@@ -1,6 +1,5 @@
 import DashboardTemplate from "~/app/dashboard/templ";
-import CreateUpdateGroup from "~/app/dashboard/(admin)/groups/create_update";
-import DeleteGroup from "~/app/dashboard/(admin)/groups/delete";
+
 import {
   Table,
   TableBody,
@@ -18,17 +17,15 @@ import {
   DropdownMenuTrigger
 } from "~/components/ui/dropdown-menu";
 import { Button } from "~/components/ui/button";
-import S3Image from "~/components/s3Image";
-import CreateUpdateTopics from "./create_update";
-import DeleteTopics from "./delete";
+import CreateUpdateTopics from "~/app/dashboard/(admin)/topics/create_update";
+import DeleteTopics from "~/app/dashboard/(admin)/topics/delete";
 
 export default async function Themes() {
     const topics = await api.topics.getAll();
-    const buildings = await api.building.getAll();
 
     return (
         <DashboardTemplate
-          navbar={<CreateUpdateTopics  buildings={buildings} />}
+          navbar={<CreateUpdateTopics/>}
           title="Тема"
         >
           <div className="max-h-full grow overflow-y-scroll">
@@ -41,7 +38,7 @@ export default async function Themes() {
 
               <TableBody>
                 {topics.map(topic => (
-                  <TableRow>
+                  <TableRow key={topic.id}>
                     <TableCell>
                       {topic.nameTopics}
                     </TableCell>
@@ -61,7 +58,7 @@ export default async function Themes() {
 
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Действия</DropdownMenuLabel>
-                            <CreateUpdateTopics topics={topic} buildings={buildings}/>
+                            <CreateUpdateTopics topics={topic}/>
                             <DeleteTopics topic={topic}/>
                           </DropdownMenuContent>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { type Topic } from "~/lib/shared/types";
+import { type User } from "~/lib/shared/types";
 import { api } from "~/trpc/react";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import {
@@ -17,24 +17,24 @@ import {
 } from "~/components/ui/alert-dialog";
 import { useToast } from "~/components/ui/use-toast";
 
-export default function DeleteTopics({
-  topic
+export default function DeleteUser({
+  user
 }: {
-  topic: Topic
+  user: User
 }) {
   const router = useRouter();
   const { toast } = useToast();
 
-  const deleteTopicMutation = api.topics.delete.useMutation({
+  const deleteUserMutation = api.user.delete.useMutation({
     onSuccess: () => {
       toast({
-        title: "Тема удалена",
+        title: "Пользователь удален",
       });
       router.refresh();
     },
     onError: (err) => {
       toast({
-        title: "Ошибка удаления темы",
+        title: "Ошибка удаления пользователя",
         description: err.message,
         variant: "destructive",
       });
@@ -50,16 +50,16 @@ export default function DeleteTopics({
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Удаление темы</AlertDialogTitle>
+          <AlertDialogTitle>Удаление пользователя</AlertDialogTitle>
         </AlertDialogHeader>
         <AlertDialogDescription>
-          Вы уверены что хотите удалить "{topic.nameTopics}"?
+          Вы уверены что хотите удалить "{user.name}"?
         </AlertDialogDescription>
         <AlertDialogFooter>
           <AlertDialogCancel>Отмена</AlertDialogCancel>
           <AlertDialogAction
-            disabled={deleteTopicMutation.isPending}
-            onClick={() => deleteTopicMutation.mutate({ id: topic.id })}
+            disabled={deleteUserMutation.isPending}
+            onClick={() => deleteUserMutation.mutate({ id: user.id })}
           >
             Удалить
           </AlertDialogAction>

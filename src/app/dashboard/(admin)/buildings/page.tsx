@@ -20,8 +20,16 @@ import { Button } from "~/components/ui/button";
 import Link from "next/link";
 import DeleteBuilding from "~/app/dashboard/(admin)/buildings/delete";
 
-export default async function Buildings() {
-  const buildings = await api.building.getAll();
+export default async function Buildings({
+  searchParams
+}: {
+  searchParams: {
+    search?: string;
+  }
+}) {
+  const buildings = await api.building.getAll({
+    search: searchParams.search
+  });
 
   return (
     <DashboardTemplate

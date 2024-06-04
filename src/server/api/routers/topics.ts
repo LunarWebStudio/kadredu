@@ -1,11 +1,8 @@
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { UploadFile } from "~/lib/server/file_upload";
-import { ProcessImage } from "~/lib/server/images";
 import { TopicsInputShema, IdInputSchema } from "~/lib/shared/types";
-
-import { adminProcedure, createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { adminProcedure, createTRPCRouter} from "~/server/api/trpc";
 import { topics } from "~/server/db/schema";
 
 export const TopicsRouter = createTRPCRouter ({

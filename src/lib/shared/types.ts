@@ -69,3 +69,6 @@ export const TopicsInputShema = z.object({
     })
 })
 
+// user
+export type User = inferProcedureOutput<AppRouter["user"]["getAll"]>[number];
+
