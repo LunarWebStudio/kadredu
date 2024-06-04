@@ -20,7 +20,7 @@ export default function DeleteDialog({
   role: { id: string, name: string }
 }) {
   const router = useRouter();
-  const DeleteRoleMutation = api.rolesTeam.delete.useMutation({
+  const DeleteRoleMutation = api.teamRoles.delete.useMutation({
     onSuccess: () => {
       toast({
         title: "Роль удалена"

@@ -183,7 +183,7 @@ export const verificationTokens = createTable(
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
   }),
 );
-export const rolesTeam = createTable("rolesTeam",{
+export const teamRoles = createTable("rolesTeam",{
   id:text("id")
   .$defaultFn(()=>createId())
   .notNull()

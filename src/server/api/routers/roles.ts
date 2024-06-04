@@ -3,18 +3,18 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { IdInputSchema, RoleInputSchema } from "~/lib/shared/types";
 import { adminProcedure, publicProcedure } from "~/server/api/trpc";
-import { rolesTeam } from "~/server/db/schema";
+import { teamRoles } from "~/server/db/schema";
 
-export const RolesRouter = {
+export const teamRolesRouter = {
   getAll: publicProcedure.query(async ({ ctx }) => {
-    const roles = await ctx.db.query.rolesTeam.findMany();
+    const roles = await ctx.db.query.teamRoles.findMany();
     return roles.reverse();
   }),
   create: adminProcedure
     .input(RoleInputSchema)
     .mutation(async ({ ctx, input }) => {
-      const existRole = await ctx.db.query.rolesTeam.findFirst({
-        where: eq(rolesTeam.name, input.name)
+      const existRole = await ctx.db.query.teamRoles.findFirst({
+        where: eq(teamRoles.name, input.name)
       });
 
       if (existRole) {
@@ -25,14 +25,14 @@ export const RolesRouter = {
       }
 
       return (
-        await ctx.db.insert(rolesTeam).values({ name: input.name }).returning()
+        await ctx.db.insert(teamRoles).values({ name: input.name }).returning()
       )[0];
     }),
   update: adminProcedure
     .input(z.intersection(IdInputSchema, RoleInputSchema))
     .mutation(async ({ ctx, input }) => {
-      const existRole = await ctx.db.query.rolesTeam.findFirst({
-        where: eq(rolesTeam.id, input.id)
+      const existRole = await ctx.db.query.teamRoles.findFirst({
+        where: eq(teamRoles.id, input.id)
       });
       if (!existRole) {
         throw new TRPCError({
@@ -42,17 +42,17 @@ export const RolesRouter = {
       }
       return (
         await ctx.db
-          .update(rolesTeam)
+          .update(teamRoles)
           .set({
             name: input.name
           })
-          .where(eq(rolesTeam.id, input.id))
+          .where(eq(teamRoles.id, input.id))
           .returning()
       )[0];
     }),
   delete: adminProcedure
     .input(IdInputSchema)
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.delete(rolesTeam).where(eq(rolesTeam.id, input.id));
+      return ctx.db.delete(teamRoles).where(eq(teamRoles.id, input.id));
     })
 };

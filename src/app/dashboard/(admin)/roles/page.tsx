@@ -20,11 +20,11 @@ import { MoreHorizontal } from "lucide-react";
 import DeleteDialog from "~/app/dashboard/(admin)/roles/delete";
 
 export default async function Roles() {
-  const roles = await api.rolesTeam.getAll();
+  const roles = await api.teamRoles.getAll();
   return (
     <DashboardTemplate
       title="Роли"
-      navbar={<CreateUpdateRole></CreateUpdateRole>}
+      navbar={<CreateUpdateRole />}
     >
       <div className="max-h-full grow overflow-y-scroll">
         <Table>

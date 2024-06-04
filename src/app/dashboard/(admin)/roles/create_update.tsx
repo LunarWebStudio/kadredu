@@ -43,7 +43,7 @@ export default function CreateUpdateRole({
   });
 	
 
-  const CreateRoleMutation = api.rolesTeam.create.useMutation({
+  const CreateRoleMutation = api.teamRoles.create.useMutation({
     onSuccess: () => {
       toast({
         title: "Роль создана"
@@ -61,7 +61,7 @@ export default function CreateUpdateRole({
     }
   });
 
-  const UpdateRoleMutation = api.rolesTeam.update.useMutation({
+  const UpdateRoleMutation = api.teamRoles.update.useMutation({
     onSuccess: () => {
       toast({
         title: "Роль обновлена"
