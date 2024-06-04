@@ -19,8 +19,17 @@ import { Button } from "~/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
 import DeleteDialog from "~/app/dashboard/(admin)/roles/delete";
 
-export default async function Roles() {
-  const roles = await api.teamRoles.getAll();
+export default async function Roles({
+  searchParams
+}: {
+  searchParams: {
+    search?: string
+  }
+}) {
+  const roles = await api.teamRoles.getAll({
+    search: searchParams.search
+  });
+
   return (
     <DashboardTemplate
       title="Роли"

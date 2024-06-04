@@ -66,7 +66,7 @@ export const RoleInputSchema = z.object({
       invalid_type_error: "Только буквы"
     })
     .min(1, "Роль не может быть пустой")
-    .max(255, "Максимум 255 символов")
+    .max(255, "Роль слишком длинная")
 });
 
 // user

@@ -1,29 +1,33 @@
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
+import { and, eq, ilike } from "drizzle-orm";
 import { z } from "zod";
 import { IdInputSchema, RoleInputSchema } from "~/lib/shared/types";
 import { adminProcedure, publicProcedure } from "~/server/api/trpc";
 import { teamRoles } from "~/server/db/schema";
 
 export const teamRolesRouter = {
-  getAll: publicProcedure.query(async ({ ctx }) => {
-    const roles = await ctx.db.query.teamRoles.findMany();
-    return roles.reverse();
-  }),
+  getAll: publicProcedure
+    .input(
+      z
+        .object({
+          search: z.string().optional()
+        })
+        .optional()
+    )
+    .query(async ({ ctx, input }) => {
+      return (
+        await ctx.db.query.teamRoles.findMany({
+          where: and(
+            input?.search
+              ? ilike(teamRoles.name, `%${input.search}%`)
+              : undefined
+          )
+        })
+      ).reverse();
+    }),
   create: adminProcedure
     .input(RoleInputSchema)
     .mutation(async ({ ctx, input }) => {
-      const existRole = await ctx.db.query.teamRoles.findFirst({
-        where: eq(teamRoles.name, input.name)
-      });
-
-      if (existRole) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Данная роль уже существует"
-        });
-      }
-
       return (
         await ctx.db.insert(teamRoles).values({ name: input.name }).returning()
       )[0];
