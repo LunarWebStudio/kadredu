@@ -35,6 +35,7 @@
     --radius: 0.5rem;
     --nav-height: 5rem;
     --dashboard-nav-height: 4rem; 
+    --dashboard-mobile-nav-height: 9rem; 
   }
 
 }

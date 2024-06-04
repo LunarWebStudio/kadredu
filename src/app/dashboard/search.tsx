@@ -30,7 +30,7 @@ export default function Search() {
   }, [query, pathname, searchParams, router]);
 
   return (
-    <div className="relative">
+    <div className="relative grow md:w-[18rem]">
       <div className="absolute left-0 top-0 flex aspect-square h-10 items-center justify-center">
         <SearchIcon className="size-4" />
       </div>
@@ -38,7 +38,7 @@ export default function Search() {
         value={query}
         onChange={e => setQuery(e.target.value)}
         placeholder="Поиск"
-        className="w-[18rem] pl-8"
+        className="w-full pl-8"
       />
     </div>
   );

@@ -1,8 +1,9 @@
 import { BookA, Building, Crown, Group, Award, Calendar, BookUser, User, Glasses, ClipboardList } from "lucide-react";
 import { type Role } from "~/server/db/schema";
-import SidebarItem from "~/app/dashboard/item";
+import { MobileSidebarItem } from "~/app/dashboard/item";
 import { getServerAuthSession } from "~/server/auth";
 import React from "react";
+import { Separator } from "~/components/ui/separator";
 
 const iconClassName = "size-4";
 
@@ -16,7 +17,7 @@ type SidebarItem = {
   }[]
 }
 
-const sidebarItems: SidebarItem[] = [
+export const sidebarItems: SidebarItem[] = [
   {
     title: "Администратор",
     roles: ["ADMIN"] as Role[],
@@ -88,22 +89,24 @@ const sidebarItems: SidebarItem[] = [
 ];
 
 export default async function Sidebar() {
-  
   const session = await getServerAuthSession();
 
   return (
-    <aside className="px-6 py-4 bg-secondary h-screen-nav-dashboard min-w-[19rem]">
+    <aside className="px-1 xl:px-6 py-4 bg-secondary h-screen-nav-dashboard hidden sm:block xl:min-w-[19rem]">
       {sidebarItems.map((section, index) => (
         <React.Fragment key={index}>
           {((session?.user.role.includes("ADMIN") ?? false) || (session?.user.role.some((role) => section.roles.includes(role)) ?? false)) && (
-            <div className="mb-4 space-y-2 px-2">
-              <p className="text-foreground/60">{section.title}</p>
-              <div className="flex flex-col gap-2">
-                {section.items.map((item, index) => (
-                  <SidebarItem {...item} key={section.title + index} />
-                ))}
+            <>
+              <div className="mb-4 space-y-2 px-2">
+                <p className="text-foreground/60 hidden xl:block">{section.title}</p>
+                <div className="flex flex-col gap-2">
+                  {section.items.map((item, index) => (
+                    <MobileSidebarItem {...item} key={section.title + index} />
+                  ))}
+                </div>
               </div>
-            </div>
+              <Separator className="block xl:hidden last:hidden w-2/3 mx-auto" />
+            </>
           )}
         </React.Fragment>
       ))}
