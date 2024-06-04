@@ -20,15 +20,27 @@ import { Button } from "~/components/ui/button";
 import S3Image from "~/components/s3Image";
 import { Skeleton } from "~/components/ui/skeleton";
 import GroupSelect from "~/app/dashboard/(teacher)/users/group_select";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "~/components/ui/hover-card";
 import RoleSelect from "~/app/dashboard/(teacher)/users/role_select";
 import { getServerAuthSession } from "~/server/auth";
 import DeleteUser from "~/app/dashboard/(teacher)/users/delete";
 import Link from "next/link";
+import { type Role } from "~/server/db/schema";
+import GroupFilter from "~/app/dashboard/(teacher)/users/group_filter";
+import RoleFilter from "~/app/dashboard/(teacher)/users/role_filter";
 
-export default async function Users() {
+export default async function Users({
+  searchParams
+}: {
+  searchParams: {
+    groupId?: string;
+    role?: string;
+  }
+}) {
   const session = await getServerAuthSession();
-  const users = await api.user.getAll();
+  const users = await api.user.getAll({
+    groupIds: searchParams.groupId ? [searchParams.groupId] : undefined,
+    roles: searchParams.role ? [searchParams.role as Role] : undefined
+  });
   const groups = await api.group.getAll();
 
   return (
@@ -43,8 +55,12 @@ export default async function Users() {
               <TableHead>Фото</TableHead>
               <TableHead>ФИО</TableHead>
               <TableHead>НИК</TableHead>
-              <TableHead>ГРУППА</TableHead>
-              <TableHead>РОЛИ</TableHead>
+              <TableHead>
+                <GroupFilter groups={groups} />
+              </TableHead>
+              <TableHead>
+                <RoleFilter />
+              </TableHead>
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>

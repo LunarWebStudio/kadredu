@@ -16,7 +16,6 @@ import {
   AlertDialogTrigger
 } from "~/components/ui/alert-dialog";
 import { useToast } from "~/components/ui/use-toast";
-import UsernameTag from "~/components/username_tag";
 
 export default function DeleteUser({
   user

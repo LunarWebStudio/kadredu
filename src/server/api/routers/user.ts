@@ -1,4 +1,4 @@
-import { eq, isNotNull } from "drizzle-orm";
+import { and, arrayContains, eq, inArray, isNotNull, isNull, or } from "drizzle-orm";
 import { z } from "zod";
 import { UploadFile } from "~/lib/server/file_upload";
 import { ProcessImage } from "~/lib/server/images";
@@ -8,7 +8,6 @@ import { images, roleSchema, users } from "~/server/db/schema";
 import { DESCRIPTION_LIMIT, MAX_PROFILE_PICTURE_SIZE, NAME_LIMIT } from "~/lib/shared/const";
 import { TRPCError } from "@trpc/server";
 import { IdInputSchema } from "~/lib/shared/types";
-import { Oi } from "next/font/google";
 import { env } from "~/env";
 
 export const userRouter = createTRPCRouter({
@@ -77,9 +76,23 @@ export const userRouter = createTRPCRouter({
         .where(eq(users.id, ctx.session.user.id));
     }),
   getAll: teacherProcedure
-    .query(async ({ ctx }) => {
+    .input(z.object({
+      roles: roleSchema.array().optional(),
+      groupIds: z.string().array().optional(),
+    }).optional())
+    .query(async ({ ctx, input }) => {
       return ctx.db.query.users.findMany({
-        where: isNotNull(users.name),
+        where: and(
+          isNotNull(users.name),
+          or(
+            input?.roles ? arrayContains(users.role, input.roles) : undefined,
+            input?.roles?.includes("UNKNOWN") ? eq(users.role, []) : undefined,
+          ),
+          or(
+            input?.groupIds ? inArray(users.groupId, input.groupIds) : undefined,
+            input?.groupIds?.includes("unknown") ? isNull(users.groupId) : undefined,
+          )
+        ),
         with: {
           profilePicture: true,
           group: {
