@@ -1,6 +1,6 @@
 import { createId } from "@paralleldrive/cuid2";
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
+import { and, eq, ilike } from "drizzle-orm";
 import { z } from "zod";
 import { UploadFile } from "~/lib/server/file_upload";
 import { ProcessImage } from "~/lib/server/images";
@@ -91,17 +91,26 @@ export const groupRouter = createTRPCRouter({
   delete: adminProcedure.input(IdInputSchema).mutation(async ({ ctx, input }) => {
     await ctx.db.delete(groups).where(eq(groups.id, input.id));
   }),
-  getAll: publicProcedure.query(async ({ ctx }) => {
-    return await ctx.db.query.groups.findMany({
-      with: {
-        building: true,
-        image: true,
-        users: {
-          columns: {
-            id: true
+  getAll: publicProcedure
+    .input(z.object({
+      buildingId: z.string().optional(),
+      search: z.string().optional()
+    }).optional())
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.query.groups.findMany({
+        where: and(
+          input?.buildingId ? eq(groups.buildingId, input.buildingId) : undefined,
+          input?.search ? ilike(groups.title, `%${input.search}%`) : undefined
+        ),
+        with: {
+          building: true,
+          image: true,
+          users: {
+            columns: {
+              id: true
+            }
           }
         }
-      }
-    })
-  }),
+      })
+    }),
 });

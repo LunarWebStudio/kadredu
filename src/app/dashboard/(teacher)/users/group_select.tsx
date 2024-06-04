@@ -36,6 +36,7 @@ export default function GroupSelect({
   })
 
   useEffect(() => {
+    if (!newGroupId) return;
     if (user.group?.id === newGroupId) return;
 
     updateGroupMutation.mutate({ id: user.id, groupId: newGroupId })

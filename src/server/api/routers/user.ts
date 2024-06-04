@@ -1,4 +1,4 @@
-import { and, arrayContains, eq, inArray, isNotNull, isNull, or } from "drizzle-orm";
+import { and, arrayContains, eq, ilike, inArray, isNotNull, isNull, or } from "drizzle-orm";
 import { z } from "zod";
 import { UploadFile } from "~/lib/server/file_upload";
 import { ProcessImage } from "~/lib/server/images";
@@ -79,11 +79,17 @@ export const userRouter = createTRPCRouter({
     .input(z.object({
       roles: roleSchema.array().optional(),
       groupIds: z.string().array().optional(),
+      search: z.string().optional(),
     }).optional())
     .query(async ({ ctx, input }) => {
       return ctx.db.query.users.findMany({
         where: and(
           isNotNull(users.name),
+          input?.search ? or(
+            ilike(users.name, `%${input.search}%`),
+            ilike(users.email, `%${input.search}%`),
+            ilike(users.username, `%${input.search}%`)
+          ) : undefined,
           or(
             input?.roles ? arrayContains(users.role, input.roles) : undefined,
             input?.roles?.includes("UNKNOWN") ? eq(users.role, []) : undefined,

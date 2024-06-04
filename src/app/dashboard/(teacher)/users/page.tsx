@@ -34,12 +34,14 @@ export default async function Users({
   searchParams: {
     groupId?: string;
     role?: string;
+    search?: string;
   }
 }) {
   const session = await getServerAuthSession();
   const users = await api.user.getAll({
     groupIds: searchParams.groupId ? [searchParams.groupId] : undefined,
-    roles: searchParams.role ? [searchParams.role as Role] : undefined
+    roles: searchParams.role ? [searchParams.role as Role] : undefined,
+    search: searchParams.search
   });
   const groups = await api.group.getAll();
 
@@ -54,6 +56,7 @@ export default async function Users({
             <TableRow>
               <TableHead>Фото</TableHead>
               <TableHead>ФИО</TableHead>
+              <TableHead>EMAIL</TableHead>
               <TableHead>НИК</TableHead>
               <TableHead>
                 <GroupFilter groups={groups} />
@@ -82,6 +85,7 @@ export default async function Users({
                   )}
                 </TableCell>
                 <TableCell>{user.name}</TableCell>
+                <TableCell>{user.email}</TableCell>
                 <TableCell>{user.username ?? "Не указано"}</TableCell>
                 <TableCell>
                   <GroupSelect user={user} groups={groups} />
