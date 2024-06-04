@@ -53,9 +53,7 @@ export default async function Groups() {
                   />
                 </TableCell>
                 <TableCell>{group.title}</TableCell>
-                <TableCell>
-                  {group.building.title}
-                </TableCell>
+                <TableCell>{group.building.title}</TableCell>
                 <TableCell>{group.users.length}</TableCell>
                 <TableCell>
                   <div className="flex items-center justify-end">
@@ -71,7 +69,10 @@ export default async function Groups() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Действия</DropdownMenuLabel>
-                        <CreateUpdateGroup group={group} buildings={buildings} />
+                        <CreateUpdateGroup
+                          group={group}
+                          buildings={buildings}
+                        />
                         <DeleteGroup group={group} />
                       </DropdownMenuContent>
                     </DropdownMenu>

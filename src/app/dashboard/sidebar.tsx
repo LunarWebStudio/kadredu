@@ -88,7 +88,9 @@ const sidebarItems: SidebarItem[] = [
 ];
 
 export default async function Sidebar() {
+  
   const session = await getServerAuthSession();
+
   return (
     <aside className="px-6 py-4 bg-secondary h-screen-nav-dashboard min-w-[19rem]">
       {sidebarItems.map((section, index) => (

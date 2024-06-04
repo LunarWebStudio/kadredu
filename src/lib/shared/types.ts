@@ -58,3 +58,14 @@ export const IdInputSchema = z.object({
     .min(1, "ID не заполнен")
     .max(255, "ID слишком длинный")
 });
+
+export const RoleInputSchema = z.object({
+  name: z
+    .string({
+      required_error: "Имя роли не указано",
+      invalid_type_error: "Только буквы"
+    })
+    .min(1, "Роль не может быть пустой")
+    .max(20, "Максимум 20 символов")
+});
+
