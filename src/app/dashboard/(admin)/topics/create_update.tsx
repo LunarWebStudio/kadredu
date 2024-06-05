@@ -94,7 +94,7 @@ export default function CreateUpdateTopics({
                     </DialogHeader>
 
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit, OnError(toast))}>
+                        <form onSubmit={form.handleSubmit(onSubmit, OnError(toast))} className="space-y-6">
                             <FormField
                                 control={form.control}
                                 name="nameTopics"

@@ -1,4 +1,3 @@
-import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { TopicsInputShema, IdInputSchema } from "~/lib/shared/types";
