@@ -41,7 +41,7 @@ export default function CreateUpdateRole({
       name: role ? role.name : ""
     }
   });
-	
+
 
   const CreateRoleMutation = api.teamRoles.create.useMutation({
     onSuccess: () => {
@@ -79,13 +79,13 @@ export default function CreateUpdateRole({
     }
   });
 
-	const onSubmit = (data:z.infer<typeof RoleInputSchema>) =>{
-		if(role){
-			UpdateRoleMutation.mutate({id:role.id,name:data.name})
-		}else{
-			CreateRoleMutation.mutate({name:data.name})
-		}
-	}
+  const onSubmit = (data: z.infer<typeof RoleInputSchema>) => {
+    if (role) {
+      UpdateRoleMutation.mutate({ id: role.id, name: data.name })
+    } else {
+      CreateRoleMutation.mutate({ name: data.name })
+    }
+  }
 
   return (
     <Dialog
@@ -94,7 +94,7 @@ export default function CreateUpdateRole({
     >
       <DialogTrigger asChild>
         {role ? (
-          <DropdownMenuItem onSelect={(e)=>{e.preventDefault()}}>Редактировать</DropdownMenuItem>
+          <DropdownMenuItem onSelect={(e) => { e.preventDefault() }}>Редактировать</DropdownMenuItem>
         ) : (
           <Button>Создать</Button>
         )}
@@ -104,7 +104,7 @@ export default function CreateUpdateRole({
           <DialogTitle>{role ? "Редактировать" : "Создать"}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit,OnError(toast))}>
+          <form onSubmit={form.handleSubmit(onSubmit, OnError(toast))} className="space-y-6">
             <FormField
               control={form.control}
               name="name"
