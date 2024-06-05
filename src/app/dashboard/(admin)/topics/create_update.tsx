@@ -17,7 +17,7 @@ import { type z } from "zod";
 
 
 export default function CreateUpdateTopics({
-  topics,
+  topics, 
 }: {
   topics?: Topic;
 }) {

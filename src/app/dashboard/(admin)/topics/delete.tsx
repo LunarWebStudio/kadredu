@@ -17,29 +17,25 @@ import {
 } from "~/components/ui/alert-dialog";
 import { useToast } from "~/components/ui/use-toast";
 
-export default function DeleteTopics({
-  topic
-}: {
-  topic: Topic
-}) {
+export default function DeleteTopics({ topic }: { topic: Topic }) {
   const router = useRouter();
   const { toast } = useToast();
 
   const deleteTopicMutation = api.topic.delete.useMutation({
     onSuccess: () => {
       toast({
-        title: "Тема удалена",
+        title: "Тема удалена"
       });
       router.refresh();
     },
-    onError: (err) => {
+    onError: err => {
       toast({
         title: "Ошибка удаления темы",
         description: err.message,
-        variant: "destructive",
+        variant: "destructive"
       });
-    },
-  })
+    }
+  });
 
   return (
     <AlertDialog>

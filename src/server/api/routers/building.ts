@@ -29,15 +29,21 @@ export const buildingRouter = createTRPCRouter({
     return ctx.db.delete(buildings).where(eq(buildings.id, input.id));
   }),
   getAll: publicProcedure
-    .input(z.object({
-      search: z.string().optional()
-    }).optional())
+    .input(
+      z
+        .object({
+          search: z.string().optional()
+        })
+        .optional()
+    )
     .query(({ ctx, input }) => {
       return ctx.db.query.buildings.findMany({
-        where: input?.search ? or(
-          ilike(buildings.title, `%${input.search}%`),
-          ilike(buildings.address, `%${input.search}%`)
-        ) : undefined,
+        where: input?.search
+          ? or(
+              ilike(buildings.title, `%${input.search}%`),
+              ilike(buildings.address, `%${input.search}%`)
+            )
+          : undefined,
         with: {
           groups: {
             columns: {

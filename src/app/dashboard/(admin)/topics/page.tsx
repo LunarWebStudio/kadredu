@@ -22,12 +22,11 @@ import DeleteTopics from "~/app/dashboard/(admin)/topics/delete";
 
 export default async function Themes({
   searchParams
-} : {
+}: {
   searchParams: {
     search?: string
   }
 }) {
-
   const topics = await api.topic.getAll({
     search: searchParams.search
   });
@@ -48,9 +47,7 @@ export default async function Themes({
           <TableBody>
             {topics.map(topic => (
               <TableRow key={topic.id}>
-                <TableCell>
-                  {topic.name}
-                </TableCell>
+                <TableCell>{topic.name}</TableCell>
 
                 <TableCell>
                   <div className="flex items-center justify-end">
@@ -70,7 +67,6 @@ export default async function Themes({
                         <CreateUpdateTopics topics={topic} />
                         <DeleteTopics topic={topic} />
                       </DropdownMenuContent>
-
                     </DropdownMenu>
                   </div>
                 </TableCell>
@@ -80,5 +76,5 @@ export default async function Themes({
         </Table>
       </div>
     </DashboardTemplate>
-  )
+  );
 }
