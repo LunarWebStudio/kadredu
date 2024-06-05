@@ -1,7 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CommandList } from "cmdk";
-import { Check } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -17,6 +17,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger
@@ -160,12 +161,15 @@ export default function CreateUpdateSubject({
                   >
                     <PopoverTrigger className="hidden w-full lg:flex ">
                       <Button
-                        className="w-full justify-start"
+                        className="w-full justify-between"
                         variant="outline"
                         type="button"
                       >
-                        {teachers.find(teacher => teacher.id === field.value)
-                          ?.name ?? "Преподаватель"}
+                        {
+                          teachers.find(teacher => teacher.id === field.value)
+                            ?.name ?? "Преподаватель"
+                        }
+                        <ChevronDown/>
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className=" lg:w-[460px]">
@@ -183,12 +187,13 @@ export default function CreateUpdateSubject({
                   >
                     <DrawerTrigger className="flex lg:hidden w-full">
                       <Button
-                          className="w-full justify-start"
+                          className="w-full justify-between"
                           variant="outline"
                           type="button"
                         >
                           {teachers.find(teacher => teacher.id === field.value)
                             ?.name ?? "Преподаватель"}
+                            <ChevronDown/>
                         </Button>
                     </DrawerTrigger>
                     <DrawerContent className="w-full">
@@ -205,9 +210,9 @@ export default function CreateUpdateSubject({
                 </FormItem>
               )}
             />
-            <div className=" w-full flex sm:flex-row sm:justify-end sm:space-x-2">
-              <Button type="submit" className=" ml-auto">Сохранить</Button>
-            </div>
+            <DialogFooter>
+              <Button type="submit" className=" ml-auto" disabled={UpdateSubjectMutation.isPending || CreateSubjectMutation.isPending}>Сохранить</Button>
+            </DialogFooter>
           </form>
         </Form>
       </DialogContent>

@@ -18,7 +18,6 @@ export const subjectsRouter = {
         .optional()
     )
     .mutation(async ({ ctx, input }) => {
-      // Поиск по преподу?
       return (
         await ctx.db.query.subjects.findMany({
           where: input?.search
@@ -71,7 +70,7 @@ export const subjectsRouter = {
       if (!existSubject) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Предмет ненайден"
+          message: "Предмет не найден"
         });
       }
       if (existSubject.id === input.teacherId) {

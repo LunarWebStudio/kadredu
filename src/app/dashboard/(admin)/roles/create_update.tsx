@@ -8,7 +8,8 @@ import {
   DialogTrigger,
   DialogTitle,
   DialogContent,
-  Dialog
+  Dialog,
+  DialogFooter
 } from "~/components/ui/dialog";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import {
@@ -121,9 +122,9 @@ export default function CreateUpdateRole({
                 </FormItem>
               )}
             />
-            <div className="flex w-full sm:justify-end">
-              <Button type="submit">Сохранить</Button> 
-            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={UpdateRoleMutation.isPending || CreateRoleMutation.isPending}>Сохранить</Button> 
+            </DialogFooter>
           </form>
         </Form>
       </DialogContent>

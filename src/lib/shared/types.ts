@@ -78,7 +78,7 @@ export const TopicsInputShema = z.object({
     })
     .min(1, "Название темы не указано")
     .max(255, "Название темы слишком длинное")
-})
+});
 
 // user
 export type User = inferProcedureOutput<AppRouter["user"]["getAll"]>[number];
@@ -94,7 +94,7 @@ export const SubjectInputSchema = z.object({
   teacherId: z
     .string({
       required_error: "Преподаватель не указан",
-      invalid_type_error: "Ошибка ???"
+      invalid_type_error: "Ошибка ID преподавателя"
     })
     .min(1, "ID преподавателя не заполнен")
     .max(255, "ID преподавателя слишком длинный")
