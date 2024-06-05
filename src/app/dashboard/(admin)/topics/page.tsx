@@ -24,13 +24,11 @@ export default async function Themes({
   searchParams
 } : {
   searchParams: {
-    building?: string,
     search?: string
   }
 }) {
 
   const topics = await api.topic.getAll({
-    id: searchParams.building,
     search: searchParams.search
   });
 

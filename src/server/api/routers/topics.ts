@@ -19,14 +19,12 @@ export const topicsRouter = createTRPCRouter ({
 
     getAll: publicProcedure
         .input(z.object({
-          id: z.string().optional(),
           search: z.string().optional()
         }).optional())
 
         .query(async ({ ctx, input }) => {
           return await ctx.db.query.topics.findMany({
             where: and(
-              input?.id ? eq(topics.id, input.id) : undefined,
               input?.search ? ilike(topics.name, `%${input.search}%`) : undefined
             ),
           })
