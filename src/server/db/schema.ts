@@ -63,6 +63,24 @@ export const groupsRelations = relations(groups, ({ many, one }) => ({
   building: one(buildings, { fields: [groups.buildingId], references: [buildings.id] }),
 }));
 
+export const teamRoles = createTable("rolesTeam", {
+  id: text("id")
+    .$defaultFn(() => createId())
+    .notNull()
+    .primaryKey(),
+  name: text("name")
+    .notNull()
+    .unique(),
+});
+ 
+export const topics = createTable("topics", {
+  id: text("id")
+    .$defaultFn(() => createId())
+    .notNull()
+    .primaryKey(),
+  name: varchar("name", { length: 255 }).notNull()
+});
+
 export const rolesEnum = pgEnum("role", [
   "ADMIN",
   "LEAD_CYCLE_COMISSION",
@@ -183,15 +201,6 @@ export const verificationTokens = createTable(
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
   }),
 );
-export const teamRoles = createTable("rolesTeam",{
-  id:text("id")
-  .$defaultFn(()=>createId())
-  .notNull()
-  .primaryKey(),
-  name:text("name")
-  .notNull()
-  .unique(),
-})
 
 export const subjects = createTable("subjects",{
   id:text("id")
@@ -210,5 +219,4 @@ export const subjects = createTable("subjects",{
 export const subjectsRelations = relations(subjects, ({one}) => ({
   teacherInfo:one(users,{fields:[subjects.teacherId],references:[users.id]})
 }))
-
 

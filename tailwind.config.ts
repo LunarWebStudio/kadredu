@@ -27,19 +27,24 @@ const config = {
         "screen-nav": "calc(100vh - var(--nav-height))",
         nav: "var(--nav-height)",
         "nav-dashboard": "var(--dashboard-nav-height)",
-        "screen-nav-dashboard": "calc(100vh - var(--dashboard-nav-height))"
+        "nav-dashboard-mobile": "var(--dashboard-mobile-nav-height)",
+        "screen-nav-dashboard": "calc(100vh - var(--dashboard-nav-height))",
+        "screen-nav-dashboard-mobile": "calc(100vh - var(--dashboard-mobile-nav-height))"
       },
       minHeight: {
         "screen-nav": "calc(100vh - var(--nav-height))",
-        "screen-nav-dashboard": "calc(100vh - var(--dashboard-nav-height))"
+        "screen-nav-dashboard": "calc(100vh - var(--dashboard-nav-height))",
+        "screen-nav-dashboard-mobile": "calc(100vh - var(--dashboard-mobile-nav-height))"
       },
       margin: {
         nav: "var(--nav-height)",
-        "nav-dashboard": "var(--dashboard-nav-height)"
+        "nav-dashboard": "var(--dashboard-nav-height)",
+        "nav-dashboard-mobile": "var(--dashboard-mobile-nav-height)"
       },
       inset: {
         nav: "var(--nav-height)",
-        "nav-dashboard": "var(--dashboard-nav-height)"
+        "nav-dashboard": "var(--dashboard-nav-height)",
+        "nav-dashboard-mobile": "var(--dashboard-mobile-nav-height)"
       },
       colors: {
         border: "hsl(var(--border))",

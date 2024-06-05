@@ -68,6 +68,17 @@ export const RoleInputSchema = z.object({
     .min(1, "Роль не может быть пустой")
     .max(255, "Роль слишком длинная")
 });
+export type Topic = inferProcedureOutput<AppRouter["topic"]["getAll"]>[number];
+
+export const TopicsInputShema = z.object({
+  name: z
+    .string({
+      required_error: "Название не указано",
+      invalid_type_error: "Название не является строкой"
+    })
+    .min(1, "Название темы не указано")
+    .max(255, "Название темы слишком длинное")
+})
 
 // user
 export type User = inferProcedureOutput<AppRouter["user"]["getAll"]>[number];

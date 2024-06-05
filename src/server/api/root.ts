@@ -5,6 +5,7 @@ import { imageRouter } from "~/server/api/routers/image";
 import { groupRouter } from "~/server/api/routers/group";
 import { teamRolesRouter } from "~/server/api/routers/roles";
 import { subjectsRouter } from "~/server/api/routers/subjects";
+import { topicsRouter } from "~/server/api/routers/topics";
 
 export const appRouter = createTRPCRouter({
   user: userRouter,
@@ -12,7 +13,8 @@ export const appRouter = createTRPCRouter({
   image: imageRouter,
   group: groupRouter,
   teamRoles: teamRolesRouter,
-  subject: subjectsRouter
+  subject: subjectsRouter,
+  topic: topicsRouter
 });
 
 export type AppRouter = typeof appRouter;

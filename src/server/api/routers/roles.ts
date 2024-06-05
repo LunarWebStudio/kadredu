@@ -8,10 +8,9 @@ import { teamRoles } from "~/server/db/schema";
 export const teamRolesRouter = {
   getAll: publicProcedure
     .input(
-      z
-        .object({
-          search: z.string().optional()
-        })
+      z.object({
+        search: z.string().optional()
+      })
         .optional()
     )
     .query(async ({ ctx, input }) => {
