@@ -1,7 +1,7 @@
-import { eq } from "drizzle-orm";
+import { and, eq, ilike } from "drizzle-orm";
 import { z } from "zod";
 import { TopicsInputShema, IdInputSchema } from "~/lib/shared/types";
-import { adminProcedure, createTRPCRouter} from "~/server/api/trpc";
+import { adminProcedure, createTRPCRouter, publicProcedure} from "~/server/api/trpc";
 import { topics } from "~/server/db/schema";
 
 export const topicsRouter = createTRPCRouter ({
@@ -17,8 +17,19 @@ export const topicsRouter = createTRPCRouter ({
             await ctx.db.delete(topics).where(eq(topics.id, input.id))
         }),
 
-    getAll: adminProcedure.query(async ({ctx}) => {
-        return await ctx.db.query.topics.findMany()
+    getAll: publicProcedure
+        .input(z.object({
+          id: z.string().optional(),
+          search: z.string().optional()
+        }).optional())
+
+        .query(async ({ ctx, input }) => {
+          return await ctx.db.query.topics.findMany({
+            where: and(
+              input?.id ? eq(topics.id, input.id) : undefined,
+              input?.search ? ilike(topics.name, `%${input.search}%`) : undefined
+            ),
+          })
     }),
 
     update: adminProcedure

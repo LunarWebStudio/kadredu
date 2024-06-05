@@ -20,8 +20,19 @@ import { Button } from "~/components/ui/button";
 import CreateUpdateTopics from "~/app/dashboard/(admin)/topics/create_update";
 import DeleteTopics from "~/app/dashboard/(admin)/topics/delete";
 
-export default async function Themes() {
-  const topics = await api.topic.getAll();
+export default async function Themes({
+  searchParams
+} : {
+  searchParams: {
+    building?: string,
+    search?: string
+  }
+}) {
+
+  const topics = await api.topic.getAll({
+    id: searchParams.building,
+    search: searchParams.search
+  });
 
   return (
     <DashboardTemplate
