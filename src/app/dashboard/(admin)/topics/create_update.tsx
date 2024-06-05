@@ -33,7 +33,7 @@ export default function CreateUpdateTopics({
         const router = useRouter();
         const {toast} = useToast();
 
-        const createTopicMutation = api.topics.create.useMutation({
+        const createTopicMutation = api.topic.create.useMutation({
             onSuccess: () => {
               toast({
                 title: "Тема создана",
@@ -51,7 +51,7 @@ export default function CreateUpdateTopics({
             },
           })
         
-        const updateTopicMutation = api.topics.update.useMutation({
+        const updateTopicMutation = api.topic.update.useMutation({
             onSuccess: () => {
               toast({
                 title: "Тема обновлена",

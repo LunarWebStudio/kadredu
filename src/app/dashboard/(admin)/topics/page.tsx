@@ -21,7 +21,7 @@ import CreateUpdateTopics from "~/app/dashboard/(admin)/topics/create_update";
 import DeleteTopics from "~/app/dashboard/(admin)/topics/delete";
 
 export default async function Themes() {
-    const topics = await api.topics.getAll();
+    const topics = await api.topic.getAll();
 
     return (
         <DashboardTemplate

@@ -5,22 +5,11 @@ import { TopicsInputShema, IdInputSchema } from "~/lib/shared/types";
 import { adminProcedure, createTRPCRouter} from "~/server/api/trpc";
 import { topics } from "~/server/db/schema";
 
-export const TopicsRouter = createTRPCRouter ({
+export const topicsRouter = createTRPCRouter ({
     create: adminProcedure 
         .input(TopicsInputShema)
         .mutation(async ({ ctx, input}) => {
-            await ctx.db.transaction(async tx => {
-                try {
-                    await tx.insert(topics).values({
-                        nameTopics: input.nameTopics
-                    })
-                } catch (err) {
-                    throw new TRPCError({
-                      code: "BAD_REQUEST",
-                      message: "Не удалось загрузить фото профиля"
-                    })
-                }
-            })
+            await ctx.db.insert(topics).values(input)
         }),
     
     delete: adminProcedure
@@ -36,6 +25,6 @@ export const TopicsRouter = createTRPCRouter ({
     update: adminProcedure
         .input(z.intersection(IdInputSchema, TopicsInputShema))
         .mutation(async ({ctx, input}) => {
-            await ctx.db.update(topics).set({...input}).where(eq(topics.id, input.id))
+            await ctx.db.update(topics).set(input).where(eq(topics.id, input.id))
         }),
 });

@@ -25,7 +25,7 @@ export default function DeleteTopics({
   const router = useRouter();
   const { toast } = useToast();
 
-  const deleteTopicMutation = api.topics.delete.useMutation({
+  const deleteTopicMutation = api.topic.delete.useMutation({
     onSuccess: () => {
       toast({
         title: "Тема удалена",

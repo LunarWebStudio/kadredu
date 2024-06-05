@@ -191,6 +191,6 @@ export const topics = createTable(
     .$defaultFn(() => createId())
     .notNull()
     .primaryKey(),
-    nameTopics: varchar("nameTopics", {length: 200}).notNull().primaryKey()
+    nameTopics: varchar("name", {length: 255}).notNull().primaryKey()
   }
 )
