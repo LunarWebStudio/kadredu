@@ -62,8 +62,8 @@ export const IdInputSchema = z.object({
 export const RoleInputSchema = z.object({
   name: z
     .string({
-      required_error: "Имя роли не указано",
-      invalid_type_error: "Только буквы"
+      required_error: "Название роли не указано",
+      invalid_type_error: "Название не является строкой"
     })
     .min(1, "Роль не может быть пустой")
     .max(255, "Роль слишком длинная")
@@ -71,3 +71,24 @@ export const RoleInputSchema = z.object({
 
 // user
 export type User = inferProcedureOutput<AppRouter["user"]["getAll"]>[number];
+
+export const SubjectInputSchema = z.object({
+  name: z
+    .string({
+      required_error: "Название предмета не указанно",
+      invalid_type_error: "Название не является строкой"
+    })
+    .min(1, "Название не может быть пустым")
+    .max(255, "Название слишком длинное"),
+  teacherId: z
+    .string({
+      required_error: "Преподаватель не указан",
+      invalid_type_error: "Ошибка ???"
+    })
+    .min(1, "ID преподавателя не заполнен")
+    .max(255, "ID преподавателя слишком длинный")
+});
+
+export type Subject = inferProcedureOutput<
+  AppRouter["subject"]["getAll"]
+>[number];

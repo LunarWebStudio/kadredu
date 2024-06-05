@@ -101,19 +101,19 @@ export default function CreateUpdateRole({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{role ? "Редактировать" : "Создать"}</DialogTitle>
+          <DialogTitle>{role ? "Редактировать роль" : "Создать роль"}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit,OnError(toast))}>
+          <form onSubmit={form.handleSubmit(onSubmit,OnError(toast))} className="space-y-6">
             <FormField
-              control={form.control}
+              control={form.control}  
               name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
                     <Input
                       type="text"
-                      placeholder="backend developer"
+                      placeholder="Backend Developer"
                       {...field}
                     />
                   </FormControl>
@@ -121,7 +121,9 @@ export default function CreateUpdateRole({
                 </FormItem>
               )}
             />
-            <Button type="submit">Сохранить</Button>
+            <div className="flex w-full sm:justify-end">
+              <Button type="submit">Сохранить</Button> 
+            </div>
           </form>
         </Form>
       </DialogContent>

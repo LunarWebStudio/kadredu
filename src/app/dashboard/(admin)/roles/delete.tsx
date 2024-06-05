@@ -29,7 +29,7 @@ export default function DeleteDialog({
     },
     onError: err => {
       toast({
-        title: "Ошибка обновления роли",
+        title: "Ошибка удаления роли",
         description: err.message,
         variant: "destructive"
       });

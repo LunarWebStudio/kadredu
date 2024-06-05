@@ -4,13 +4,15 @@ import { buildingRouter } from "~/server/api/routers/building";
 import { imageRouter } from "~/server/api/routers/image";
 import { groupRouter } from "~/server/api/routers/group";
 import { teamRolesRouter } from "~/server/api/routers/roles";
+import { subjectsRouter } from "~/server/api/routers/subjects";
 
 export const appRouter = createTRPCRouter({
   user: userRouter,
   building: buildingRouter,
   image: imageRouter,
   group: groupRouter,
-  teamRoles: teamRolesRouter
+  teamRoles: teamRolesRouter,
+  subject: subjectsRouter
 });
 
 export type AppRouter = typeof appRouter;
