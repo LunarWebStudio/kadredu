@@ -11,7 +11,7 @@ export default async function DashboardLayout({
 }) {
   const session = await getServerAuthSession();
 
-  if (!session) {
+  if ((session?.user.role.every((r) => r === "STUDENT") ?? false) || session?.user.role.length === 0) {
     redirect("/auth");
   }
 
