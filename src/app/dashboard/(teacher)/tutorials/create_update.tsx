@@ -10,7 +10,7 @@ import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import { useToast } from "~/components/ui/use-toast";
-import { type Tutorial, TutorialInputShema, Topic } from "~/lib/shared/types";
+import { type Tutorial, TutorialInputShema, type Topic } from "~/lib/shared/types";
 import { api } from "~/trpc/react";
 import { OnError } from "~/lib/shared/onError";
 import { type z } from "zod";

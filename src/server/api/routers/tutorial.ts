@@ -2,7 +2,7 @@ import { eq, and, ilike } from "drizzle-orm";
 import { z } from "zod";
 import { TutorialInputShema, IdInputSchema } from "~/lib/shared/types";
 import { adminProcedure, createTRPCRouter, publicProcedure} from "~/server/api/trpc";
-import { sessions, tutorials, users } from "~/server/db/schema";
+import { tutorials } from "~/server/db/schema";
 
 export const tutorialsRouter = createTRPCRouter ({
     create: adminProcedure
