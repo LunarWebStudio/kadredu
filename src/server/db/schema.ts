@@ -81,6 +81,29 @@ export const topics = createTable("topics", {
   name: varchar("name", { length: 255 }).notNull()
 });
 
+export const tutorials = createTable("tutorials", {
+  id: text("id")
+    .$defaultFn(() => createId())
+    .notNull()
+    .primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  image: varchar("image", { length: 255 }).notNull(),
+  text: varchar("text", {length: 255}).notNull(),
+  authorId: text("author").notNull().references(() => users.id),
+  createDate: timestamp("createDate", {
+    mode: "date",
+    withTimezone: true,
+  }).defaultNow(),
+  price: varchar("price", {length: 255}).notNull(),
+  likes: integer("likes").notNull().default(0),
+  topic: varchar("name", {length: 255}).notNull(),
+  timeRead: varchar("timeRead", {length: 255}).notNull(),
+})
+
+export const tutorialsRelations = relations(tutorials, ({one}) => ({
+  authorInfo: one(users, {fields: [tutorials.authorId], references: [users.id]})
+}))
+
 export const rolesEnum = pgEnum("role", [
   "ADMIN",
   "LEAD_CYCLE_COMISSION",

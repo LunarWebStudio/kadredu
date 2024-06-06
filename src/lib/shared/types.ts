@@ -80,5 +80,55 @@ export const TopicsInputShema = z.object({
     .max(255, "Название темы слишком длинное")
 })
 
+export type Tutorial = inferProcedureOutput<AppRouter["tutorial"]["getAll"]>[number];
+
+export const TutorialInputShema = z.object({
+  name: z
+    .string({
+      required_error: "Название не указано",
+      invalid_type_error: "Название не является строкой"
+    })
+    .min(1, "Название темы не указано")
+    .max(255, "Название темы слишком длинное"),
+
+  image: z.string({
+      required_error: "Фото не задано",
+      invalid_type_error: "Фото не является строкой"
+    })
+    .min(1, "Фото не указано"),
+  text: z
+    .string({
+      required_error: "Текст не указан",
+      invalid_type_error: "Текст не является строкой"
+    })
+    .min(1, "Текст не указан")
+    .max(500, "Текст слишком длинный"),
+  authorId: z
+    .string({
+      required_error: "Автор не указан",
+      invalid_type_error: "Текст не является строкой"
+    })
+    .min(1, "Автор не указан")
+    .max(50, "Текст слишком длинный"),
+  price: z
+    .string({
+      invalid_type_error: "Цена не является строкой"
+    }),
+  topic: z
+    .string({
+      required_error: "Тема не указана",
+      invalid_type_error: "Тема не является строкой"
+    })
+    .min(1, "Тема не указана")
+    .max(255, "Тема слишком длинная"),
+  timeRead: z
+    .string({
+      required_error: "Время не указано",
+      invalid_type_error: "Время не является строкой"
+    })
+    .min(1, "Время не указана")
+    .max(255, "Время слишком длинное"),
+})
+
 // user
 export type User = inferProcedureOutput<AppRouter["user"]["getAll"]>[number];
