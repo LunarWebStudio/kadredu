@@ -59,7 +59,7 @@ export default function CreateUpdateSubject({
     resolver: zodResolver(SubjectInputSchema),
     defaultValues: {
       teacherId: subject ? subject.teacherId : "",
-      name:subject ? subject.name : ""
+      name: subject ? subject.name : ""
     }
   });
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -98,21 +98,20 @@ export default function CreateUpdateSubject({
       });
     }
   });
-  const onSubmit = (data:z.infer<typeof SubjectInputSchema>) =>{
-    console.log(data)
-  	if(subject){
-  		UpdateSubjectMutation.mutate({
-        id:subject.id,
-        name:data.name,
-        teacherId:data.teacherId
+  const onSubmit = (data: z.infer<typeof SubjectInputSchema>) => {
+    if (subject) {
+      UpdateSubjectMutation.mutate({
+        id: subject.id,
+        name: data.name,
+        teacherId: data.teacherId
       })
-  	}
-  else{
-  	CreateSubjectMutation.mutate({
-      name:data.name,
-      teacherId:data.teacherId
-    })
-  }
+    }
+    else {
+      CreateSubjectMutation.mutate({
+        name: data.name,
+        teacherId: data.teacherId
+      })
+    }
   }
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -132,7 +131,7 @@ export default function CreateUpdateSubject({
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form className=" space-y-6" onSubmit={form.handleSubmit(onSubmit,OnError(toast))}>
+          <form className=" space-y-6" onSubmit={form.handleSubmit(onSubmit, OnError(toast))}>
             <FormField
               control={form.control}
               name="name"
@@ -157,7 +156,7 @@ export default function CreateUpdateSubject({
                   <Popover
                     open={popoverOpen}
                     onOpenChange={setPopoverOpen}
-                    
+
                   >
                     <PopoverTrigger className="hidden w-full lg:flex ">
                       <Button
@@ -169,7 +168,7 @@ export default function CreateUpdateSubject({
                           teachers.find(teacher => teacher.id === field.value)
                             ?.name ?? "Преподаватель"
                         }
-                        <ChevronDown/>
+                        <ChevronDown />
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className=" lg:w-[460px]">
@@ -187,14 +186,14 @@ export default function CreateUpdateSubject({
                   >
                     <DrawerTrigger className="flex lg:hidden w-full">
                       <Button
-                          className="w-full justify-between"
-                          variant="outline"
-                          type="button"
-                        >
-                          {teachers.find(teacher => teacher.id === field.value)
-                            ?.name ?? "Преподаватель"}
-                            <ChevronDown/>
-                        </Button>
+                        className="w-full justify-between"
+                        variant="outline"
+                        type="button"
+                      >
+                        {teachers.find(teacher => teacher.id === field.value)
+                          ?.name ?? "Преподаватель"}
+                        <ChevronDown />
+                      </Button>
                     </DrawerTrigger>
                     <DrawerContent className="w-full">
                       <div className="mt-4 border-t">

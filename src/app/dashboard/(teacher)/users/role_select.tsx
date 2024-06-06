@@ -77,16 +77,16 @@ export default function RoleSelect({
   })
 
   useEffect(() => {
-    if (user.role.length === newRoles.length && user.role.every((role, index) => role === newRoles[index])) return;
-
     const timeout = setTimeout(() => {
+      if (user.role.length === newRoles.length && user.role.every((role, index) => role === newRoles[index])) return;
+
       updateRolesMutation.mutate({
         id: user.id,
         roles: newRoles
       })
     }, 1000)
     return () => clearTimeout(timeout);
-  }, [newRoles, user.id, user.role, updateRolesMutation])
+  }, [newRoles])
 
   return (
     <>
