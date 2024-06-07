@@ -3,6 +3,25 @@
 @tailwind utilities;
 
 @layer base {
+  
+  globals.css
+  ul {
+   @apply list-disc pl-4;
+  }
+
+  ol {
+    @apply list-decimal pl-4;
+  }
+
+  blockquote {
+    @apply border-l-4 border-muted p-4 pl-6 text-secondary-foreground;
+  }
+  .tiptap a{
+    @apply text-blue-600 underline cursor-pointer
+  }
+  .tiptap code{
+    @apply w-full bg-black text-white p-2 inline-block rounded-md 
+  }
   :root {
     --background: 210 40% 96%;
     --foreground: 222 47% 11%;
