@@ -142,7 +142,7 @@ export const userRouter = createTRPCRouter({
       }
       await ctx.db.update(users).set({
         role: input.roles
-      }).where(eq(users.id, ctx.session.user.id));
+      }).where(eq(users.id, input.id));
     }),
   delete: teacherProcedure
     .input(IdInputSchema)

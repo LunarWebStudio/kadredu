@@ -202,21 +202,21 @@ export const verificationTokens = createTable(
   }),
 );
 
-export const subjects = createTable("subjects",{
-  id:text("id")
-  .$defaultFn(()=> createId())
-  .notNull()
-  .primaryKey(),
+export const subjects = createTable("subjects", {
+  id: text("id")
+    .$defaultFn(() => createId())
+    .notNull()
+    .primaryKey(),
 
-  name:text("name")
-  .notNull(),
+  name: text("name")
+    .notNull(),
 
-  teacherId:text("teacherId")
-  .references(()=> users.id)
-  .notNull()
+  teacherId: text("teacherId")
+    .references(() => users.id)
+    .notNull()
 })
 
-export const subjectsRelations = relations(subjects, ({one}) => ({
-  teacherInfo:one(users,{fields:[subjects.teacherId],references:[users.id]})
+export const subjectsRelations = relations(subjects, ({ one }) => ({
+  teacherInfo: one(users, { fields: [subjects.teacherId], references: [users.id] })
 }))
 
