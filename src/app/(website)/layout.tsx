@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { type ReactNode } from "react";
+import Navbar from "~/components/navbar";
 import { getServerAuthSession } from "~/server/auth";
 
 export default async function WebsiteLayout({
@@ -21,5 +22,12 @@ export default async function WebsiteLayout({
     redirect("/onboarding");
   }
 
-  return <main className="bg-background dark:bg-background">{children}</main>;
+  return (
+    <main className="bg-background dark:bg-background min-h-screen-nav flex flex-col">
+      <Navbar />
+      <div className="grow mt-nav">
+        {children}
+      </div>
+    </main>
+  );
 }
