@@ -132,7 +132,6 @@ export default function CreateUpdateGroup({
               </div>
             </div>
             <FormField
-
               control={form.control}
               name="image"
               render={({ field }) => (
@@ -161,22 +160,6 @@ export default function CreateUpdateGroup({
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input placeholder="ИС-10" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Название группы
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
-
             <FormField
               control={form.control}
               name="buildingId"
@@ -200,6 +183,21 @@ export default function CreateUpdateGroup({
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input placeholder="ИС-10" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Название группы
+                  </FormDescription>
+                </FormItem>
+              )}
+            />
+
             <DialogFooter>
               <Button
                 disabled={updateGroupMutation.isPending || createGroupMutation.isPending}

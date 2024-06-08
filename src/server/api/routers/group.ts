@@ -38,7 +38,6 @@ export const groupRouter = createTRPCRouter({
             message: "Не удалось загрузить фото группы"
           })
         }
-
         await tx.insert(groups).values({
           ...input,
           imageId
@@ -75,17 +74,10 @@ export const groupRouter = createTRPCRouter({
           }
         }
 
-        const group = await tx.update(groups).set({
+        await tx.update(groups).set({
           ...input,
           imageId
         }).where(eq(groups.id, input.id));
-
-        if (!group) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Группа не найдена"
-          })
-        }
       })
     }),
   delete: adminProcedure.input(IdInputSchema).mutation(async ({ ctx, input }) => {

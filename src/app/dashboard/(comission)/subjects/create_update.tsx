@@ -66,11 +66,12 @@ export default function CreateUpdateSubject({
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const CreateSubjectMutation = api.subject.create.useMutation({
+  const createSubjectMutation = api.subject.create.useMutation({
     onSuccess: () => {
       toast({
         title: "Предмет создан"
       });
+      form.reset();
       router.refresh();
       setDialogOpen(false)
     },
@@ -82,7 +83,7 @@ export default function CreateUpdateSubject({
       });
     }
   });
-  const UpdateSubjectMutation = api.subject.update.useMutation({
+  const updateSubjectMutation = api.subject.update.useMutation({
     onSuccess: () => {
       toast({
         title: "Предмет обновлен"
@@ -100,14 +101,14 @@ export default function CreateUpdateSubject({
   });
   const onSubmit = (data: z.infer<typeof SubjectInputSchema>) => {
     if (subject) {
-      UpdateSubjectMutation.mutate({
+      updateSubjectMutation.mutate({
         id: subject.id,
         name: data.name,
         teacherId: data.teacherId
       })
     }
     else {
-      CreateSubjectMutation.mutate({
+      createSubjectMutation.mutate({
         name: data.name,
         teacherId: data.teacherId
       })
@@ -210,7 +211,7 @@ export default function CreateUpdateSubject({
               )}
             />
             <DialogFooter>
-              <Button type="submit" className=" ml-auto" disabled={UpdateSubjectMutation.isPending || CreateSubjectMutation.isPending}>Сохранить</Button>
+              <Button type="submit" className=" ml-auto" disabled={updateSubjectMutation.isPending || createSubjectMutation.isPending}>Сохранить</Button>
             </DialogFooter>
           </form>
         </Form>
@@ -230,7 +231,7 @@ function TeacherList({
 }) {
   return (
     <Command>
-      <CommandInput placeholder="Роль..." />
+      <CommandInput placeholder="Преподаватель..." />
       <CommandList>
         <CommandEmpty>Преподавателей не найдено.</CommandEmpty>
         <CommandGroup>
