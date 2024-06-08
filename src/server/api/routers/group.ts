@@ -35,7 +35,7 @@ export const groupRouter = createTRPCRouter({
         } catch (err) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Не удалось загрузить фото профиля"
+            message: "Не удалось загрузить фото группы"
           })
         }
 
@@ -70,7 +70,7 @@ export const groupRouter = createTRPCRouter({
           } catch (err) {
             throw new TRPCError({
               code: "BAD_REQUEST",
-              message: "Не удалось загрузить фото профиля"
+              message: "Не удалось загрузить фото группы"
             })
           }
         }

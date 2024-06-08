@@ -184,7 +184,7 @@ export default function CreateUpdateGroup({
                 <FormItem>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Выберите здание" />
+                      <SelectValue placeholder="Выберите СП" />
                     </SelectTrigger>
                     <SelectContent>
                       {buildings.map(building => (
@@ -195,7 +195,7 @@ export default function CreateUpdateGroup({
                     </SelectContent>
                   </Select>
                   <FormDescription>
-                    Выберите здание
+                    Выберите СП
                   </FormDescription>
                 </FormItem>
               )}

@@ -42,11 +42,11 @@ export const GroupInputSchema = z.object({
   }),
   buildingId: z
     .string({
-      required_error: "Не указан ID здания",
-      invalid_type_error: "ID здания не является строкой"
+      required_error: "Не указан ID СП",
+      invalid_type_error: "ID СП не является строкой"
     })
-    .min(1, "ID здания не заполнен")
-    .max(255, "ID здания слишком длинный")
+    .min(1, "ID СП не заполнен")
+    .max(255, "ID СП слишком длинный")
 });
 
 export const IdInputSchema = z.object({
