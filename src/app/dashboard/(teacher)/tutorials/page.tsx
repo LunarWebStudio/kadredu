@@ -18,6 +18,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { Button } from "~/components/ui/button";
 import CreateUpdateTutorial from "~/app/dashboard/(teacher)/tutorials/create_update"; 
+import DeleteTutorial from "./delete";
 
 export default async function Tutorials({
     searchParams
@@ -33,9 +34,11 @@ export default async function Tutorials({
 
     const topics = await api.topic.getAll();
 
+    const subjects = await api.subject.getAll();
+
     return (
         <DashboardTemplate
-            navbar={<CreateUpdateTutorial topics={topics}/>}
+            navbar={<CreateUpdateTutorial topics={topics} subjects={subjects}/>}
             title="Туториалы"
         >
             <div className="max-h-full grow overflow-y-scroll">
@@ -57,15 +60,19 @@ export default async function Tutorials({
                                 </TableCell>
 
                                 <TableCell>
-                                    {tutorial.authorId}
+                                    {tutorial.authorInfo.email}
                                 </TableCell>
 
                                 <TableCell>
-                                    {tutorial.topic}
+                                    {tutorial.subjectId ? (
+                                        tutorial.subjectId
+                                    ) : (
+                                        <p>Предмет не указан</p>
+                                    )}
                                 </TableCell>
 
                                 <TableCell>
-                                    {tutorial.price}
+                                    {tutorial.createDate?.toDateString()}
                                 </TableCell>
             
                                 <TableCell>
@@ -83,6 +90,7 @@ export default async function Tutorials({
                     
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Действия</DropdownMenuLabel>
+                                                <DeleteTutorial tutorial={tutorial}/>
                                             </DropdownMenuContent>
                     
                                         </DropdownMenu>

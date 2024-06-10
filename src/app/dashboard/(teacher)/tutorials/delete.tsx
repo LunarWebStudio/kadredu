@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { type Topic } from "~/lib/shared/types";
+import { type Tutorial } from "~/lib/shared/types";
 import { api } from "~/trpc/react";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import {
@@ -17,20 +17,20 @@ import {
 } from "~/components/ui/alert-dialog";
 import { useToast } from "~/components/ui/use-toast";
 
-export default function DeleteTopics({ topic }: { topic: Topic }) {
+export default function DeleteTutorial({ tutorial }: { tutorial: Tutorial }) {
   const router = useRouter();
   const { toast } = useToast();
 
-  const deleteTopicMutation = api.topic.delete.useMutation({
+  const deleteTutorialMutation = api.tutorial.delete.useMutation({
     onSuccess: () => {
       toast({
-        title: "Тема удалена"
+        title: "Туториал удален"
       });
       router.refresh();
     },
     onError: err => {
       toast({
-        title: "Ошибка удаления темы",
+        title: "Ошибка удаления туториала",
         description: err.message,
         variant: "destructive"
       });
@@ -46,16 +46,16 @@ export default function DeleteTopics({ topic }: { topic: Topic }) {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Удаление темы</AlertDialogTitle>
+          <AlertDialogTitle>Удаление туториала</AlertDialogTitle>
         </AlertDialogHeader>
         <AlertDialogDescription>
-          Вы уверены что хотите удалить "{topic.name}"?
+          Вы уверены что хотите удалить "{tutorial.name}"?
         </AlertDialogDescription>
         <AlertDialogFooter>
           <AlertDialogCancel>Отмена</AlertDialogCancel>
           <AlertDialogAction
-            disabled={deleteTopicMutation.isPending}
-            onClick={() => deleteTopicMutation.mutate({ id: topic.id })}
+            disabled={deleteTutorialMutation.isPending}
+            onClick={() => deleteTutorialMutation.mutate({ id: tutorial.id })}
           >
             Удалить
           </AlertDialogAction>

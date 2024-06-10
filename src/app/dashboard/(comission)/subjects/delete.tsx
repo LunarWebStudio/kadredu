@@ -12,24 +12,21 @@ import {
 import { DialogFooter } from "~/components/ui/dialog";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import { toast } from "~/components/ui/use-toast";
+import { type Subject } from "~/lib/shared/types";
 import { api } from "~/trpc/react";
 
-export default function DeleteDialog({
-  role
-}: {
-  role: { id: string, name: string }
-}) {
+export default function DeleteSubject({ subject }: { subject: Subject }) {
   const router = useRouter();
-  const DeleteRoleMutation = api.teamRoles.delete.useMutation({
+  const DeleteSubjectMutation = api.subject.delete.useMutation({
     onSuccess: () => {
       toast({
-        title: "Роль удалена"
+        title: "Предмет удалена"
       });
       router.refresh();
     },
     onError: err => {
       toast({
-        title: "Ошибка удаления роли",
+        title: "Ошибка удаления предмета",
         description: err.message,
         variant: "destructive"
       });
@@ -39,25 +36,21 @@ export default function DeleteDialog({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <DropdownMenuItem
-          onSelect={e => {
-            e.preventDefault();
-          }}
-        >
+        <DropdownMenuItem onSelect={e => e.preventDefault()}>
           Удалить
         </DropdownMenuItem>
       </AlertDialogTrigger>
       <AlertDialogContent>
-        <AlertDialogHeader>Удаление роли</AlertDialogHeader>
+        <AlertDialogHeader>Удаление предмета</AlertDialogHeader>
         <AlertDialogDescription>
-          Вы уверены что хотите удалить `{role.name}`?
+          Вы уверены что хотите удалить "{subject.name}" ?
         </AlertDialogDescription>
         <DialogFooter>
           <AlertDialogCancel>Отмена</AlertDialogCancel>
           <AlertDialogAction
             disabled={false}
             onClick={() => {
-              DeleteRoleMutation.mutate({ id: role.id });
+              DeleteSubjectMutation.mutate({ id: subject.id });
             }}
           >
             Удалить

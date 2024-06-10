@@ -2,16 +2,49 @@ import { eq, and, ilike } from "drizzle-orm";
 import { z } from "zod";
 import { TutorialInputShema, IdInputSchema } from "~/lib/shared/types";
 import { adminProcedure, createTRPCRouter, publicProcedure} from "~/server/api/trpc";
-import { tutorials } from "~/server/db/schema";
+import { images, tutorials } from "~/server/db/schema";
+import { ProcessImage } from "~/lib/server/images";
+import { createId } from "@paralleldrive/cuid2";
+import { UploadFile } from "~/lib/server/file_upload";
+import { TRPCError } from "@trpc/server";
 
 export const tutorialsRouter = createTRPCRouter ({
     create: adminProcedure
         .input(TutorialInputShema)
         .mutation(async ({ctx, input}) => {
-            await ctx.db.insert(tutorials).values({
+            let imageId: string | undefined = undefined
+            await ctx.db.transaction(async tx => {
+              try {
+                const processed_image = await ProcessImage({
+                  imageB64: input.image,
+                  size: {
+                    width: 100,
+                    height: 200
+                  },
+                  fit: "contain"
+                });
+      
+                const storageId = `tutorial_${createId()}`
+                await UploadFile(processed_image.file, storageId);
+      
+                imageId = (await tx.insert(images).values({
+                  blurPreview: processed_image.blurPreview,
+                  storageId
+                }).returning())[0]!.id;
+              } catch (err) {
+                console.error(err)
+                throw new TRPCError({
+                  code: "BAD_REQUEST",
+                  message: "Не удалось загрузить фото туториала"
+                })
+              }
+      
+              await tx.insert(tutorials).values({
                 ...input,
+                imageId,
                 authorId: ctx.session.user.id
-            })
+              });
+            });
         }),
     delete: adminProcedure
         .input(IdInputSchema)
@@ -32,9 +65,12 @@ export const tutorialsRouter = createTRPCRouter ({
               with: {
                 authorInfo: {
                     columns: {
-                        id: true
+                        id: true,
+                        name: true,
+                        email: true
                     }
-                }
+                },
+                image: true
               }
             })
         }),

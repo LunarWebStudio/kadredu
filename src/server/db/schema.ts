@@ -72,7 +72,7 @@ export const teamRoles = createTable("rolesTeam", {
     .notNull()
     .unique(),
 });
-
+ 
 export const topics = createTable("topics", {
   id: text("id")
     .$defaultFn(() => createId())
@@ -87,21 +87,23 @@ export const tutorials = createTable("tutorials", {
     .notNull()
     .primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
-  image: varchar("image", { length: 255 }).notNull(),
+  imageId: text("imageId").references(() => images.id, { onDelete: "cascade" }).notNull(),
   text: varchar("text", {length: 255}).notNull(),
-  authorId: text("author").notNull().references(() => users.id),
+  authorId: text("author").references(() => users.id).notNull(),
   createDate: timestamp("createDate", {
     mode: "date",
     withTimezone: true,
   }).defaultNow(),
-  price: varchar("price", {length: 255}).notNull(),
+  price: varchar("price", {length: 255}),
   likes: integer("likes").notNull().default(0),
-  topic: varchar("name", {length: 255}).notNull(),
+  topicId: varchar("topicId", {length: 255}).notNull(),
   timeRead: varchar("timeRead", {length: 255}).notNull(),
+  subjectId: varchar("subjectId", {length: 255}),
 })
 
 export const tutorialsRelations = relations(tutorials, ({one}) => ({
-  authorInfo: one(users, {fields: [tutorials.authorId], references: [users.id]})
+  authorInfo: one(users, {fields: [tutorials.authorId], references: [users.id]}),
+  image: one(images, { fields: [tutorials.imageId], references: [images.id] }),
 }))
 
 export const rolesEnum = pgEnum("role", [
@@ -224,3 +226,22 @@ export const verificationTokens = createTable(
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
   }),
 );
+
+export const subjects = createTable("subjects",{
+  id:text("id")
+  .$defaultFn(()=> createId())
+  .notNull()
+  .primaryKey(),
+
+  name:text("name")
+  .notNull(),
+
+  teacherId:text("teacherId")
+  .references(()=> users.id)
+  .notNull()
+})
+
+export const subjectsRelations = relations(subjects, ({one}) => ({
+  teacherInfo:one(users,{fields:[subjects.teacherId],references:[users.id]})
+}))
+
