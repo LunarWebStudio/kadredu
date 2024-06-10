@@ -4,11 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "~/components/ui/dialog";
 import { Form, FormField, FormItem, FormControl, FormDescription } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
-import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import { useToast } from "~/components/ui/use-toast";
 import { type Tutorial, TutorialInputShema, type Topic, type Subject } from "~/lib/shared/types";
 import { api } from "~/trpc/react";
@@ -95,16 +93,8 @@ export default function CreateUpdateTutorial({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {tutorial ? (
-          <DropdownMenuItem onSelect={e => e.preventDefault()}>Редактировать</DropdownMenuItem>
-        ) : (
-          <Button>Добавить</Button>
-        )}
-      </DialogTrigger>
 
-      <DialogContent>
+      <>
         <div style={{display: "flex", justifyContent: "space-between"}}>
             Туториалы
 
@@ -282,15 +272,12 @@ export default function CreateUpdateTutorial({
                 )}
               />
 
-              <DialogFooter>
-                <Button disabled={updateTutorialMutation.isPending || createTutorialMutation.isPending} style={{width: "100%"}} type="submit">
-                  Сохранить
-                </Button>
-              </DialogFooter>
+              <Button disabled={updateTutorialMutation.isPending || createTutorialMutation.isPending} style={{width: "100%"}} type="submit">
+                Сохранить
+              </Button>
             </div>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </>
   )
 }

@@ -79,4 +79,22 @@ export const tutorialsRouter = createTRPCRouter ({
         .mutation(async ({ctx, input}) => {
             await ctx.db.update(tutorials).set(input).where(eq(tutorials.id, input.id))
         }),
+    getOne: adminProcedure
+        .input(IdInputSchema)
+        .mutation(async ({ctx, input}) => {
+          return await ctx.db.query.tutorials.findFirst({
+            where: eq(tutorials.id, input.id),
+
+            with: {
+              authorInfo: {
+                  columns: {
+                      id: true,
+                      name: true,
+                      email: true
+                  }
+              },
+              image: true
+            }
+        })
+      })
 })

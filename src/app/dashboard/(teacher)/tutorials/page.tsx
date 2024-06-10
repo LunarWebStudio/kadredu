@@ -13,12 +13,13 @@ import { api } from "~/trpc/server";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from "~/components/ui/dropdown-menu";
 import { Button } from "~/components/ui/button";
-import CreateUpdateTutorial from "~/app/dashboard/(teacher)/tutorials/create_update"; 
-import DeleteTutorial from "./delete";
+import DeleteTutorial from "~/app/dashboard/(teacher)/tutorials/delete";
+import Link from "next/link";
 
 export default async function Tutorials({
     searchParams
@@ -32,13 +33,10 @@ export default async function Tutorials({
         search: searchParams.search
     })
 
-    const topics = await api.topic.getAll();
-
-    const subjects = await api.subject.getAll();
 
     return (
         <DashboardTemplate
-            navbar={<CreateUpdateTutorial topics={topics} subjects={subjects}/>}
+            navbar={<Link href="/dashboard/tutorials/create">Добавить</Link>}
             title="Туториалы"
         >
             <div className="max-h-full grow overflow-y-scroll">
@@ -91,6 +89,9 @@ export default async function Tutorials({
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Действия</DropdownMenuLabel>
                                                 <DeleteTutorial tutorial={tutorial}/>
+                                                <DropdownMenuItem>
+                                                    <Link href="/dashboard/tutorials/redact">Редактировать</Link>
+                                                </DropdownMenuItem>
                                             </DropdownMenuContent>
                     
                                         </DropdownMenu>

@@ -78,7 +78,7 @@ export const topics = createTable("topics", {
     .$defaultFn(() => createId())
     .notNull()
     .primaryKey(),
-  name: varchar("name", { length: 255 }).notNull()
+  name: varchar("name", { length: 255 }).notNull().unique()
 });
 
 export const tutorials = createTable("tutorials", {
