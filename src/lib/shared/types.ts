@@ -59,6 +59,17 @@ export const IdInputSchema = z.object({
     .max(255, "ID слишком длинный")
 });
 
+export const UsernameInputSchema = z.object({
+  username: z
+    .string({
+      required_error: "Ник не заполнен",
+      invalid_type_error: "Ник не является строкой"
+    })
+    .min(1, "Ник не заполнен")
+    .max(255, "Ник слишком длинный")
+    .regex(/^[a-zA-Z_]+$/)
+});
+
 export const RoleInputSchema = z.object({
   name: z
     .string({
