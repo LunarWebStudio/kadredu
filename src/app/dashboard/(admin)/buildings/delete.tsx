@@ -26,7 +26,7 @@ export default function DeleteBuilding({ building }: { building: Building }) {
       router.refresh();
       toast({
         title: "Успешно",
-        description: "Здание было удалено"
+        description: "СП было удалено"
       });
     },
     onError: err => {
@@ -47,7 +47,7 @@ export default function DeleteBuilding({ building }: { building: Building }) {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Удаление здания</AlertDialogTitle>
+          <AlertDialogTitle>Удаление СП</AlertDialogTitle>
         </AlertDialogHeader>
         <AlertDialogDescription>
           Вы уверены что хотите удалить "{building.title}" по адресу "

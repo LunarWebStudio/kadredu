@@ -35,10 +35,9 @@ export const groupRouter = createTRPCRouter({
         } catch (err) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Не удалось загрузить фото профиля"
+            message: "Не удалось загрузить фото группы"
           })
         }
-
         await tx.insert(groups).values({
           ...input,
           imageId
@@ -70,22 +69,15 @@ export const groupRouter = createTRPCRouter({
           } catch (err) {
             throw new TRPCError({
               code: "BAD_REQUEST",
-              message: "Не удалось загрузить фото профиля"
+              message: "Не удалось загрузить фото группы"
             })
           }
         }
 
-        const group = await tx.update(groups).set({
+        await tx.update(groups).set({
           ...input,
           imageId
         }).where(eq(groups.id, input.id));
-
-        if (!group) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Группа не найдена"
-          })
-        }
       })
     }),
   delete: adminProcedure.input(IdInputSchema).mutation(async ({ ctx, input }) => {
