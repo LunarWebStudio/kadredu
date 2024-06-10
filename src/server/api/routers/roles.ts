@@ -27,9 +27,24 @@ export const teamRolesRouter = {
   create: adminProcedure
     .input(RoleInputSchema)
     .mutation(async ({ ctx, input }) => {
-      return (
-        await ctx.db.insert(teamRoles).values({ name: input.name }).returning()
-      )[0];
+      try {
+        return (
+          await ctx.db.insert(teamRoles).values({ name: input.name }).returning()
+        )[0];
+      } catch (err: any) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (err.code === "23505") {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Роль с таким названием уже существует"
+          })
+        }
+
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Не удалось создать роль"
+        })
+      }
     }),
   update: adminProcedure
     .input(z.intersection(IdInputSchema, RoleInputSchema))

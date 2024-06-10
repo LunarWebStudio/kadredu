@@ -72,7 +72,7 @@ export const teamRoles = createTable("rolesTeam", {
     .notNull()
     .unique(),
 });
-
+ 
 export const topics = createTable("topics", {
   id: text("id")
     .$defaultFn(() => createId())

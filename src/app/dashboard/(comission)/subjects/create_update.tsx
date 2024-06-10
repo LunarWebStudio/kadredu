@@ -99,6 +99,7 @@ export default function CreateUpdateSubject({
       });
     }
   });
+
   const onSubmit = (data: z.infer<typeof SubjectInputSchema>) => {
     if (subject) {
       updateSubjectMutation.mutate({
@@ -113,6 +114,7 @@ export default function CreateUpdateSubject({
         teacherId: data.teacherId
       })
     }
+
   }
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -157,7 +159,6 @@ export default function CreateUpdateSubject({
                   <Popover
                     open={popoverOpen}
                     onOpenChange={setPopoverOpen}
-
                   >
                     <PopoverTrigger className="hidden w-full lg:flex ">
                       <Button
@@ -169,6 +170,7 @@ export default function CreateUpdateSubject({
                           teachers.find(teacher => teacher.id === field.value)
                             ?.name ?? "Преподаватель"
                         }
+
                         <ChevronDown />
                       </Button>
                     </PopoverTrigger>

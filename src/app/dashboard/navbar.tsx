@@ -19,7 +19,7 @@ export default async function DashboardNavbar() {
   const session = await getServerAuthSession();
 
   return (
-    <div className="h-nav-dashboard-mobile flex w-screen flex-col items-center justify-center gap-4 bg-secondary px-6 sm:h-nav-dashboard sm:flex-row sm:justify-between">
+    <div className="flex h-nav-dashboard-mobile w-screen flex-col items-center justify-center gap-4 bg-secondary px-6 sm:h-nav-dashboard sm:flex-row sm:justify-between">
       <div className="flex w-full flex-row items-center justify-between sm:w-auto">
         <Logo />
         <Sheet>
@@ -46,7 +46,7 @@ export default async function DashboardNavbar() {
                 </Button>
               </SheetClose>
             </SheetHeader>
-            <aside className="h-screen-nav-dashboard min-w-[19rem] bg-secondary px-6 py-4 overflow-y-scroll">
+            <aside className="h-screen-nav-dashboard min-w-[19rem] overflow-y-scroll bg-secondary px-6 py-4">
               {sidebarItems.map((section, index) => (
                 <React.Fragment key={index}>
                   {((session?.user.role.includes("ADMIN") ?? false) ||
@@ -54,18 +54,18 @@ export default async function DashboardNavbar() {
                       section.roles.includes(role)
                     ) ??
                       false)) && (
-                      <div className="mb-4 space-y-2 px-2">
-                        <p className="text-foreground/60">{section.title}</p>
-                        <div className="flex flex-col gap-2">
-                          {section.items.map((item, index) => (
-                            <SidebarItem
-                              {...item}
-                              key={section.title + index}
-                            />
-                          ))}
-                        </div>
+                    <div className="mb-4 space-y-2 px-2">
+                      <p className="text-foreground/60">{section.title}</p>
+                      <div className="flex flex-col gap-2">
+                        {section.items.map((item, index) => (
+                          <SidebarItem
+                            {...item}
+                            key={section.title + index}
+                          />
+                        ))}
                       </div>
-                    )}
+                    </div>
+                  )}
                 </React.Fragment>
               ))}
             </aside>
