@@ -3,6 +3,26 @@
 @tailwind utilities;
 
 @layer base {
+  
+  ul {
+   @apply list-disc pl-4;
+  }
+
+  ol {
+    @apply list-decimal pl-4;
+  }
+  .tiptap{
+    @apply focus-visible:outline-none focus-visible:outline-transparent
+  }
+  blockquote {
+    @apply text-primary underline-offset-4 hover:underline;
+  }
+  .tiptap a{
+    @apply text-blue-600 underline cursor-pointer
+  }
+  .tiptap code{
+    @apply w-full bg-black text-white p-2 inline-block rounded-md 
+  }
   :root {
     --background: 210 40% 96%;
     --foreground: 222 47% 11%;
