@@ -4,7 +4,6 @@
 
 @layer base {
   
-  globals.css
   ul {
    @apply list-disc pl-4;
   }
@@ -12,9 +11,11 @@
   ol {
     @apply list-decimal pl-4;
   }
-
+  .tiptap{
+    @apply focus-visible:outline-none focus-visible:outline-transparent
+  }
   blockquote {
-    @apply border-l-4 border-muted p-4 pl-6 text-secondary-foreground;
+    @apply text-primary underline-offset-4 hover:underline;
   }
   .tiptap a{
     @apply text-blue-600 underline cursor-pointer

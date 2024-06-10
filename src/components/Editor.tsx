@@ -62,28 +62,32 @@ const HeadingsSheet = [
     name:"Параграф",
     type: "paragraph",
     tag: "<p>",
-    level: 0
+    level: 0,
+    style:"text-sm"
   },
   {
     name:"Заголовок 1",
     type: "h1",
     tag: "<h1>",
-    level: 1
+    level: 1,
+    style:"text-2xl font-bold"
   },
   {
     name:"Заголовок 2",
     type: "h2",
     tag: "<h2>",
-    level: 2
+    level: 2,
+    style:"text-lg font-bold"
   },
   {
     name:"Заголовок 3",
     type: "h3",
     tag: "<h3>",
-    level: 3
+    level: 3,
+    style:"text-base font-bold"
   }
 ];
-
+const IconClassName = "size-4"
 StarterKit.configure({
   heading:{
     levels:[1,2,3]
@@ -98,25 +102,17 @@ type Options = {
   quotes?: boolean
 };
 
-export default function EditorText({setText, options }: 
+export default function EditorText({text,setText, options }: 
   {
-    
-    setText:(arg0:string) => void
-    options?: Options   
+    text:string,
+    setText:(text:string) => void
+    options?: Options
   }) {
   Link.configure({
-    autolink:true,
-    HTMLAttributes:{
-      class:"text-blue-600 underline"
-    }
+    autolink:true
   })
   Image.configure({
     allowBase64: true,
-  })
-  Blockquote.configure({
-    HTMLAttributes: {
-      class: 'bg-red-400 p-4 rounded-lg',
-    },
   })
   const editor = useEditor({
     extensions: [
@@ -138,7 +134,7 @@ export default function EditorText({setText, options }:
     onUpdate:({editor}) =>{
       setText(editor.getText())
     },
-    content: "Hello world"
+    content: text
   });
  
 
@@ -185,14 +181,14 @@ function EditorControllers({
          onValueChange={(value)=>{
           setCurrentHeading(HeadingsSheet.find((e) => e.type === value) ?? HeadingsSheet[0]!)
         }}>
-          <SelectTrigger className="w-fit px-6 gap-4 bg-white">
+          <SelectTrigger className="w-fit px-6 gap-4 bg-white hover:bg-gray-300 transition-all">
             <SelectValue placeholder="Форматирование" />
           </SelectTrigger>
           <SelectContent>
             {
               HeadingsSheet.map((heading)=>{
                 return (
-                  <SelectItem key={heading.type} value={heading.type}>
+                  <SelectItem key={heading.type} value={heading.type} className={heading.style}>
                     {heading.name}
                   </SelectItem>
                 )
@@ -205,25 +201,25 @@ function EditorControllers({
             pressed={editor.isActive("bold")}
             onClick={() => editor.chain().focus().toggleBold().run()}
           >
-            <Bold className="size-4" />
+            <Bold className={IconClassName} />
           </Toggle>
           <Toggle
             pressed={editor.isActive("italic")}
             onClick={() => editor.chain().focus().toggleItalic().run()}
           >
-            <Italic className="size-4" />
+            <Italic className={IconClassName} />
           </Toggle>
           <Toggle
             pressed={editor.isActive("underline")}
             onClick={() => editor.chain().focus().toggleUnderline().run()}
           >
-            <UnderlineIcon className="size-4" />
+            <UnderlineIcon className={IconClassName} />
           </Toggle>
           <Toggle
             pressed={editor.isActive("strike")}
             onClick={() => editor.chain().focus().toggleStrike().run()}
           >
-            <Strikethrough className="size-4" />
+            <Strikethrough className={IconClassName} />
           </Toggle>
         </div>
         <div className="flex gap-0.5" >
@@ -231,25 +227,25 @@ function EditorControllers({
             pressed={editor.isActive("bulletList")}
             onClick={() => editor.commands.toggleBulletList()}
           >
-            <List className="size-4" />
+            <List className={IconClassName} />
           </Toggle>
           <Toggle
             pressed={editor.isActive("orderedList")}
             onClick={() => editor.commands.toggleOrderedList()}
           >
-            <ListOrdered className="size-4" />
+            <ListOrdered className={IconClassName} />
           </Toggle>
         </div>
         <div className="flex gap-0.5">
           {options?.links  && <PasteLink editor={editor} /> }
           {options?.images && <PasteImage editor={editor} setImage={options.images} /> }
           {options?.code && <PasteCodeBlock editor={editor} />}
-          {options?.code && (
+          {options?.quotes && (
             <Toggle
             pressed={editor.isActive("blockquote")}
             onClick={() => editor.commands.toggleBlockquote()}
           >
-            <Quote className="size-4" />
+            <Quote className={IconClassName} />
           </Toggle>
           )}
         </div>
@@ -286,13 +282,11 @@ function PasteLink({editor}:
       pressed={editor.isActive("link")}
       onClick={SetLink}
     >
-      <LinkIcon className="size-4" />
+      <LinkIcon className={IconClassName} />
     </Toggle>
   )
 }
-function PasteImage({editor,
-  // setImage
-}:
+function PasteImage({editor}:
   {
     editor:Editor
     setImage:(arg0:typeof ImagesToBase64) => void
@@ -306,7 +300,7 @@ function PasteImage({editor,
               variant="ghost"
               size="icon"
             >
-              <ImageIcon className="size-4" />
+              <ImageIcon className={IconClassName} />
             </Button>
           </DialogTrigger>
           <DialogContent>
@@ -316,7 +310,6 @@ function PasteImage({editor,
 
                 const image = (await ImagesToBase64([e.target.files[0]]))[0]!;
                 editor.commands.setImage({ src: image })
-                // setImage((prev)=> [...prev,image])
 
                 setOpenDialog(false)
               }}
@@ -336,7 +329,7 @@ function PasteCodeBlock({editor}:
       pressed={editor.isActive("codeBlock")}
       onClick={() => editor.chain().focus().toggleCodeBlock().run()}
     >
-      <Code2 className="size-4" />
+      <Code2 className={IconClassName} />
     </Toggle>
   )
 }
