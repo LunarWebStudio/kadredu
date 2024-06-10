@@ -132,7 +132,6 @@ export default function CreateUpdateGroup({
               </div>
             </div>
             <FormField
-
               control={form.control}
               name="image"
               render={({ field }) => (
@@ -161,7 +160,29 @@ export default function CreateUpdateGroup({
                 </FormItem>
               )}
             />
-
+            <FormField
+              control={form.control}
+              name="buildingId"
+              render={({ field }) => (
+                <FormItem>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Выберите СП" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {buildings.map(building => (
+                        <SelectItem key={building.id} value={building.id}>
+                          {building.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Выберите СП
+                  </FormDescription>
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="title"
@@ -177,29 +198,6 @@ export default function CreateUpdateGroup({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="buildingId"
-              render={({ field }) => (
-                <FormItem>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Выберите здание" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {buildings.map(building => (
-                        <SelectItem key={building.id} value={building.id}>
-                          {building.title}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    Выберите здание
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
             <DialogFooter>
               <Button
                 disabled={updateGroupMutation.isPending || createGroupMutation.isPending}

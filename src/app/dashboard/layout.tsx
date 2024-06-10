@@ -11,7 +11,7 @@ export default async function DashboardLayout({
 }) {
   const session = await getServerAuthSession();
 
-  if (!session) {
+  if ((session?.user.role.every((r) => r === "STUDENT") ?? false) || session?.user.role.length === 0) {
     redirect("/auth");
   }
 
@@ -20,7 +20,7 @@ export default async function DashboardLayout({
       <DashboardNavbar />
       <div className="flex flex-row">
         <Sidebar />
-        <div className="flex h-screen-nav-dashboard grow items-center justify-center overflow-hidden p-10">
+        <div className="flex h-screen-nav-dashboard-mobile md:h-screen-nav-dashboard grow items-center justify-center overflow-hidden p-4 sm:p-6 xl:p-10">
           {children}
         </div>
       </div>

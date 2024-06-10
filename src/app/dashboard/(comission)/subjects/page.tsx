@@ -30,7 +30,6 @@ export default async function Subjects({
   const teachers = await api.user.getAll({
     roles: ["TEACHER"]
   });
-  // console.log(subjects[0]?.teacherInfo);
 
   return (
     <DashboardTemplate

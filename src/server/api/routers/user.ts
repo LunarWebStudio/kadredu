@@ -124,7 +124,7 @@ export const userRouter = createTRPCRouter({
       await ctx.db.transaction(async (tx) => {
         await tx.update(users).set({
           groupId: input.groupId
-        }).where(eq(users.id, ctx.session.user.id));
+        }).where(eq(users.id, input.id));
       })
     }),
   updateRoles: teacherProcedure
@@ -142,7 +142,7 @@ export const userRouter = createTRPCRouter({
       }
       await ctx.db.update(users).set({
         role: input.roles
-      }).where(eq(users.id, ctx.session.user.id));
+      }).where(eq(users.id, input.id));
     }),
   delete: teacherProcedure
     .input(IdInputSchema)

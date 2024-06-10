@@ -48,7 +48,6 @@ export const subjectsRouter = {
           )
         )
       });
-      console.log(teacher);
       if (!teacher) {
         throw new TRPCError({
           code: "NOT_FOUND",

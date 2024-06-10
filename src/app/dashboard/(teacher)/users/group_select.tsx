@@ -40,7 +40,7 @@ export default function GroupSelect({
     if (user.group?.id === newGroupId) return;
 
     updateGroupMutation.mutate({ id: user.id, groupId: newGroupId })
-  })
+  }, [newGroupId])
 
   return (
     <Select value={newGroupId} onValueChange={setNewGroupId}>

@@ -10,7 +10,7 @@ const config = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "shoppoker-nextjs.storage.yandexcloud.net"
+        hostname: "kadredu.storage.yandexcloud.net"
       },
       {
         protocol: "http",
