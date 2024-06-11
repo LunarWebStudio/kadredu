@@ -57,10 +57,10 @@ export default function LoginForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
+                <FormDescription>Введите ваш адрес электронной почты</FormDescription>
                 <FormControl>
                   <Input placeholder="Email" {...field} />
                 </FormControl>
-                <FormDescription>Введите ваш адрес электронной почты</FormDescription>
               </FormItem>
             )}
           />

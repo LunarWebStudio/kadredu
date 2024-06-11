@@ -140,6 +140,7 @@ export default function CreateUpdateSubject({
               name="name"
               render={({ field }) => (
                 <FormItem>
+                  <FormDescription>Название предмета</FormDescription>
                   <FormControl>
                     <Input
                       type="text"
@@ -147,7 +148,6 @@ export default function CreateUpdateSubject({
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>Название предмета</FormDescription>
                 </FormItem>
               )}
             />
@@ -156,6 +156,7 @@ export default function CreateUpdateSubject({
               name="teacherId"
               render={({ field }) => (
                 <FormItem>
+                  <FormDescription>Преподаватель</FormDescription>
                   <Popover
                     open={popoverOpen}
                     onOpenChange={setPopoverOpen}
@@ -208,7 +209,6 @@ export default function CreateUpdateSubject({
                       </div>
                     </DrawerContent>
                   </Drawer>
-                  <FormDescription>Преподаватель</FormDescription>
                 </FormItem>
               )}
             />

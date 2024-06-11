@@ -105,12 +105,13 @@ export default function CreateUpdateRole({
           <DialogTitle>{role ? "Редактировать роль" : "Создать роль"}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit,OnError(toast))} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit, OnError(toast))} className="space-y-6">
             <FormField
-              control={form.control}  
+              control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
+                  <FormDescription>Название роли</FormDescription>
                   <FormControl>
                     <Input
                       type="text"
@@ -118,12 +119,11 @@ export default function CreateUpdateRole({
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>Название роли</FormDescription>
                 </FormItem>
               )}
             />
             <DialogFooter>
-              <Button type="submit" disabled={UpdateRoleMutation.isPending || CreateRoleMutation.isPending}>Сохранить</Button> 
+              <Button type="submit" disabled={UpdateRoleMutation.isPending || CreateRoleMutation.isPending}>Сохранить</Button>
             </DialogFooter>
           </form>
         </Form>
