@@ -58,7 +58,6 @@
     --dashboard-nav-height: 4rem; 
     --dashboard-mobile-nav-height: 9rem; 
   }
-
 }
 
 .dark {
@@ -111,5 +110,9 @@
 
   .emoji {
     @apply text-4xl;
+  }
+
+  .text-primary-gradient {
+    @apply bg-gradient-to-b from-[#CE5BEB] to-primary text-transparent bg-clip-text;
   }
 }

@@ -28,7 +28,12 @@ const GetUser = async (id: string) => {
     where: eq(users.id, id),
     with: {
       profilePicture: true,
-      group: true
+      group: {
+        with: {
+          image: true,
+          building: true
+        }
+      }
     },
     columns: {
       id: true,
