@@ -7,7 +7,7 @@ import { createTRPCRouter, protectedProcedure, teacherProcedure, verificationPro
 import { images, roleSchema, users } from "~/server/db/schema";
 import { DESCRIPTION_LIMIT, MAX_PROFILE_PICTURE_SIZE, NAME_LIMIT } from "~/lib/shared/const";
 import { TRPCError } from "@trpc/server";
-import { IdInputSchema } from "~/lib/shared/types";
+import { IdInputSchema, UsernameInputSchema } from "~/lib/shared/types";
 import { env } from "~/env";
 
 export const userRouter = createTRPCRouter({
@@ -173,5 +173,24 @@ export const userRouter = createTRPCRouter({
       }
 
       await ctx.db.delete(users).where(eq(users.id, input.id));
+    }),
+  getOne: protectedProcedure
+    .input(UsernameInputSchema)
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.query.users.findFirst({
+        where: and(
+          eq(users.username, input.username),
+          eq(users.verified, true)
+        ),
+        with: {
+          profilePicture: true,
+          group: true
+        },
+        columns: {
+          id: true,
+          name: true,
+          username: true,
+        }
+      });
     })
 });

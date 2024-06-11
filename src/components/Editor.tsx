@@ -1,5 +1,5 @@
 "use client";
-import {useEditor, EditorContent } from "@tiptap/react";
+import { useEditor, EditorContent } from "@tiptap/react";
 import type { Editor } from "@tiptap/react";
 import { Button } from "~/components/ui/button";
 import {
@@ -37,7 +37,7 @@ import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import Blockquote from '@tiptap/extension-blockquote'
 import CodeBlock from "@tiptap/extension-code-block";
-import {type Level} from  '@tiptap/extension-heading'
+import { type Level } from '@tiptap/extension-heading'
 // import {lowlight} from 'lowlight/lib/core'
 
 // import js from "highlight.js/lib/languages/javascript"
@@ -59,57 +59,57 @@ import {type Level} from  '@tiptap/extension-heading'
 
 const HeadingsSheet = [
   {
-    name:"Параграф",
+    name: "Параграф",
     type: "paragraph",
     tag: "<p>",
     level: 0,
-    style:"text-sm"
+    style: "text-sm"
   },
   {
-    name:"Заголовок 1",
+    name: "Заголовок 1",
     type: "h1",
     tag: "<h1>",
     level: 1,
-    style:"text-2xl font-bold"
+    style: "text-2xl font-bold"
   },
   {
-    name:"Заголовок 2",
+    name: "Заголовок 2",
     type: "h2",
     tag: "<h2>",
     level: 2,
-    style:"text-lg font-bold"
+    style: "text-lg font-bold"
   },
   {
-    name:"Заголовок 3",
+    name: "Заголовок 3",
     type: "h3",
     tag: "<h3>",
     level: 3,
-    style:"text-base font-bold"
+    style: "text-base font-bold"
   }
 ];
 const IconClassName = "size-4"
 StarterKit.configure({
-  heading:{
-    levels:[1,2,3]
+  heading: {
+    levels: [1, 2, 3]
   }
 })
 
 
 type Options = {
   links?: boolean,
-  images?:(arg0:typeof ImagesToBase64) => void,
+  images?: (arg0: typeof ImagesToBase64) => void,
   code?: boolean,
   quotes?: boolean
 };
 
-export default function EditorText({text,setText, options }: 
+export default function EditorText({ text, setText, options }:
   {
-    text:string,
-    setText:(text:string) => void
+    text: string,
+    setText: (text: string) => void
     options?: Options
   }) {
   Link.configure({
-    autolink:true
+    autolink: true
   })
   Image.configure({
     allowBase64: true,
@@ -129,14 +129,14 @@ export default function EditorText({text,setText, options }:
       //     return ReactNodeViewRenderer(CodeBlockComponent)
       //   }
       // })
-      
+
     ],
-    onUpdate:({editor}) =>{
+    onUpdate: ({ editor }) => {
       setText(editor.getText())
     },
     content: text
   });
- 
+
 
   if (!editor) {
     // Placeholder
@@ -144,14 +144,14 @@ export default function EditorText({text,setText, options }:
   }
   return (
     <div className="flex flex-col gap-4 bg-secondary p-6 rounded-xl focus:outline-none">
-        <EditorControllers
+      <EditorControllers
         editor={editor}
         options={options}
-        />
-        <EditorContent
-          editor={editor}
-          className="p-4 border border-input rounded-xl bg-white tiptap"
-        />
+      />
+      <EditorContent
+        editor={editor}
+        className="p-4 border border-input rounded-xl bg-white tiptap"
+      />
     </div>
   );
 }
@@ -167,26 +167,26 @@ function EditorControllers({
   const [currentHeading, setCurrentHeading] = useState(HeadingsSheet[0]!);
 
   useEffect(() => {
-    if(currentHeading.level === 0 ){
+    if (currentHeading.level === 0) {
       editor.chain().focus().setParagraph().run()
-    }else{
-      editor.chain().focus().setHeading({level:currentHeading.level as Level}).run()
+    } else {
+      editor.chain().focus().setHeading({ level: currentHeading.level as Level }).run()
     }
-  }, [currentHeading,editor]);
+  }, [currentHeading, editor]);
 
   return (
     <>
       <div className="flex flex-row gap-4 bg-white">
         <Select
-         onValueChange={(value)=>{
-          setCurrentHeading(HeadingsSheet.find((e) => e.type === value) ?? HeadingsSheet[0]!)
-        }}>
+          onValueChange={(value) => {
+            setCurrentHeading(HeadingsSheet.find((e) => e.type === value) ?? HeadingsSheet[0]!)
+          }}>
           <SelectTrigger className="w-fit px-6 gap-4 bg-white hover:bg-gray-300 transition-all">
             <SelectValue placeholder="Форматирование" />
           </SelectTrigger>
           <SelectContent>
             {
-              HeadingsSheet.map((heading)=>{
+              HeadingsSheet.map((heading) => {
                 return (
                   <SelectItem key={heading.type} value={heading.type} className={heading.style}>
                     {heading.name}
@@ -237,16 +237,16 @@ function EditorControllers({
           </Toggle>
         </div>
         <div className="flex gap-0.5">
-          {options?.links  && <PasteLink editor={editor} /> }
-          {options?.images && <PasteImage editor={editor} setImage={options.images} /> }
+          {options?.links && <PasteLink editor={editor} />}
+          {options?.images && <PasteImage editor={editor} setImage={options.images} />}
           {options?.code && <PasteCodeBlock editor={editor} />}
           {options?.quotes && (
             <Toggle
-            pressed={editor.isActive("blockquote")}
-            onClick={() => editor.commands.toggleBlockquote()}
-          >
-            <Quote className={IconClassName} />
-          </Toggle>
+              pressed={editor.isActive("blockquote")}
+              onClick={() => editor.commands.toggleBlockquote()}
+            >
+              <Quote className={IconClassName} />
+            </Toggle>
           )}
         </div>
 
@@ -256,17 +256,17 @@ function EditorControllers({
   );
 }
 
-function PasteLink({editor}:
+function PasteLink({ editor }:
   {
-    editor:Editor
+    editor: Editor
   }
-){
+) {
   // TODO Нормальное диалоговое окно
-  const SetLink = () =>{
+  const SetLink = () => {
     const prevUrl = editor.getAttributes('link')
-       
-    const url = window.prompt('URL',prevUrl.href as string)
-    if(!url){
+
+    const url = window.prompt('URL', prevUrl.href as string)
+    if (!url) {
       editor.chain().focus().extendMarkRange('link').unsetLink().run()
       return
     }
@@ -274,10 +274,10 @@ function PasteLink({editor}:
       editor.chain().focus().extendMarkRange('link').unsetLink().run()
       return
     }
-    editor.commands.toggleLink({href:url,target:"_blank"})
+    editor.commands.toggleLink({ href: url, target: "_blank" })
   }
 
-  return(
+  return (
     <Toggle
       pressed={editor.isActive("link")}
       onClick={SetLink}
@@ -286,45 +286,45 @@ function PasteLink({editor}:
     </Toggle>
   )
 }
-function PasteImage({editor}:
+function PasteImage({ editor }:
   {
-    editor:Editor
-    setImage:(arg0:typeof ImagesToBase64) => void
+    editor: Editor
+    setImage: (arg0: typeof ImagesToBase64) => void
   }
-){
-  const [openDialog,setOpenDialog] = useState(false)
-  return(
-        <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-          <DialogTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-            >
-              <ImageIcon className={IconClassName} />
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <Input type="file"
-              onChange={async (e) => {
-                if (!e.target.files?.[0]) return;
+) {
+  const [openDialog, setOpenDialog] = useState(false)
+  return (
+    <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+      <DialogTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+        >
+          <ImageIcon className={IconClassName} />
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <Input type="file"
+          onChange={async (e) => {
+            if (!e.target.files?.[0]) return;
 
-                const image = (await ImagesToBase64([e.target.files[0]]))[0]!;
-                editor.commands.setImage({ src: image })
+            const image = (await ImagesToBase64([e.target.files[0]]))[0]!;
+            editor.commands.setImage({ src: image })
 
-                setOpenDialog(false)
-              }}
-            />
-          </DialogContent>
-        </Dialog>
+            setOpenDialog(false)
+          }}
+        />
+      </DialogContent>
+    </Dialog>
   )
 }
-function PasteCodeBlock({editor}:
+function PasteCodeBlock({ editor }:
   {
-    editor:Editor
+    editor: Editor
   }
-){
+) {
 
-  return(
+  return (
     <Toggle
       pressed={editor.isActive("codeBlock")}
       onClick={() => editor.chain().focus().toggleCodeBlock().run()}
@@ -336,7 +336,7 @@ function PasteCodeBlock({editor}:
 
 // const CodeBlockComponent = ({ node: { attrs: { language: defaultLanguage } }, updateAttributes }) =>(
 //   <NodeViewWrapper className="code-block">
-    
+
 //     <select contentEditable={false} defaultValue={defaultLanguage} onChange={event => updateAttributes({ language: event.target.value })}>
 //       <option value="null">
 //         auto

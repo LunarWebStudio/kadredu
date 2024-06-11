@@ -7,7 +7,7 @@ export default function UsernameTag({
   username: string
 }) {
   return (
-    <Link href={`/@${username}`}>
+    <Link href={`/${username}`}>
       <Button variant="link" size="link">
       </Button>
     </Link>
