@@ -94,8 +94,7 @@ export const TutorialInputShema = z.object({
   image: z.string({
       required_error: "Фото не задано",
       invalid_type_error: "Фото не является строкой"
-    })
-    .min(1, "Фото не указано"),
+    }),
   text: z
     .string({
       required_error: "Текст не указан",

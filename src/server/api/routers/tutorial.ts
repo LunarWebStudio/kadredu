@@ -77,7 +77,37 @@ export const tutorialsRouter = createTRPCRouter ({
     update: adminProcedure
         .input(z.intersection(IdInputSchema, TutorialInputShema))
         .mutation(async ({ctx, input}) => {
-            await ctx.db.update(tutorials).set(input).where(eq(tutorials.id, input.id))
+          await ctx.db.transaction(async (tx) => {
+            let imageId: string | undefined = undefined
+            if (input.image) {
+              try {
+                const processed_image = await ProcessImage({
+                  imageB64: input.image,
+                  size: {
+                    width: 500,
+                    height: 500
+                  },
+                  fit: "contain"
+                });
+                const storageId = `tutorial_${input.name}`
+                await UploadFile(processed_image.file, storageId);
+    
+                imageId = (await tx.insert(images).values({
+                  blurPreview: processed_image.blurPreview,
+                  storageId
+                }).returning())[0]!.id;
+              } catch (err) {
+                throw new TRPCError({
+                  code: "BAD_REQUEST",
+                  message: "Не удалось загрузить фото группы"
+                })
+              }
+            }
+            await tx.update(tutorials).set({
+              ...input,
+              imageId
+            }).where(eq(tutorials.id, input.id));
+          })
         }),
     getOne: adminProcedure
         .input(IdInputSchema)

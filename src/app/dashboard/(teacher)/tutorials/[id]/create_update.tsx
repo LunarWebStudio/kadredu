@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Form, FormField, FormItem, FormControl, FormDescription } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
@@ -18,6 +17,9 @@ import S3Image from "~/components/s3Image";
 import { Skeleton } from "~/components/ui/skeleton";
 import { ImagesToBase64 } from "~/lib/shared/images";
 import Link from "next/link";
+import EditorText from "~/components/Editor";
+import DashboardTemplate from "~/app/dashboard/templ";
+import BackButton from "~/components/backButton";
 
 
 export default function CreateUpdateTutorial({
@@ -29,8 +31,6 @@ export default function CreateUpdateTutorial({
     topics?: Topic[];
     subjects: Subject[];
 }) {
-
-  const [open, setOpen] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(TutorialInputShema),
@@ -55,8 +55,8 @@ export default function CreateUpdateTutorial({
         title: "Туториал создан",
       });
       router.refresh();
-      setOpen(false);
       form.reset();
+      router.push("/dashboard/tutorials");
     },
     onError: (err) => {
       toast({
@@ -73,7 +73,7 @@ export default function CreateUpdateTutorial({
         title: "Тема обновлена",
       });
       router.refresh();
-      setOpen(false);
+      router.push("/dashboard/tutorials");
     },
     onError: (err) => {
       toast({
@@ -94,190 +94,197 @@ export default function CreateUpdateTutorial({
 
   return (
 
-      <>
-        <div style={{display: "flex", justifyContent: "space-between"}}>
-            Туториалы
+      <DashboardTemplate
+            navbar={
+                <Link href="/dashboard/tutorials">
+                  <BackButton/>
+                </Link>
+            }
+            title="Туториалы"
+      >
+        <div className="max-h-full grow overflow-y-scroll">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit, OnError(toast))} className="space-y-6 grid grid-cols-2">
+              <div className="p-6 space-y-6">
+                {tutorial ? (
+                  <p className="text-muted-foreground text-center text-2xl pb-4">Редактирование туториала</p>
+                ) : (
+                  <p className="text-muted-foreground text-center text-2xl pb-4">Добавить туториал</p>
+                )}
+                <FormField
 
-            <Link href="">Назад</Link>
-        </div>
+                  control={form.control}
+                  name="image"
+                  render={({ field }) => (
+                    <FormItem>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit, OnError(toast))} className="space-y-6">
-            <div className="main">
-              <p className="text-muted-foreground" style={{textAlign: "center"}}>Добавить туториал</p>
-              <FormField
-
-                control={form.control}
-                name="image"
-                render={({ field }) => (
-                  <FormItem>
-
-                    {form.watch("image") ? (
-                        <Image
-                          src={form.watch("image")}
-                          width={60}
-                          height={60}
-                          className="object-cover rounded-lg w-full aspect-[2/1]"
-                          alt="Image"
-                        />
-                      ) : (
-                        <>
-                          {tutorial ? (
-                            <S3Image
-                              src={tutorial.image.storageId}
-                              alt={tutorial.name}
-                              width={500}
-                              height={500}
-                              className="object-cover rounded-lg w-full aspect-[2/1]" 
-                            />
-                          ) : (
-                            <Skeleton className="rounded-lg w-full aspect-[2/1]"/>
-                          )}
-                        </>
-                    )}
-                    <FormControl>
-                      <Input type="file" {...field}
-                        value=""
-                        max={5}
-                        accept="image/png, image/jpeg, image/webp"
-                        onChange={(e) => {
-                          if (!e.target.files?.[0]) return;
-                          ImagesToBase64([e.target.files[0]]).then(data => {
-                            field.onChange(data[0]!);
-                          }).catch(_ => {
-                            toast({
-                              title: "Ошибка загрузки изображения",
-                              variant: "destructive",
+                      {form.watch("image") ? (
+                          <Image
+                            src={form.watch("image")}
+                            width={60}
+                            height={60}
+                            className="object-cover rounded-lg w-full aspect-[2/1]"
+                            alt="Image"
+                          />
+                        ) : (
+                          <>
+                            {tutorial ? (
+                              <S3Image
+                                src={tutorial.image.storageId}
+                                alt={tutorial.name}
+                                width={300}
+                                height={300}
+                                className="object-cover rounded-lg w-full aspect-[2/1]" 
+                              />
+                            ) : (
+                              <Skeleton className="rounded-lg w-full aspect-[3/1]"/>
+                            )}
+                          </>
+                      )}
+                      <FormControl>
+                        <Input type="file" {...field}
+                          value=""
+                          max={5}
+                          accept="image/png, image/jpeg, image/webp"
+                          onChange={(e) => {
+                            if (!e.target.files?.[0]) return;
+                            ImagesToBase64([e.target.files[0]]).then(data => {
+                              field.onChange(data[0]!);
+                            }).catch(_ => {
+                              toast({
+                                title: "Ошибка загрузки изображения",
+                                variant: "destructive",
+                              });
                             });
-                          });
-                        }}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Изображение группы
-                    </FormDescription>
-                  </FormItem>
-                )}
-              />
+                          }}
 
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input placeholder="Название" {...field} />
-                    </FormControl>
+                          className="pb-2 pt-2"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
 
-                    <FormDescription>
-                      Название задания
-                    </FormDescription>
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input placeholder="Название" {...field} />
+                      </FormControl>
 
-              <FormField
-                control={form.control}
-                name="timeRead"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input placeholder="Время чтения" {...field} />
-                    </FormControl>
+                      <FormDescription className="pb-2">
+                        Название задания
+                      </FormDescription>
+                    </FormItem>
+                  )}
+                />
 
-                    <FormDescription>
-                      Время чтения
-                    </FormDescription>
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="timeRead"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input placeholder="Время чтения" {...field} />
+                      </FormControl>
 
-              <FormField
-                control={form.control}
-                name="price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input placeholder="Цена" {...field} />
-                    </FormControl>
+                      <FormDescription className="pb-2">
+                        Время чтения
+                      </FormDescription>
+                    </FormItem>
+                  )}
+                />
 
-                    <FormDescription>
-                      Цена (необязательно)
-                    </FormDescription>
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input placeholder="Цена" {...field} />
+                      </FormControl>
 
-              <FormField
-                control={form.control}
-                name="topicId"
-                render={({ field }) => (
-                  <FormItem>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Выберите тему" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {topics.map(topic => (
-                          <SelectItem key={topic.id} value={topic.id}>
-                            {topic.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      Выберите тему
-                    </FormDescription>
-                  </FormItem>
-                )}
-              />
+                      <FormDescription className="pb-2">
+                        Цена (необязательно)
+                      </FormDescription>
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="subjectId"
-                render={({ field }) => (
-                  <FormItem>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Выберите предмет" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {subjects.map(subject => (
-                          <SelectItem key={subject.id} value={subject.name}>
-                            {subject.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      Выберите предмет(необязательно)
-                    </FormDescription>
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="topicId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Выберите тему" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {topics.map(topic => (
+                            <SelectItem key={topic.id} value={topic.id}>
+                              {topic.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormDescription className="pb-2">
+                        Выберите тему
+                      </FormDescription>
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="text"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input placeholder="Текст" {...field} />
-                    </FormControl>
+                <FormField
+                  control={form.control}
+                  name="subjectId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Выберите предмет" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {subjects.map(subject => (
+                            <SelectItem key={subject.id} value={subject.name}>
+                              {subject.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormDescription className="pb-2">
+                        Выберите предмет(необязательно)
+                      </FormDescription>
+                    </FormItem>
+                  )}
+                />
 
-                    <FormDescription>
-                      Текст
-                    </FormDescription>
-                  </FormItem>
-                )}
-              />
+                <Button disabled={updateTutorialMutation.isPending || createTutorialMutation.isPending} style={{width: "100%"}} type="submit">
+                  {tutorial ? (
+                    "Сохранить"
+                  ) : (
+                    "Добавить"
+                  )}
+                </Button>
 
-              <Button disabled={updateTutorialMutation.isPending || createTutorialMutation.isPending} style={{width: "100%"}} type="submit">
-                Сохранить
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </>
+              </div>
+
+              <div>
+                <FormField
+                    control={form.control}
+                    name="text"
+                    render={({ field }) => (
+                      <FormItem>
+                        <EditorText text={field.value} setText={field.onChange} options={{links: true, code: true, quotes: true}}/>
+                      </FormItem>
+                    )}
+                  />
+              </div>
+            </form>
+          </Form>
+        </div>
+      </DashboardTemplate>
   )
 }

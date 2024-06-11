@@ -97,12 +97,11 @@ StarterKit.configure({
 
 type Options = {
   links?: boolean,
-  images?:(arg0:typeof ImagesToBase64) => void,
   code?: boolean,
   quotes?: boolean
 };
 
-export default function EditorText({text,setText, options }: 
+export default function EditorText({text, setText, options }: 
   {
     text:string,
     setText:(text:string) => void
@@ -143,14 +142,14 @@ export default function EditorText({text,setText, options }:
     return null;
   }
   return (
-    <div className="flex flex-col gap-4 bg-secondary p-6 rounded-xl focus:outline-none">
+    <div className="flex flex-col h-full gap-4 p-6 rounded-xl focus:outline-none">
         <EditorControllers
         editor={editor}
         options={options}
         />
         <EditorContent
           editor={editor}
-          className="p-4 border border-input rounded-xl bg-white tiptap"
+          className="p-4 border h-full border-input rounded-xl tiptap"
         />
     </div>
   );
@@ -176,12 +175,12 @@ function EditorControllers({
 
   return (
     <>
-      <div className="flex flex-row gap-4 bg-white">
+      <div className="flex flex-row gap-4">
         <Select
          onValueChange={(value)=>{
           setCurrentHeading(HeadingsSheet.find((e) => e.type === value) ?? HeadingsSheet[0]!)
         }}>
-          <SelectTrigger className="w-fit px-6 gap-4 bg-white hover:bg-gray-300 transition-all">
+          <SelectTrigger className="w-fit px-6 gap-4 hover:bg-gray-300 transition-all">
             <SelectValue placeholder="Форматирование" />
           </SelectTrigger>
           <SelectContent>
@@ -238,7 +237,7 @@ function EditorControllers({
         </div>
         <div className="flex gap-0.5">
           {options?.links  && <PasteLink editor={editor} /> }
-          {options?.images && <PasteImage editor={editor} setImage={options.images} /> }
+
           {options?.code && <PasteCodeBlock editor={editor} />}
           {options?.quotes && (
             <Toggle
@@ -286,38 +285,38 @@ function PasteLink({editor}:
     </Toggle>
   )
 }
-function PasteImage({editor}:
-  {
-    editor:Editor
-    setImage:(arg0:typeof ImagesToBase64) => void
-  }
-){
-  const [openDialog,setOpenDialog] = useState(false)
-  return(
-        <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-          <DialogTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-            >
-              <ImageIcon className={IconClassName} />
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <Input type="file"
-              onChange={async (e) => {
-                if (!e.target.files?.[0]) return;
+// function PasteImage({editor}:
+//   {
+//     editor:Editor
+//     setImage:(arg0:typeof ImagesToBase64) => void
+//   }
+// ){
+//   const [openDialog,setOpenDialog] = useState(false)
+//   return(
+//         <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+//           <DialogTrigger asChild>
+//             <Button
+//               variant="ghost"
+//               size="icon"
+//             >
+//               <ImageIcon className={IconClassName} />
+//             </Button>
+//           </DialogTrigger>
+//           <DialogContent>
+//             <Input type="file"
+//               onChange={async (e) => {
+//                 if (!e.target.files?.[0]) return;
 
-                const image = (await ImagesToBase64([e.target.files[0]]))[0]!;
-                editor.commands.setImage({ src: image })
+//                 const image = (await ImagesToBase64([e.target.files[0]]))[0]!;
+//                 editor.commands.setImage({ src: image })
 
-                setOpenDialog(false)
-              }}
-            />
-          </DialogContent>
-        </Dialog>
-  )
-}
+//                 setOpenDialog(false)
+//               }}
+//             />
+//           </DialogContent>
+//         </Dialog>
+//   )
+// }
 function PasteCodeBlock({editor}:
   {
     editor:Editor

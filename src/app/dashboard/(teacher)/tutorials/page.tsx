@@ -36,7 +36,11 @@ export default async function Tutorials({
 
     return (
         <DashboardTemplate
-            navbar={<Link href="/dashboard/tutorials/create">Добавить</Link>}
+            navbar={
+                <Button>
+                    <Link href="/dashboard/tutorials/create">Добавить</Link>
+                </Button>
+            }
             title="Туториалы"
         >
             <div className="max-h-full grow overflow-y-scroll">
@@ -90,7 +94,7 @@ export default async function Tutorials({
                                                 <DropdownMenuLabel>Действия</DropdownMenuLabel>
                                                 <DeleteTutorial tutorial={tutorial}/>
                                                 <DropdownMenuItem>
-                                                    <Link href="/dashboard/tutorials/redact">Редактировать</Link>
+                                                    <Link href={`/dashboard/tutorials/${tutorial.id}`}>Редактировать</Link>
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
                     
