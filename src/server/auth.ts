@@ -33,6 +33,7 @@ const GetUser = async (id: string) => {
     columns: {
       id: true,
       name: true,
+      username: true,
       email: true,
       role: true,
       experiencePoints: true,
