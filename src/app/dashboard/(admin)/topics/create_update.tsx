@@ -17,7 +17,7 @@ import { type z } from "zod";
 
 
 export default function CreateUpdateTopics({
-  topics, 
+  topics,
 }: {
   topics?: Topic;
 }) {
@@ -100,13 +100,12 @@ export default function CreateUpdateTopics({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormControl>
-                    <Input placeholder="Добавить тему" {...field} />
-                  </FormControl>
-
                   <FormDescription>
                     Название темы
                   </FormDescription>
+                  <FormControl>
+                    <Input placeholder="Добавить тему" {...field} />
+                  </FormControl>
                 </FormItem>
               )}
             />

@@ -136,6 +136,9 @@ export default function CreateUpdateGroup({
               name="image"
               render={({ field }) => (
                 <FormItem>
+                  <FormDescription>
+                    Изображение группы
+                  </FormDescription>
                   <FormControl>
                     <Input type="file" {...field}
                       value=""
@@ -154,9 +157,6 @@ export default function CreateUpdateGroup({
                       }}
                     />
                   </FormControl>
-                  <FormDescription>
-                    Изображение группы
-                  </FormDescription>
                 </FormItem>
               )}
             />
@@ -165,6 +165,9 @@ export default function CreateUpdateGroup({
               name="buildingId"
               render={({ field }) => (
                 <FormItem>
+                  <FormDescription>
+                    Выберите СП
+                  </FormDescription>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger>
                       <SelectValue placeholder="Выберите СП" />
@@ -177,9 +180,6 @@ export default function CreateUpdateGroup({
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormDescription>
-                    Выберите СП
-                  </FormDescription>
                 </FormItem>
               )}
             />
@@ -188,12 +188,12 @@ export default function CreateUpdateGroup({
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormControl>
-                    <Input placeholder="ИС-10" {...field} />
-                  </FormControl>
                   <FormDescription>
                     Название группы
                   </FormDescription>
+                  <FormControl>
+                    <Input placeholder="ИС-10" {...field} />
+                  </FormControl>
                 </FormItem>
               )}
             />
