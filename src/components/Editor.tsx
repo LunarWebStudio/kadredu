@@ -1,7 +1,6 @@
 "use client";
 import { useEditor, EditorContent } from "@tiptap/react";
 import type { Editor } from "@tiptap/react";
-import { Button } from "~/components/ui/button";
 import {
   Link as LinkIcon,
   Bold,
@@ -23,8 +22,6 @@ import {
   SelectValue
 } from "~/components/ui/select";
 
-import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
-import { Input } from "~/components/ui/input";
 import { ImagesToBase64 } from "~/lib/shared/images";
 
 import StarterKit from "@tiptap/starter-kit";

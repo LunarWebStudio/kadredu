@@ -3,6 +3,33 @@ import UserAvatar from "~/components/avatar";
 import { getServerAuthSession } from "~/server/auth";
 import NavbarItem from "~/components/navbar_item";
 
+export const navbarItems = [
+  {
+    title: "Главная",
+    href: "/"
+  },
+  {
+    title: "Профиль",
+    href: "/profile"
+  },
+  {
+    title: "Профиль",
+    href: "/profile"
+  },
+  {
+    title: "Профиль",
+    href: "/profile"
+  },
+  {
+    title: "Профиль",
+    href: "/profile"
+  },
+  {
+    title: "Профиль",
+    href: "/profile"
+  },
+];
+
 export default async function Navbar() {
   const session = await getServerAuthSession();
   return (
@@ -10,11 +37,11 @@ export default async function Navbar() {
       <div className="container h-nav flex flex-row justify-between items-center relative">
         <Logo />
         <div className="flex gap-10 w-2/5 flex-row items-center justify-end">
-          <NavbarItem href="/">Главная</NavbarItem>
-          <NavbarItem href="/profile">Профиль</NavbarItem>
-          <NavbarItem href="/profile">Профиль</NavbarItem>
-          <NavbarItem href="/profile">Профиль</NavbarItem>
-          <NavbarItem href="/profile">Профиль</NavbarItem>
+          {navbarItems.map((item) => (
+            <NavbarItem key={item.title} href={item.href}>
+              {item.title}
+            </NavbarItem>
+          ))}
         </div>
         <div className="size-20 absolute right-1/2 translate-x-1/2 top-1/3 z-50 isolate">
           <UserAvatar
