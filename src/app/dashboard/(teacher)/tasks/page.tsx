@@ -13,17 +13,13 @@ import { api } from "~/trpc/server";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from "~/components/ui/dropdown-menu";
 import { Button } from "~/components/ui/button";
-import DeleteTutorial from "~/app/dashboard/(teacher)/tutorials/delete";
 import Link from "next/link";
-import { format } from "date-fns";
-import { ru } from "date-fns/locale";
 
-export default async function Tutorials({
+export default async function Tasks({
     searchParams
 } : {
     searchParams: {
@@ -31,7 +27,7 @@ export default async function Tutorials({
     }
 }) {
 
-    const tutorials = await api.tutorial.getAll({
+    const tasks = await api.task.getAll({
         search: searchParams.search
     })
 
@@ -40,43 +36,54 @@ export default async function Tutorials({
         <DashboardTemplate
             navbar={
                 <Button>
-                    <Link href="/dashboard/tutorials/create">Добавить</Link>
+                    <Link href="/dashboard/tasks/create">Добавить</Link>
                 </Button>
             }
-            title="Туториалы"
+            title="Задания"
         >
             <div className="max-h-full grow overflow-y-scroll">
                 <Table>
                     <TableHeader>
                     <TableRow>
                         <TableHead>Название</TableHead>
-                        <TableHead>Автор</TableHead>
+                        <TableHead>Дедлайн</TableHead>
+                        <TableHead>Описание</TableHead>
                         <TableHead>Предмет</TableHead>
-                        <TableHead>Дата создания</TableHead>
+                        <TableHead>Туториал</TableHead>
+                        <TableHead>Опыт</TableHead>
+                        <TableHead>Монеты</TableHead>
                     </TableRow>
                     </TableHeader>
         
                     <TableBody>
-                        {tutorials.map(tutorial => (
-                            <TableRow key={tutorial.id}>
+                        {tasks.map(task => (
+                            <TableRow key={task.id}>
                                 <TableCell>
-                                    {tutorial.name}
+                                    {task.name}
                                 </TableCell>
 
                                 <TableCell>
-                                    {tutorial.authorInfo.email}
+                                    {task.deadline}
                                 </TableCell>
 
                                 <TableCell>
-                                    {tutorial.subjectId ? (
-                                        tutorial.subjectId
-                                    ) : (
-                                        <p>Предмет не указан</p>
-                                    )}
+                                    {task.description}
                                 </TableCell>
 
                                 <TableCell>
-                                    {format(tutorial.createdAt?? "", "PPP", {locale: ru})}
+                                    {task.subject}
+                                </TableCell>
+
+                                <TableCell>
+                                    {task.tutorial}
+                                </TableCell>
+
+                                <TableCell>
+                                    {task.coin}
+                                </TableCell>
+
+                                <TableCell>
+                                    {task.subject}
                                 </TableCell>
             
                                 <TableCell>
@@ -94,10 +101,6 @@ export default async function Tutorials({
                     
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Действия</DropdownMenuLabel>
-                                                <DeleteTutorial tutorial={tutorial}/>
-                                                <DropdownMenuItem>
-                                                    <Link href={`/dashboard/tutorials/${tutorial.id}`}>Редактировать</Link>
-                                                </DropdownMenuItem>
                                             </DropdownMenuContent>
                     
                                         </DropdownMenu>

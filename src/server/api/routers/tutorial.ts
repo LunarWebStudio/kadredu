@@ -42,7 +42,7 @@ export const tutorialsRouter = createTRPCRouter ({
               await tx.insert(tutorials).values({
                 ...input,
                 imageId,
-                authorId: ctx.session.user.id
+                author: ctx.session.user.id
               });
             });
         }),

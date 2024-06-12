@@ -101,7 +101,6 @@ export const TutorialInputShema = z.object({
     })
     .min(1, "Название темы не указано")
     .max(255, "Название темы слишком длинное"),
-
   image: z.string({
       required_error: "Фото не задано",
       invalid_type_error: "Фото не является строкой"
@@ -111,9 +110,8 @@ export const TutorialInputShema = z.object({
       required_error: "Текст не указан",
       invalid_type_error: "Текст не является строкой"
     })
-    .min(1, "Текст не указан")
-    .max(500, "Текст слишком длинный"),
-  authorId: z
+    .min(1, "Текст не указан"),
+  author: z
     .string({
       required_error: "Автор не указан",
       invalid_type_error: "Текст не является строкой"
@@ -134,12 +132,59 @@ export const TutorialInputShema = z.object({
       required_error: "Время не указано",
       invalid_type_error: "Время не является строкой"
     })
-    .min(1, "Время не указана")
-    .max(255, "Время слишком длинное"),
+    .min(1, "Время не указана"),
   subjectId: z
     .string({
       invalid_type_error: "Предмет не является строкой"
     })
+})
+
+
+export type Task = inferProcedureOutput<AppRouter["task"]["getAll"]>[number];
+
+export const TaskInputShema = z.object({
+  name: z
+    .string({
+      required_error: "Название не указано",
+      invalid_type_error: "Название не является строкой"
+    })
+    .min(1, "Название темы не указано")
+    .max(255, "Название темы слишком длинное"),
+  deadline: z
+    .string({
+      required_error: "Сроки не указаны",
+      invalid_type_error: "Срок не является строкой"
+    })
+    .min(1, "Срок не указан"),
+  description: z
+    .string({
+      required_error: "Описание не указано",
+      invalid_type_error: "Описание не является строкой"
+    })
+    .min(1, "Описание не указано"),
+  experience: z
+    .string({
+      required_error: "Опыт не указан",
+      invalid_type_error: "Опыт не является строкой"
+    })
+    .min(1, "Опыт не указан"),
+  coin: z
+    .string({
+      required_error: "Монета не указана",
+      invalid_type_error: "Монета не является строкой"
+    })
+    .min(1, "Монета не указана"),
+  tutorial: z
+    .string({
+      required_error: "Туториал не указан",
+      invalid_type_error: "Туториал не является строкой"
+    })
+    .min(1, "Туториал не указан"),
+  subject: z
+    .string({
+      invalid_type_error: "Предмет не является строкой"
+    })
+    .min(1, "Предмет не указан"),
 })
 
 // user

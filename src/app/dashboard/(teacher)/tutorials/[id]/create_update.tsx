@@ -38,7 +38,7 @@ export default function CreateUpdateTutorial({
       name: tutorial?.name ?? "",
       image: "",
       text: tutorial?.text ?? "",
-      authorId: tutorial?.authorId ?? "",
+      author: tutorial?.author ?? "",
       price: tutorial?.price ?? "",
       topicId: tutorial?.topicId ?? "",
       timeRead: tutorial?.timeRead ?? "",
@@ -70,14 +70,14 @@ export default function CreateUpdateTutorial({
   const updateTutorialMutation = api.tutorial.update.useMutation({
     onSuccess: () => {
       toast({
-        title: "Тема обновлена",
+        title: "Туториал обновлен",
       });
       router.refresh();
       router.push("/dashboard/tutorials");
     },
     onError: (err) => {
       toast({
-        title: "Ошибка обновления темы",
+        title: "Ошибка обновления туториала",
         description: err.message,
         variant: "destructive",
       });
@@ -175,7 +175,7 @@ export default function CreateUpdateTutorial({
                       </FormControl>
 
                       <FormDescription className="pb-2">
-                        Название задания
+                        Название туториала
                       </FormDescription>
                     </FormItem>
                   )}

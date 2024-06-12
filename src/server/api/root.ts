@@ -7,6 +7,7 @@ import { teamRolesRouter } from "~/server/api/routers/roles";
 import { subjectsRouter } from "~/server/api/routers/subjects";
 import { topicsRouter } from "~/server/api/routers/topics";
 import { tutorialsRouter } from "~/server/api/routers/tutorial";
+import { tasksRouter } from "./routers/task";
 
 export const appRouter = createTRPCRouter({
   user: userRouter,
@@ -17,6 +18,7 @@ export const appRouter = createTRPCRouter({
   topic: topicsRouter,
   tutorial: tutorialsRouter,
   subject: subjectsRouter,
+  task: tasksRouter,
 });
 
 export type AppRouter = typeof appRouter;
