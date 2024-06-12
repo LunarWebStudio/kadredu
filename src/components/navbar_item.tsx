@@ -18,7 +18,10 @@ export default function NavbarItem({
     <Link href={href} className={
       cn(
         "relative hover:text-primary group",
-        pathname.startsWith(href) ? "text-primary" : "text-muted-foreground"
+        (
+          pathname.startsWith(href) &&
+          (href !== "/" || pathname === href)
+        ) ? "text-primary" : "text-muted-foreground"
       )
     }>
       {children}
