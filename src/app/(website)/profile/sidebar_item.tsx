@@ -1,5 +1,5 @@
 "use client";
-import { Lock, LockKeyhole } from "lucide-react";
+import { LockKeyhole } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type ReactNode } from "react";
