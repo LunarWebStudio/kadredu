@@ -1,9 +1,8 @@
 "use client";
 import { useEditor, EditorContent } from "@tiptap/react";
-import type { Editor } from "@tiptap/react";
+import { type Editor, ReactNodeViewRenderer, NodeViewWrapper, NodeViewContent } from "@tiptap/react";
 import { Button } from "~/components/ui/button";
 import {
-  Link as LinkIcon,
   Bold,
   Image as ImageIcon,
   Italic,
@@ -40,16 +39,39 @@ import CodeBlock from "@tiptap/extension-code-block";
 import { type Level } from '@tiptap/extension-heading'
 import { api } from "~/trpc/react";
 import { useToast } from "~/components/ui/use-toast";
-// import {lowlight} from 'lowlight/lib/core'
 
-// import js from "highlight.js/lib/languages/javascript"
-// import ts from "highlight.js/lib/languages/typescript"
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import html from 'highlight.js/lib/languages/xml'
+import css from 'highlight.js/lib/languages/css'
+import js from 'highlight.js/lib/languages/javascript'
+import ts from 'highlight.js/lib/languages/typescript'
+import bash from 'highlight.js/lib/languages/bash'
+import php from 'highlight.js/lib/languages/php'
+import json from 'highlight.js/lib/languages/json'
+import python from 'highlight.js/lib/languages/python'
+import csharp from 'highlight.js/lib/languages/csharp'
+import c from 'highlight.js/lib/languages/c'
+import cpp from 'highlight.js/lib/languages/cpp'
+import java from 'highlight.js/lib/languages/java'
+import go from 'highlight.js/lib/languages/go'
+import rust from 'highlight.js/lib/languages/rust'
 
-// lowlight.registerLanguage('js', js)
-// lowlight.registerLanguage('ts', ts)
-// lowlight.registerLanguage('html', html)
-// lowlight.registerLanguage('css', css)
-// lowlight.registerLanguage('js', js)
+import { lowlight } from 'lowlight'
+
+lowlight.registerLanguage('html', html)
+lowlight.registerLanguage('css', css)
+lowlight.registerLanguage('js', js)
+lowlight.registerLanguage('ts', ts)
+lowlight.registerLanguage('bash', bash)
+lowlight.registerLanguage('php', php)
+lowlight.registerLanguage('json', json)
+lowlight.registerLanguage('python', python)
+lowlight.registerLanguage('csharp', csharp)
+lowlight.registerLanguage('c', c)
+lowlight.registerLanguage('cpp', cpp)
+lowlight.registerLanguage('java', java)
+lowlight.registerLanguage('go', go)
+lowlight.registerLanguage('rust', rust)
 
 const HeadingsSheet = [
   {
@@ -96,18 +118,19 @@ type Options = {
   quotes?: boolean
 };
 
-export default function EditorText({ text, setText, options }:
-  {
-    text: string,
-    setText: (text: string) => void
-    options?: Options
-  }) {
-  Link.configure({
-    autolink: true
-  })
-  Image.configure({
-    allowBase64: true,
-  })
+Link.configure({
+  autolink: true
+});
+
+export default function EditorText({
+  text,
+  setText,
+  options
+}: {
+  text: string,
+  setText: (text: string) => void
+  options?: Options
+}) {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -116,13 +139,14 @@ export default function EditorText({ text, setText, options }:
       Image,
       Blockquote,
       Link,
-      CodeBlock
-      // CodeBlockLowlight
-      // .extend({
-      //   addNodeView(){
-      //     return ReactNodeViewRenderer(CodeBlockComponent)
-      //   }
-      // })
+      CodeBlock,
+      CodeBlockLowlight
+        .extend({
+          addNodeView() {
+            return ReactNodeViewRenderer(CodeBlockComponent)
+          }
+        })
+        .configure({ lowlight, defaultLanguage: "python" })
 
     ],
     onUpdate: ({ editor }) => {
@@ -133,7 +157,7 @@ export default function EditorText({ text, setText, options }:
 
 
   if (!editor) {
-    // Placeholder
+    // TODO: Placeholder
     return null;
   }
   return (
@@ -231,7 +255,6 @@ function EditorControllers({
           </Toggle>
         </div>
         <div className="flex gap-0.5">
-          {options?.links && <PasteLink editor={editor} />}
           {options?.images && <PasteImage editor={editor} />}
           {options?.code && <PasteCodeBlock editor={editor} />}
           {options?.quotes && (
@@ -243,43 +266,11 @@ function EditorControllers({
             </Toggle>
           )}
         </div>
-
-
       </div>
     </>
   );
 }
 
-function PasteLink({ editor }:
-  {
-    editor: Editor
-  }
-) {
-  // TODO Нормальное диалоговое окно
-  const SetLink = () => {
-    const prevUrl = editor.getAttributes('link')
-
-    const url = window.prompt('URL', prevUrl.href as string)
-    if (!url) {
-      editor.chain().focus().extendMarkRange('link').unsetLink().run()
-      return
-    }
-    if (url === '') {
-      editor.chain().focus().extendMarkRange('link').unsetLink().run()
-      return
-    }
-    editor.commands.toggleLink({ href: url, target: "_blank" })
-  }
-
-  return (
-    <Toggle
-      pressed={editor.isActive("link")}
-      onClick={SetLink}
-    >
-      <LinkIcon className={IconClassName} />
-    </Toggle>
-  )
-}
 function PasteImage({ editor }: {
   editor: Editor
 }) {
@@ -315,9 +306,7 @@ function PasteImage({ editor }: {
           disabled={uploadImageMutation.isPending}
           onChange={async (e) => {
             if (!e.target.files?.[0]) return;
-
             const image = (await ImagesToBase64([e.target.files[0]]))[0]!;
-
             uploadImageMutation.mutate({ image: image })
           }}
         />
@@ -325,12 +314,9 @@ function PasteImage({ editor }: {
     </Dialog>
   )
 }
-function PasteCodeBlock({ editor }:
-  {
-    editor: Editor
-  }
-) {
-
+function PasteCodeBlock({ editor }: {
+  editor: Editor
+}) {
   return (
     <Toggle
       pressed={editor.isActive("codeBlock")}
@@ -341,24 +327,38 @@ function PasteCodeBlock({ editor }:
   )
 }
 
-// const CodeBlockComponent = ({ node: { attrs: { language: defaultLanguage } }, updateAttributes }) =>(
-//   <NodeViewWrapper className="code-block">
-
-//     <select contentEditable={false} defaultValue={defaultLanguage} onChange={event => updateAttributes({ language: event.target.value })}>
-//       <option value="null">
-//         auto
-//       </option>
-//       <option disabled>
-//         —
-//       </option>
-//       {lowlight.listLanguages().map((lang, index) => (
-//         <option key={index} value={lang}>
-//           {lang}
-//         </option>
-//       ))}
-//     </select>
-//     <pre>
-//       <NodeViewContent as="code" />
-//     </pre>
-//   </NodeViewWrapper>
-// )
+function CodeBlockComponent({
+  updateAttributes
+}: {
+  updateAttributes: (val: {
+    language: string
+  }) => void;
+}) {
+  return (
+    <NodeViewWrapper className="code-block">
+      <Select
+        onValueChange={(value) => {
+          updateAttributes({
+            language: value
+          })
+        }}
+      >
+        <SelectTrigger
+          className="w-fit bg-transparent border-0 h-fit gap-4 mb-2 rounded-none p-1"
+        >
+          <SelectValue placeholder="Язык" />
+        </SelectTrigger>
+        <SelectContent>
+          {lowlight.listLanguages().map((lang, index) => (
+            <SelectItem key={index} value={lang}>
+              {lang}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <pre>
+        <NodeViewContent as="code" />
+      </pre>
+    </NodeViewWrapper>
+  )
+}
