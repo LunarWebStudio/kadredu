@@ -38,6 +38,8 @@ import Link from '@tiptap/extension-link'
 import Blockquote from '@tiptap/extension-blockquote'
 import CodeBlock from "@tiptap/extension-code-block";
 import { type Level } from '@tiptap/extension-heading'
+import { api } from "~/trpc/react";
+import { useToast } from "~/components/ui/use-toast";
 // import {lowlight} from 'lowlight/lib/core'
 
 // import js from "highlight.js/lib/languages/javascript"
@@ -48,14 +50,6 @@ import { type Level } from '@tiptap/extension-heading'
 // lowlight.registerLanguage('html', html)
 // lowlight.registerLanguage('css', css)
 // lowlight.registerLanguage('js', js)
-
-
-// type Heading  = {
-//   name:string
-//   type:string
-//   tag:string
-//   level:number
-// }
 
 const HeadingsSheet = [
   {
@@ -97,7 +91,7 @@ StarterKit.configure({
 
 type Options = {
   links?: boolean,
-  images?: (arg0: typeof ImagesToBase64) => void,
+  images?: boolean,
   code?: boolean,
   quotes?: boolean
 };
@@ -238,7 +232,7 @@ function EditorControllers({
         </div>
         <div className="flex gap-0.5">
           {options?.links && <PasteLink editor={editor} />}
-          {options?.images && <PasteImage editor={editor} setImage={options.images} />}
+          {options?.images && <PasteImage editor={editor} />}
           {options?.code && <PasteCodeBlock editor={editor} />}
           {options?.quotes && (
             <Toggle
@@ -286,13 +280,26 @@ function PasteLink({ editor }:
     </Toggle>
   )
 }
-function PasteImage({ editor }:
-  {
-    editor: Editor
-    setImage: (arg0: typeof ImagesToBase64) => void
-  }
-) {
+function PasteImage({ editor }: {
+  editor: Editor
+}) {
+  const { toast } = useToast();
   const [openDialog, setOpenDialog] = useState(false)
+
+  const uploadImageMutation = api.image.upload.useMutation({
+    onSuccess: (res) => {
+      setOpenDialog(false);
+      editor.commands.setImage({ src: `/api/images/${res.storageId}` })
+    },
+    onError: (err) => {
+      toast({
+        title: "Ошибка загрузки изображения",
+        description: err.message,
+        variant: "destructive",
+      })
+    }
+  })
+
   return (
     <Dialog open={openDialog} onOpenChange={setOpenDialog}>
       <DialogTrigger asChild>
@@ -305,13 +312,13 @@ function PasteImage({ editor }:
       </DialogTrigger>
       <DialogContent>
         <Input type="file"
+          disabled={uploadImageMutation.isPending}
           onChange={async (e) => {
             if (!e.target.files?.[0]) return;
 
             const image = (await ImagesToBase64([e.target.files[0]]))[0]!;
-            editor.commands.setImage({ src: image })
 
-            setOpenDialog(false)
+            uploadImageMutation.mutate({ image: image })
           }}
         />
       </DialogContent>

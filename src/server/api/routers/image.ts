@@ -16,7 +16,7 @@ export const imageRouter = createTRPCRouter({
     .query(async ({ input }) => {
       return GetSignedUrl(input.key);
     }),
-  uploadImage: highLevelProcedure
+  upload: highLevelProcedure
     .input(z.object({
       image: z.string(),
     }))

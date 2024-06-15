@@ -13,8 +13,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {type === "file" ? (
           <label
             className={cn(
-              "flex flex-col lg:flex-row gap-2 w-full lg:items-center cursor-pointer",
-              className
+              "flex flex-col lg:flex-row gap-2 w-full lg:items-center ",
+              className,
+              props.disabled ? "cursor-not-allowed animate-pulse" : "cursor-pointer"
             )}
           >
             <input type="file" className="hidden" {...props} />
