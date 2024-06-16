@@ -22,8 +22,6 @@ import {
   SelectValue
 } from "~/components/ui/select";
 
-import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
-import { Input } from "~/components/ui/input";
 import { ImagesToBase64 } from "~/lib/shared/images";
 
 import StarterKit from "@tiptap/starter-kit";
@@ -57,6 +55,8 @@ import go from 'highlight.js/lib/languages/go'
 import rust from 'highlight.js/lib/languages/rust'
 
 import { lowlight } from 'lowlight'
+import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
+import { Input } from "~/components/ui/input";
 
 lowlight.registerLanguage('html', html)
 lowlight.registerLanguage('css', css)
@@ -161,14 +161,14 @@ export default function EditorText({
     return null;
   }
   return (
-    <div className="flex flex-col gap-4 bg-secondary p-6 rounded-xl focus:outline-none">
+    <div className="flex flex-col h-full gap-4 p-6 rounded-xl focus:outline-none">
       <EditorControllers
         editor={editor}
         options={options}
       />
       <EditorContent
         editor={editor}
-        className="p-4 border border-input rounded-xl bg-white tiptap"
+        className="p-4 border h-full border-input rounded-xl tiptap"
       />
     </div>
   );
@@ -194,12 +194,12 @@ function EditorControllers({
 
   return (
     <>
-      <div className="flex flex-row gap-4 bg-white">
+      <div className="flex flex-row gap-4">
         <Select
           onValueChange={(value) => {
             setCurrentHeading(HeadingsSheet.find((e) => e.type === value) ?? HeadingsSheet[0]!)
           }}>
-          <SelectTrigger className="w-fit px-6 gap-4 bg-white hover:bg-gray-300 transition-all">
+          <SelectTrigger className="w-fit px-6 gap-4 hover:bg-gray-300 transition-all">
             <SelectValue placeholder="Форматирование" />
           </SelectTrigger>
           <SelectContent>
