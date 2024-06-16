@@ -64,7 +64,7 @@ export default async function Tutorials({
                                 </TableCell>
 
                                 <TableCell>
-                                    {tutorial.authorInfo.email}
+                                    {tutorial.author.email}
                                 </TableCell>
 
                                 <TableCell>

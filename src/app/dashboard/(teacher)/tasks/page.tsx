@@ -1,5 +1,6 @@
 import DashboardTemplate from "~/app/dashboard/templ";
-
+import { format } from "date-fns";
+import { ru } from "date-fns/locale";
 import {
   Table,
   TableBody,
@@ -18,6 +19,8 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { Button } from "~/components/ui/button";
 import Link from "next/link";
+import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
+import DeleteTask from "~/app/dashboard/(teacher)/tasks/delete";
 
 export default async function Tasks({
     searchParams
@@ -44,15 +47,15 @@ export default async function Tasks({
             <div className="max-h-full grow overflow-y-scroll">
                 <Table>
                     <TableHeader>
-                    <TableRow>
-                        <TableHead>Название</TableHead>
-                        <TableHead>Дедлайн</TableHead>
-                        <TableHead>Описание</TableHead>
-                        <TableHead>Предмет</TableHead>
-                        <TableHead>Туториал</TableHead>
-                        <TableHead>Опыт</TableHead>
-                        <TableHead>Монеты</TableHead>
-                    </TableRow>
+                        <TableRow>
+                            <TableHead>Название</TableHead>
+                            <TableHead>Дедлайн</TableHead>
+                            <TableHead>Описание</TableHead>
+                            <TableHead>Предмет</TableHead>
+                            <TableHead>Туториал</TableHead>
+                            <TableHead>Опыт</TableHead>
+                            <TableHead>Монеты</TableHead>
+                        </TableRow>
                     </TableHeader>
         
                     <TableBody>
@@ -63,7 +66,7 @@ export default async function Tasks({
                                 </TableCell>
 
                                 <TableCell>
-                                    {task.deadline}
+                                    {task.deadline ? format(task.deadline, "PPP", { locale: ru }) : "Не указан"}
                                 </TableCell>
 
                                 <TableCell>
@@ -71,19 +74,19 @@ export default async function Tasks({
                                 </TableCell>
 
                                 <TableCell>
-                                    {task.subject}
+                                    {task.subjectId}
                                 </TableCell>
 
                                 <TableCell>
-                                    {task.tutorial}
+                                    {task.tutorialId}
+                                </TableCell>
+
+                                <TableCell>
+                                    {task.experience}
                                 </TableCell>
 
                                 <TableCell>
                                     {task.coin}
-                                </TableCell>
-
-                                <TableCell>
-                                    {task.subject}
                                 </TableCell>
             
                                 <TableCell>
@@ -101,6 +104,11 @@ export default async function Tasks({
                     
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Действия</DropdownMenuLabel>
+                                                <DeleteTask task={task}/>
+
+                                                <DropdownMenuItem>
+                                                    <Link href={`/dashboard/tasks/${task.id}`}>Редактировать</Link>
+                                                </DropdownMenuItem>
                                             </DropdownMenuContent>
                     
                                         </DropdownMenu>

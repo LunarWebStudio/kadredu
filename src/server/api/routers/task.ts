@@ -10,7 +10,7 @@ export const tasksRouter = createTRPCRouter ({
         .mutation(async ({ctx, input}) => {
             await ctx.db.insert(tasks).values({
                 ...input,
-                author: ctx.session.user.id
+                authorId: ctx.session.user.id,
             });
         }),
     delete: adminProcedure
@@ -30,13 +30,31 @@ export const tasksRouter = createTRPCRouter ({
               ), 
 
               with: {
-                authorInfo: {
+                author: {
                     columns: {
                         id: true,
                         name: true,
                         email: true
                     }
                 },
+                subject: {
+                    columns: {
+                        id: true,
+                        name: true
+                    }
+                },
+                tutorial: {
+                    columns: {
+                        id: true,
+                        name: true
+                    }
+                },
+                group: {
+                    columns: {
+                        id: true,
+                        title: true
+                    }
+                }
               }
             })
         }),
@@ -47,4 +65,39 @@ export const tasksRouter = createTRPCRouter ({
               ...input,
             }).where(eq(tasks.id, input.id));
         }),
+    getOne: adminProcedure
+        .input(IdInputSchema)
+        .mutation(async ({ctx, input}) => {
+          return await ctx.db.query.tasks.findFirst({
+            where: eq(tasks.id, input.id),
+
+            with: {
+                author: {
+                    columns: {
+                      id: true,
+                      name: true,
+                      email: true
+                    }
+                },
+                subject: {
+                    columns: {
+                        id: true,
+                        name: true
+                    }
+                },
+                tutorial: {
+                    columns: {
+                        id: true,
+                        name: true
+                    }
+                },
+                group: {
+                    columns: {
+                        id: true,
+                        title: true
+                    }
+                }
+            }
+        })
+      })
 })

@@ -89,35 +89,41 @@ export const tutorials = createTable("tutorials", {
   name: varchar("name", { length: 255 }).notNull(),
   imageId: text("imageId").references(() => images.id, { onDelete: "cascade" }).notNull(),
   text: varchar("text", {length: 255}).notNull(),
-  author: text("author").references(() => users.id).notNull(),
+  authorId: text("authorId").references(() => users.id).notNull(),
   createdAt: timestamp("createdAt", {
     mode: "date",
     withTimezone: true,
   }).defaultNow(),
-  price: varchar("price", {length: 255}),
-  topicId: varchar("topicId", {length: 255}).notNull(),
-  timeRead: varchar("timeRead", {length: 255}).notNull(),
-  subjectId: varchar("subjectId", {length: 255}),
+  price: integer("price").notNull().default(0), // число+
+  timeRead: integer("timeRead").notNull().default(0), // число+
+  topicId: text("topicId").references(() => topics.id).notNull(),
+  subjectId: text("subjectId").references(() => subjects.id),
 })
 
 export const tutorialsRelations = relations(tutorials, ({one}) => ({
-  authorInfo: one(users, {fields: [tutorials.author], references: [users.id]}),
+  author: one(users, { fields: [tutorials.authorId], references: [users.id] }),
+  topic: one(topics, { fields: [tutorials.topicId], references: [topics.id] }),
+  subject: one(subjects, { fields: [tutorials.subjectId], references: [subjects.id] }),
   image: one(images, { fields: [tutorials.imageId], references: [images.id] }),
 }))
 
 export const tasks = createTable("tasks", {
   id: text("id")
-  .$defaultFn(() => createId())
-  .notNull()
-  .primaryKey(),
+    .$defaultFn(() => createId())
+    .notNull()
+    .primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
-  deadline: varchar("deadline", {length: 255}).notNull(), 
-  description: varchar("description", {length: 255}).notNull(),
-  experience: varchar("experience", {length: 255}).notNull(),
-  coin: varchar("coin", {length: 255}).notNull(),
-  tutorial: varchar("tutorial", {length: 255}),
-  subject: varchar("subject", {length: 255}).notNull(),
-  author: text("author").references(() => users.id).notNull(),
+  description: text("description").notNull(),
+  deadline: timestamp("deadline", {
+    mode: "date",
+    withTimezone: true,
+  }),
+  experience: integer("experience").notNull().default(0), // число+
+  coin: integer("coin").notNull().default(0), // число+
+  tutorialId: text("tutorialId").references(() => tutorials.id),
+  subjectId: text("subjectId").notNull().references(() => subjects.id),
+  groupId: text("groupId").notNull().references(() => groups.id),
+  authorId: text("authorId").references(() => users.id).notNull(),
   createdAt: timestamp("createdAt", {
     mode: "date",
     withTimezone: true,
@@ -125,7 +131,10 @@ export const tasks = createTable("tasks", {
 })
 
 export const tasksRelations = relations(tasks, ({one}) => ({
-  authorInfo: one(users, {fields: [tasks.author], references: [users.id]}),
+  author: one(users, { fields: [tasks.authorId], references: [users.id] }),
+  subject: one(subjects, { fields: [tasks.subjectId], references: [subjects.id] }),
+  group: one(groups, { fields: [tasks.groupId], references: [groups.id] }),
+  tutorial: one(tutorials, { fields: [tasks.tutorialId], references: [tutorials.id] }),
 }))
 
 export const rolesEnum = pgEnum("role", [

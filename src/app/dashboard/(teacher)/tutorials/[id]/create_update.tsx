@@ -36,12 +36,12 @@ export default function CreateUpdateTutorial({
     resolver: zodResolver(TutorialInputShema),
     defaultValues: {
       name: tutorial?.name ?? "",
-      image: "",
+      imageId: tutorial?.imageId ?? "",
       text: tutorial?.text ?? "",
-      author: tutorial?.author ?? "",
-      price: tutorial?.price ?? "",
+      authorId: tutorial?.authorId ?? "",
+      price: tutorial?.price ?? 0,
       topicId: tutorial?.topicId ?? "",
-      timeRead: tutorial?.timeRead ?? "",
+      timeRead: tutorial?.timeRead ?? 0,
       subjectId: tutorial?.subjectId ?? "",
     }
   });
@@ -54,9 +54,9 @@ export default function CreateUpdateTutorial({
       toast({
         title: "Туториал создан",
       });
-      router.refresh();
       form.reset();
       router.push("/dashboard/tutorials");
+      router.refresh();
     },
     onError: (err) => {
       toast({
@@ -114,13 +114,13 @@ export default function CreateUpdateTutorial({
                 <FormField
 
                   control={form.control}
-                  name="image"
+                  name="imageId"
                   render={({ field }) => (
                     <FormItem>
 
-                      {form.watch("image") ? (
+                      {form.watch("imageId") ? (
                           <Image
-                            src={form.watch("image")}
+                            src={form.watch("imageId")}
                             width={60}
                             height={60}
                             className="object-cover rounded-lg w-full aspect-[2/1]"
@@ -248,7 +248,7 @@ export default function CreateUpdateTutorial({
                         </SelectTrigger>
                         <SelectContent>
                           {subjects.map(subject => (
-                            <SelectItem key={subject.id} value={subject.name}>
+                            <SelectItem key={subject.id} value={subject.id}>
                               {subject.name}
                             </SelectItem>
                           ))}

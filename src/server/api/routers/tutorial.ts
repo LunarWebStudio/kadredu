@@ -2,7 +2,7 @@ import { eq, and, ilike } from "drizzle-orm";
 import { z } from "zod";
 import { TutorialInputShema, IdInputSchema } from "~/lib/shared/types";
 import { adminProcedure, createTRPCRouter, publicProcedure} from "~/server/api/trpc";
-import { images, tutorials } from "~/server/db/schema";
+import { images, tutorials} from "~/server/db/schema";
 import { ProcessImage } from "~/lib/server/images";
 import { createId } from "@paralleldrive/cuid2";
 import { UploadFile } from "~/lib/server/file_upload";
@@ -12,11 +12,12 @@ export const tutorialsRouter = createTRPCRouter ({
     create: adminProcedure
         .input(TutorialInputShema)
         .mutation(async ({ctx, input}) => {
+            
             let imageId: string | undefined = undefined
             await ctx.db.transaction(async tx => {
               try {
                 const processed_image = await ProcessImage({
-                  imageB64: input.image,
+                  imageB64: input.imageId,
                   size: {
                     width: 100,
                     height: 200
@@ -42,7 +43,7 @@ export const tutorialsRouter = createTRPCRouter ({
               await tx.insert(tutorials).values({
                 ...input,
                 imageId,
-                author: ctx.session.user.id
+                authorId: ctx.session.user.id
               });
             });
         }),
@@ -63,7 +64,7 @@ export const tutorialsRouter = createTRPCRouter ({
               ), 
 
               with: {
-                authorInfo: {
+                author: {
                     columns: {
                         id: true,
                         name: true,
@@ -79,10 +80,10 @@ export const tutorialsRouter = createTRPCRouter ({
         .mutation(async ({ctx, input}) => {
           await ctx.db.transaction(async (tx) => {
             let imageId: string | undefined = undefined
-            if (input.image) {
+            if (input.imageId) {
               try {
                 const processed_image = await ProcessImage({
-                  imageB64: input.image,
+                  imageB64: input.imageId,
                   size: {
                     width: 500,
                     height: 500
@@ -116,7 +117,7 @@ export const tutorialsRouter = createTRPCRouter ({
             where: eq(tutorials.id, input.id),
 
             with: {
-              authorInfo: {
+              author: {
                   columns: {
                       id: true,
                       name: true,
