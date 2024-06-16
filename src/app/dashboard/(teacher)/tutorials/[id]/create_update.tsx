@@ -223,7 +223,7 @@ export default function CreateUpdateTutorial({
                           <SelectValue placeholder="Выберите тему" />
                         </SelectTrigger>
                         <SelectContent>
-                          {topics.map(topic => (
+                          {topics?.map(topic => (
                             <SelectItem key={topic.id} value={topic.id}>
                               {topic.name}
                             </SelectItem>

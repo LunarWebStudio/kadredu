@@ -64,13 +64,8 @@ export const tutorialsRouter = createTRPCRouter ({
               ), 
 
               with: {
-                author: {
-                    columns: {
-                        id: true,
-                        name: true,
-                        email: true
-                    }
-                },
+                author: true,
+                subject: true,      
                 image: true
               }
             })

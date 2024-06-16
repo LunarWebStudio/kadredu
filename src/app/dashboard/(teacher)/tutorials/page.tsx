@@ -64,12 +64,12 @@ export default async function Tutorials({
                                 </TableCell>
 
                                 <TableCell>
-                                    {tutorial.author.email}
+                                    {tutorial.author.username}
                                 </TableCell>
 
                                 <TableCell>
                                     {tutorial.subjectId ? (
-                                        tutorial.subjectId
+                                        tutorial.subject?.name
                                     ) : (
                                         <p>Предмет не указан</p>
                                     )}

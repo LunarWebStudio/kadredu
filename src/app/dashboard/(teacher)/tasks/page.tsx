@@ -74,11 +74,11 @@ export default async function Tasks({
                                 </TableCell>
 
                                 <TableCell>
-                                    {task.subjectId}
+                                    {task.subject.name}
                                 </TableCell>
 
                                 <TableCell>
-                                    {task.tutorialId}
+                                    {task.tutorial?.name}
                                 </TableCell>
 
                                 <TableCell>
