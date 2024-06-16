@@ -1,6 +1,9 @@
 import type { inferProcedureOutput } from "@trpc/server";
 import { z } from "zod";
 import type { AppRouter } from "~/server/api/root";
+import { statusSchema } from "~/server/db/schema";
+
+
 
 // building
 export type Building = inferProcedureOutput<
@@ -79,6 +82,9 @@ export const RoleInputSchema = z.object({
     .min(1, "Роль не может быть пустой")
     .max(255, "Роль слишком длинная")
 });
+
+export type TeamRole = inferProcedureOutput<AppRouter["teamRoles"]["getAll"]>[number]
+
 export type Topic = inferProcedureOutput<AppRouter["topic"]["getAll"]>[number];
 
 export const TopicsInputShema = z.object({
@@ -91,6 +97,17 @@ export const TopicsInputShema = z.object({
     .max(255, "Название темы слишком длинное")
 });
 
+
+
+export const ResumeInputSchema = z.object({
+  roleId:z.string()
+  .min(1,"Роль не может быть пустым"),
+  status:statusSchema,
+  experience:z.string().optional()
+})
+
+export type ResumeInput = z.infer<typeof ResumeInputSchema>;
+ 
 // user
 export type User = inferProcedureOutput<AppRouter["user"]["getAll"]>[number];
 
@@ -114,3 +131,4 @@ export const SubjectInputSchema = z.object({
 export type Subject = inferProcedureOutput<
   AppRouter["subject"]["getAll"]
 >[number];
+

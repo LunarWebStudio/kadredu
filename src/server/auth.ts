@@ -39,7 +39,8 @@ const GetUser = async (id: string) => {
       experiencePoints: true,
       coins: true,
       verified: true,
-      onboarding: true
+      onboarding: true,
+      description:true
     }
   });
 };

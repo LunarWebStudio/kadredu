@@ -22,6 +22,13 @@ export const userRouter = createTRPCRouter({
           .min(1, "ФИО не заполнено")
           .max(NAME_LIMIT)
           .optional(),
+          username: z
+            .string({
+              required_error:"Никнейм не заполнен",
+            })
+            .min(1,"Никнейм не заполнен")
+            .max(NAME_LIMIT)
+            .optional(),
         description: z
           .string({
             required_error: "Описание не заполнено",
@@ -63,6 +70,7 @@ export const userRouter = createTRPCRouter({
 
         await tx.update(users).set({
           name: input.name,
+          username:input.username,
           description: input.description,
           profilePictureId: imageId
         }).where(eq(users.id, ctx.session.user.id));
