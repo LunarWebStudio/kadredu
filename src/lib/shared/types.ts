@@ -2,7 +2,7 @@ import type { inferProcedureOutput } from "@trpc/server";
 import { z } from "zod";
 import type { AppRouter } from "~/server/api/root";
 import { statusSchema } from "~/server/db/schema";
-
+import { day } from "~/lib/shared/time";
 
 
 // building
@@ -97,8 +97,6 @@ export const TopicsInputShema = z.object({
     .max(255, "Название темы слишком длинное")
 });
 
-
-
 export const ResumeInputSchema = z.object({
   roleId:z.string()
   .min(1,"Роль не может быть пустым"),
@@ -108,6 +106,109 @@ export const ResumeInputSchema = z.object({
 
 export type ResumeInput = z.infer<typeof ResumeInputSchema>;
  
+
+export type Tutorial = inferProcedureOutput<AppRouter["tutorial"]["getAll"]>[number];
+
+export const TutorialInputShema = z.object({
+  name: z
+    .string({
+      required_error: "Название не указано",
+      invalid_type_error: "Название не является строкой"
+    })
+    .min(1, "Название темы не указано")
+    .max(255, "Название темы слишком длинное"),
+  imageId: z
+    .string({
+      required_error: "Фото не задано",
+      invalid_type_error: "Фото не является строкой"
+    }),
+  text: z
+    .string({
+      required_error: "Текст не указан",
+      invalid_type_error: "Текст не является строкой"
+    })
+    .min(1, "Текст не указан"),
+  authorId: z
+    .string({
+      required_error: "Автор не указан",
+      invalid_type_error: "Текст не является строкой"
+    }),
+  price: z
+    .coerce.number({
+      invalid_type_error: "Цена не является числом"
+    }),
+  topicId: z
+    .string({
+      required_error: "Тема не указана",
+      invalid_type_error: "Тема не является строкой"
+    })
+    .min(1, "Тема не указана")
+    .max(255, "Тема слишком длинная"),
+  timeRead: z
+    .coerce.number({
+      required_error: "Время не указано",
+      invalid_type_error: "Время не является числом"
+    })
+    .min(1, "Время не указано"),
+  subjectId: z
+    .string({
+      invalid_type_error: "Предмет не является строкой"
+    })
+})
+
+
+export type Task = inferProcedureOutput<AppRouter["task"]["getAll"]>[number];
+
+export const TaskInputShema = z.object({
+  name: z
+    .string({
+      required_error: "Название не указано",
+      invalid_type_error: "Название не является строкой"
+    })
+    .min(1, "Название темы не указано")
+    .max(255, "Название темы слишком длинное"),
+  deadline: z
+    .date({
+      invalid_type_error: "Срок не является датой"
+    }).min(new Date(new Date().getTime() - day)).nullable(),
+  description: z
+    .string({
+      required_error: "Описание не указано",
+      invalid_type_error: "Описание не является строкой"
+    })
+    .min(1, "Описание не указано"),
+  experience: z
+    .coerce.number({
+      required_error: "Опыт не указан",
+      invalid_type_error: "Опыт не является строкой"
+    })
+    .min(1, "Опыт не указан"),
+  coin: z
+    .coerce.number({
+      required_error: "Монета не указана",
+      invalid_type_error: "Монета не является строкой"
+    })
+    .min(1, "Монета не указана"),
+  tutorialId: z
+    .string({
+      required_error: "Туториал не указан",
+      invalid_type_error: "Туториал не является строкой"
+    })
+    .min(1, "Туториал не указан"),
+  subjectId: z
+    .string({
+      required_error: "Предмет не указан",
+      invalid_type_error: "Предмет не является строкой"
+    })
+    .min(1, "Предмет не указан"),
+  groupId: z
+    .string({
+      required_error: "Группа не указана",
+      invalid_type_error: "Группа не является строкой"
+    })
+    .min(1, "Группа не указана"),
+})
+
 // user
 export type User = inferProcedureOutput<AppRouter["user"]["getAll"]>[number];
 

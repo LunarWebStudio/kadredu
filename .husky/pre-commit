@@ -1,1 +1,1 @@
-SKIP_ENV_VALIDATION=true bunx next lint --strict --max-warnings 0
+SKIP_ENV_VALIDATION=true npx next lint --strict --max-warnings 0

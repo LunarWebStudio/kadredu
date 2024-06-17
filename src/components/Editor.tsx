@@ -1,9 +1,8 @@
 "use client";
 import { useEditor, EditorContent } from "@tiptap/react";
-import type { Editor } from "@tiptap/react";
+import { type Editor, ReactNodeViewRenderer, NodeViewWrapper, NodeViewContent } from "@tiptap/react";
 import { Button } from "~/components/ui/button";
 import {
-  Link as LinkIcon,
   Bold,
   Image as ImageIcon,
   Italic,
@@ -23,8 +22,6 @@ import {
   SelectValue
 } from "~/components/ui/select";
 
-import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
-import { Input } from "~/components/ui/input";
 import { ImagesToBase64 } from "~/lib/shared/images";
 
 import StarterKit from "@tiptap/starter-kit";
@@ -38,24 +35,43 @@ import Link from '@tiptap/extension-link'
 import Blockquote from '@tiptap/extension-blockquote'
 import CodeBlock from "@tiptap/extension-code-block";
 import { type Level } from '@tiptap/extension-heading'
-// import {lowlight} from 'lowlight/lib/core'
+import { api } from "~/trpc/react";
+import { useToast } from "~/components/ui/use-toast";
 
-// import js from "highlight.js/lib/languages/javascript"
-// import ts from "highlight.js/lib/languages/typescript"
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import html from 'highlight.js/lib/languages/xml'
+import css from 'highlight.js/lib/languages/css'
+import js from 'highlight.js/lib/languages/javascript'
+import ts from 'highlight.js/lib/languages/typescript'
+import bash from 'highlight.js/lib/languages/bash'
+import php from 'highlight.js/lib/languages/php'
+import json from 'highlight.js/lib/languages/json'
+import python from 'highlight.js/lib/languages/python'
+import csharp from 'highlight.js/lib/languages/csharp'
+import c from 'highlight.js/lib/languages/c'
+import cpp from 'highlight.js/lib/languages/cpp'
+import java from 'highlight.js/lib/languages/java'
+import go from 'highlight.js/lib/languages/go'
+import rust from 'highlight.js/lib/languages/rust'
 
-// lowlight.registerLanguage('js', js)
-// lowlight.registerLanguage('ts', ts)
-// lowlight.registerLanguage('html', html)
-// lowlight.registerLanguage('css', css)
-// lowlight.registerLanguage('js', js)
+import { lowlight } from 'lowlight'
+import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
+import { Input } from "~/components/ui/input";
 
-
-// type Heading  = {
-//   name:string
-//   type:string
-//   tag:string
-//   level:number
-// }
+lowlight.registerLanguage('html', html)
+lowlight.registerLanguage('css', css)
+lowlight.registerLanguage('js', js)
+lowlight.registerLanguage('ts', ts)
+lowlight.registerLanguage('bash', bash)
+lowlight.registerLanguage('php', php)
+lowlight.registerLanguage('json', json)
+lowlight.registerLanguage('python', python)
+lowlight.registerLanguage('csharp', csharp)
+lowlight.registerLanguage('c', c)
+lowlight.registerLanguage('cpp', cpp)
+lowlight.registerLanguage('java', java)
+lowlight.registerLanguage('go', go)
+lowlight.registerLanguage('rust', rust)
 
 const HeadingsSheet = [
   {
@@ -97,23 +113,24 @@ StarterKit.configure({
 
 type Options = {
   links?: boolean,
-  images?: (arg0: typeof ImagesToBase64) => void,
+  images?: boolean,
   code?: boolean,
   quotes?: boolean
 };
 
-export default function EditorText({ text, setText, options }:
-  {
-    text: string,
-    setText: (text: string) => void
-    options?: Options
-  }) {
-  Link.configure({
-    autolink: true
-  })
-  Image.configure({
-    allowBase64: true,
-  })
+Link.configure({
+  autolink: true
+});
+
+export default function EditorText({
+  text,
+  setText,
+  options
+}: {
+  text: string,
+  setText: (text: string) => void
+  options?: Options
+}) {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -122,13 +139,14 @@ export default function EditorText({ text, setText, options }:
       Image,
       Blockquote,
       Link,
-      CodeBlock
-      // CodeBlockLowlight
-      // .extend({
-      //   addNodeView(){
-      //     return ReactNodeViewRenderer(CodeBlockComponent)
-      //   }
-      // })
+      CodeBlock,
+      CodeBlockLowlight
+        .extend({
+          addNodeView() {
+            return ReactNodeViewRenderer(CodeBlockComponent)
+          }
+        })
+        .configure({ lowlight, defaultLanguage: "python" })
 
     ],
     onUpdate: ({ editor }) => {
@@ -139,18 +157,18 @@ export default function EditorText({ text, setText, options }:
 
 
   if (!editor) {
-    // Placeholder
+    // TODO: Placeholder
     return null;
   }
   return (
-    <div className="flex flex-col gap-4 bg-secondary p-6 rounded-xl focus:outline-none">
+    <div className="flex flex-col h-full gap-4 p-6 rounded-xl focus:outline-none">
       <EditorControllers
         editor={editor}
         options={options}
       />
       <EditorContent
         editor={editor}
-        className="p-4 border border-input rounded-xl dark:bg-neutral-800 bg-white tiptap"
+        className="p-4 border border-input rounded-xl tiptap dark:bg-neutral-800 bg-white tiptap"
       />
     </div>
   );
@@ -237,8 +255,7 @@ function EditorControllers({
           </Toggle>
         </div>
         <div className="flex gap-0.5">
-          {options?.links && <PasteLink editor={editor} />}
-          {options?.images && <PasteImage editor={editor} setImage={options.images} />}
+          {options?.images && <PasteImage editor={editor} />}
           {options?.code && <PasteCodeBlock editor={editor} />}
           {options?.quotes && (
             <Toggle
@@ -249,50 +266,31 @@ function EditorControllers({
             </Toggle>
           )}
         </div>
-
-
       </div>
     </>
   );
 }
 
-function PasteLink({ editor }:
-  {
-    editor: Editor
-  }
-) {
-  // TODO Нормальное диалоговое окно
-  const SetLink = () => {
-    const prevUrl = editor.getAttributes('link')
-
-    const url = window.prompt('URL', prevUrl.href as string)
-    if (!url) {
-      editor.chain().focus().extendMarkRange('link').unsetLink().run()
-      return
-    }
-    if (url === '') {
-      editor.chain().focus().extendMarkRange('link').unsetLink().run()
-      return
-    }
-    editor.commands.toggleLink({ href: url, target: "_blank" })
-  }
-
-  return (
-    <Toggle
-      pressed={editor.isActive("link")}
-      onClick={SetLink}
-    >
-      <LinkIcon className={IconClassName} />
-    </Toggle>
-  )
-}
-function PasteImage({ editor }:
-  {
-    editor: Editor
-    setImage: (arg0: typeof ImagesToBase64) => void
-  }
-) {
+function PasteImage({ editor }: {
+  editor: Editor
+}) {
+  const { toast } = useToast();
   const [openDialog, setOpenDialog] = useState(false)
+
+  const uploadImageMutation = api.image.upload.useMutation({
+    onSuccess: (res) => {
+      setOpenDialog(false);
+      editor.commands.setImage({ src: `/api/images/${res.storageId}` })
+    },
+    onError: (err) => {
+      toast({
+        title: "Ошибка загрузки изображения",
+        description: err.message,
+        variant: "destructive",
+      })
+    }
+  })
+
   return (
     <Dialog open={openDialog} onOpenChange={setOpenDialog}>
       <DialogTrigger asChild>
@@ -305,25 +303,20 @@ function PasteImage({ editor }:
       </DialogTrigger>
       <DialogContent>
         <Input type="file"
+          disabled={uploadImageMutation.isPending}
           onChange={async (e) => {
             if (!e.target.files?.[0]) return;
-
             const image = (await ImagesToBase64([e.target.files[0]]))[0]!;
-            editor.commands.setImage({ src: image })
-
-            setOpenDialog(false)
+            uploadImageMutation.mutate({ image: image })
           }}
         />
       </DialogContent>
     </Dialog>
   )
 }
-function PasteCodeBlock({ editor }:
-  {
-    editor: Editor
-  }
-) {
-
+function PasteCodeBlock({ editor }: {
+  editor: Editor
+}) {
   return (
     <Toggle
       pressed={editor.isActive("codeBlock")}
@@ -334,24 +327,38 @@ function PasteCodeBlock({ editor }:
   )
 }
 
-// const CodeBlockComponent = ({ node: { attrs: { language: defaultLanguage } }, updateAttributes }) =>(
-//   <NodeViewWrapper className="code-block">
-
-//     <select contentEditable={false} defaultValue={defaultLanguage} onChange={event => updateAttributes({ language: event.target.value })}>
-//       <option value="null">
-//         auto
-//       </option>
-//       <option disabled>
-//         —
-//       </option>
-//       {lowlight.listLanguages().map((lang, index) => (
-//         <option key={index} value={lang}>
-//           {lang}
-//         </option>
-//       ))}
-//     </select>
-//     <pre>
-//       <NodeViewContent as="code" />
-//     </pre>
-//   </NodeViewWrapper>
-// )
+function CodeBlockComponent({
+  updateAttributes
+}: {
+  updateAttributes: (val: {
+    language: string
+  }) => void;
+}) {
+  return (
+    <NodeViewWrapper className="code-block">
+      <Select
+        onValueChange={(value) => {
+          updateAttributes({
+            language: value
+          })
+        }}
+      >
+        <SelectTrigger
+          className="w-fit bg-transparent border-0 h-fit gap-4 mb-2 rounded-none p-1"
+        >
+          <SelectValue placeholder="Язык" />
+        </SelectTrigger>
+        <SelectContent>
+          {lowlight.listLanguages().map((lang, index) => (
+            <SelectItem key={index} value={lang}>
+              {lang}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <pre>
+        <NodeViewContent as="code" />
+      </pre>
+    </NodeViewWrapper>
+  )
+}

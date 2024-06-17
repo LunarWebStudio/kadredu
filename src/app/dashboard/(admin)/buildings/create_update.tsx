@@ -87,12 +87,12 @@ export default function CreateUpdateBuilding({ building }: { building?: Building
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormControl>
-                    <Input placeholder="СП-10" {...field} />
-                  </FormControl>
                   <FormDescription>
                     Название СП
                   </FormDescription>
+                  <FormControl>
+                    <Input placeholder="СП-10" {...field} />
+                  </FormControl>
                 </FormItem>
               )}
             />
@@ -101,12 +101,12 @@ export default function CreateUpdateBuilding({ building }: { building?: Building
               name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormControl>
-                    <Input placeholder="г. Москва, ул. Ленина, д. 10" {...field} />
-                  </FormControl>
                   <FormDescription>
                     Адрес
                   </FormDescription>
+                  <FormControl>
+                    <Input placeholder="г. Москва, ул. Ленина, д. 10" {...field} />
+                  </FormControl>
                 </FormItem>
               )}
             />
