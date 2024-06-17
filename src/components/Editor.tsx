@@ -194,7 +194,7 @@ function EditorControllers({
 
   return (
     <>
-      <div className="flex flex-row gap-4 dark:bg-secondary bg-white">
+      <div className="flex flex-row gap-4 dark:bg-inherit bg-white">
         <Select
           onValueChange={(value) => {
             setCurrentHeading(HeadingsSheet.find((e) => e.type === value) ?? HeadingsSheet[0]!)
