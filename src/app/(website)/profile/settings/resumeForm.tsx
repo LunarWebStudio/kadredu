@@ -12,29 +12,17 @@ import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover
 import { Textarea } from "~/components/ui/textarea";
 import { useToast } from "~/components/ui/use-toast";
 import { OnError } from "~/lib/shared/onError";
-import { ResumeInputSchema, type TeamRole } from "~/lib/shared/types";
+import { type Resume, ResumeInputSchema, type TeamRole, Statuses } from "~/lib/shared/types";
 import { cn } from "~/lib/utils";
 import { type Status } from "~/server/db/schema";
 import { api } from "~/trpc/react";
 
-const Statuses:Array<{code:Status,name:string}> = [
-  {
-    code:"OPEN_TO_OFFERS",
-    name:"Открыт к предложениям"
-  },
-  {
-    code:"SEARCH",
-    name:"В поиске"
-  },
-  {
-    code:"WORK",
-    name:"Работаю"
-  }
-]
 
-export default function ResumeForm({roles}:
+
+export default function ResumeForm({roles,resume}:
   {
-    roles:TeamRole[]
+    roles:TeamRole[],
+    resume:Resume | undefined
   }
 ){
   const [roleOpen,setRoleOpen] = useState(false)
@@ -47,9 +35,9 @@ export default function ResumeForm({roles}:
   const form = useForm({
     resolver:zodResolver(ResumeInputSchema),
     defaultValues:{
-      roleId:"",
-      status:"",
-      experience:""
+      roleId: resume?.roleId ?? "",
+      status: Statuses.find(status => resume?.status == status.code)?.code ?? "",
+      experience:resume?.experience ?? ""
     }
   })
   const updateSelfResumeMutation = api.resume.updateSelf.useMutation({
@@ -71,7 +59,7 @@ export default function ResumeForm({roles}:
   }
 
   return(
-    <div className="w-full max-w-[895px] dark:bg-neutral-900 bg-white rounded-2xl">
+    <div className="w-full dark:bg-neutral-900 bg-white rounded-2xl">
       <div className="w-full px-6 py-4 border-b-2 text-lg font-bold dark:border-neutral-700 border-gray-300 dark:text-slate-300 text-slate-500">
         Резюме
       </div>
@@ -185,7 +173,7 @@ export default function ResumeForm({roles}:
                 </FormItem>
               )}
             />
-            <Button className="w-full">Сохранить</Button>
+            <Button className="w-full" disabled={updateSelfResumeMutation.isPending}>Сохранить</Button>
           </form>
          </Form>
       </div>

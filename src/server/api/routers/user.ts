@@ -5,46 +5,13 @@ import { ProcessImage } from "~/lib/server/images";
 
 import { createTRPCRouter, protectedProcedure, teacherProcedure, verificationProcedure } from "~/server/api/trpc";
 import { images, roleSchema, users } from "~/server/db/schema";
-import { DESCRIPTION_LIMIT, MAX_PROFILE_PICTURE_SIZE, NAME_LIMIT } from "~/lib/shared/const";
 import { TRPCError } from "@trpc/server";
-import { IdInputSchema, UsernameInputSchema } from "~/lib/shared/types";
+import { IdInputSchema, UserUpdateInputSchema, UsernameInputSchema } from "~/lib/shared/types";
 import { env } from "~/env";
 
 export const userRouter = createTRPCRouter({
   updadeSelf: verificationProcedure
-    .input(
-      z.object({
-        name: z
-          .string({
-            required_error: "ФИО не заполнено",
-            invalid_type_error: "ФИО не является строкой"
-          })
-          .min(1, "ФИО не заполнено")
-          .max(NAME_LIMIT)
-          .optional(),
-          username: z
-            .string({
-              required_error:"Никнейм не заполнен",
-            })
-            .min(1,"Никнейм не заполнен")
-            .max(NAME_LIMIT)
-            .optional(),
-        description: z
-          .string({
-            required_error: "Описание не заполнено",
-            invalid_type_error: "Описание не является строкой"
-          })
-          .max(DESCRIPTION_LIMIT)
-          .optional(),
-        profilePictureImage: z
-          .string({
-            required_error: "Фото не выбрано",
-            invalid_type_error: "Фото не является строкой"
-          })
-          .max(MAX_PROFILE_PICTURE_SIZE, "Фото слишком большое")
-          .optional()
-      })
-    )
+    .input(UserUpdateInputSchema)
     .mutation(async ({ ctx, input }) => {
       await ctx.db.transaction(async (tx) => {
         let imageId: string | undefined = undefined

@@ -1,8 +1,11 @@
 import type { inferProcedureOutput } from "@trpc/server";
 import { z } from "zod";
 import type { AppRouter } from "~/server/api/root";
-import { statusSchema } from "~/server/db/schema";
+import { type Status, statusSchema } from "~/server/db/schema";
 import { day } from "~/lib/shared/time";
+import { DESCRIPTION_LIMIT, MAX_PROFILE_PICTURE_SIZE, NAME_LIMIT } from "~/lib/shared/const";
+
+
 
 
 // building
@@ -97,16 +100,6 @@ export const TopicsInputShema = z.object({
     .max(255, "Название темы слишком длинное")
 });
 
-export const ResumeInputSchema = z.object({
-  roleId:z.string()
-  .min(1,"Роль не может быть пустым"),
-  status:statusSchema,
-  experience:z.string().optional()
-})
-
-export type ResumeInput = z.infer<typeof ResumeInputSchema>;
- 
-
 export type Tutorial = inferProcedureOutput<AppRouter["tutorial"]["getAll"]>[number];
 
 export const TutorialInputShema = z.object({
@@ -156,7 +149,7 @@ export const TutorialInputShema = z.object({
     })
 })
 
-
+// tasks
 export type Task = inferProcedureOutput<AppRouter["task"]["getAll"]>[number];
 
 export const TaskInputShema = z.object({
@@ -209,9 +202,68 @@ export const TaskInputShema = z.object({
     .min(1, "Группа не указана"),
 })
 
+
+// resume
+export const ResumeInputSchema = z.object({
+  roleId:z.string()
+  .min(1,"Выберите роль"),
+  status:statusSchema,
+  experience:z.string().optional()
+})
+
+export type Resume = inferProcedureOutput<AppRouter["resume"]["getSelf"]>;
+
+export const Statuses:Array<{code:Status,name:string}> = [
+  {
+    code:"OPEN_TO_OFFERS",
+    name:"Открыт к предложениям"
+  },
+  {
+    code:"SEARCH",
+    name:"В поиске"
+  },
+  {
+    code:"WORK",
+    name:"Работаю"
+  }
+]
+
 // user
 export type User = inferProcedureOutput<AppRouter["user"]["getAll"]>[number];
 
+export const UserUpdateInputSchema = z.object({
+  name: z
+    .string({
+      required_error: "ФИО не заполнено",
+      invalid_type_error: "ФИО не является строкой"
+    })
+    .min(1, "ФИО не заполнено")
+    .max(NAME_LIMIT)
+    .optional(),
+    username: z
+      .string({
+        required_error:"Никнейм не заполнен",
+      })
+      .min(1,"Никнейм не заполнен")
+      .max(NAME_LIMIT)
+      .optional(),
+  description: z
+    .string({
+      required_error: "Описание не заполнено",
+      invalid_type_error: "Описание не является строкой"
+    })
+    .max(DESCRIPTION_LIMIT)
+    .optional(),
+  profilePictureImage: z
+    .string({
+      required_error: "Фото не выбрано",
+      invalid_type_error: "Фото не является строкой"
+    })
+    .max(MAX_PROFILE_PICTURE_SIZE, "Фото слишком большое")
+    .optional()
+})
+
+// subject
 export const SubjectInputSchema = z.object({
   name: z
     .string({

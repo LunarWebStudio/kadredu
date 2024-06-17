@@ -5,8 +5,9 @@ import { Pen } from "lucide-react";
 import { type Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { type z } from "zod";
 import EditorText from "~/components/Editor";
+import UserAvatar from "~/components/avatar";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, RequiredFormLabel } from "~/components/ui/form";
@@ -14,28 +15,17 @@ import { Input } from "~/components/ui/input";
 import { useToast } from "~/components/ui/use-toast";
 import { ImagesToBase64 } from "~/lib/shared/images";
 import { OnError } from "~/lib/shared/onError";
+import { UserUpdateInputSchema } from "~/lib/shared/types";
 import { api } from "~/trpc/react";
+
 
 export default function AboutMeForm({session}:{
   session?:Session
 }) {
-
-  const formSchema = z.object({
-    profilePictureImage: z.string().optional(),
-    username:z.string({
-      required_error:"Укажите никнейм",
-    }).min(1,"Укажите никнейм"),
-    name: z.string({
-      required_error: "Заполните имя",
-      invalid_type_error: "Имя должно быть строкой",
-    }).min(1, "Заполните имя"),
-    description: z.string().optional(),
-  })
-
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(UserUpdateInputSchema),
     defaultValues: {
-      profilePictureImage: "",
+      profilePictureImage:"",
       name: session?.user.name ?? "",
       username: session?.user.username ?? "",
       description: session?.user.description ?? "",
@@ -57,12 +47,12 @@ export default function AboutMeForm({session}:{
     }
   })
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  const onSubmit = (data: z.infer<typeof UserUpdateInputSchema>) => {
     updateSelfMutation.mutate(data);
   }
 
   return (
-    <div className="w-full max-w-[895px] dark:bg-neutral-900 bg-white rounded-2xl">
+    <div className="w-full dark:bg-neutral-900 bg-white rounded-2xl">
       <div className="w-full px-6 py-4 border-b-2 text-lg font-bold dark:border-neutral-700 border-gray-300 dark:text-slate-300 text-slate-500">
         Аккаунт
       </div>
@@ -77,18 +67,19 @@ export default function AboutMeForm({session}:{
                   <FormLabel>ФОТО</FormLabel>
                   <div className="flex items-center justify-center">
                     <label className="relative size-fit group cursor-pointer">
-                      <Avatar className="size-20">
-                        <AvatarImage src={field.value} />
-                        <AvatarFallback></AvatarFallback>
-                      </Avatar>
-                      {/* <S3Image
-                        width={80}
-                        height={80}
-                        src={field.value}
-                        alt=""
-                        placeholder="blur"
-                      /> */}
-
+                     {
+                        field.value ?
+                          <Avatar className="size-20">
+                            <AvatarImage src={field.value} />
+                            <AvatarFallback></AvatarFallback>
+                          </Avatar>
+                          : 
+                          <UserAvatar 
+                            image={session?.user.profilePicture ?? undefined}
+                            name={session?.user.name ?? "Неизвестно"}
+                            className="size-20"
+                          />
+                      }
                       <div className="transition-all ease-in-out duration-300 group-hover:scale-105 absolute translate-y-1/2 right-1/2 translate-x-1/2 bottom-0 size-8 bg-primary flex items-center justify-center rounded-full text-background">
                         <Pen className="size-4" />
                       </div>
@@ -142,7 +133,7 @@ export default function AboutMeForm({session}:{
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>О себе</FormLabel>
-                  <FormControl>
+                  <FormControl className="">
                     <EditorText text={field.value} setText={field.onChange} options={{
                       code:true,
                       quotes:true,

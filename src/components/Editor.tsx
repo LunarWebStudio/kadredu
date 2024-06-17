@@ -161,7 +161,7 @@ export default function EditorText({
     return null;
   }
   return (
-    <div className="flex flex-col h-full gap-4 p-6 rounded-xl focus:outline-none">
+    <div className="flex flex-col h-full gap-4 rounded-xl focus:outline-none">
       <EditorControllers
         editor={editor}
         options={options}
