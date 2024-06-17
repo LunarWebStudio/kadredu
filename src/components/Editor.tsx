@@ -150,7 +150,7 @@ export default function EditorText({ text, setText, options }:
       />
       <EditorContent
         editor={editor}
-        className="p-4 border border-input rounded-xl bg-white tiptap"
+        className="p-4 border border-input rounded-xl dark:bg-neutral-800 bg-white tiptap"
       />
     </div>
   );
@@ -176,12 +176,12 @@ function EditorControllers({
 
   return (
     <>
-      <div className="flex flex-row gap-4 bg-white">
+      <div className="flex flex-row gap-4 dark:bg-secondary bg-white">
         <Select
           onValueChange={(value) => {
             setCurrentHeading(HeadingsSheet.find((e) => e.type === value) ?? HeadingsSheet[0]!)
           }}>
-          <SelectTrigger className="w-fit px-6 gap-4 bg-white hover:bg-gray-300 transition-all">
+          <SelectTrigger className="w-fit px-6 gap-4 dark:bg-neutral-800 bg-white hover:bg-gray-300 transition-all">
             <SelectValue placeholder="Форматирование" />
           </SelectTrigger>
           <SelectContent>

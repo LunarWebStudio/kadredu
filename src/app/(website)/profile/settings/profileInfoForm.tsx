@@ -6,11 +6,11 @@ import { type Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import EditorText from "~/components/Editor";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, RequiredFormLabel } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { Textarea } from "~/components/ui/textarea";
 import { useToast } from "~/components/ui/use-toast";
 import { ImagesToBase64 } from "~/lib/shared/images";
 import { OnError } from "~/lib/shared/onError";
@@ -143,7 +143,11 @@ export default function AboutMeForm({session}:{
                 <FormItem>
                   <FormLabel>О себе</FormLabel>
                   <FormControl>
-                    <Textarea className="dark:bg-neutral-800 bg-white" placeholder="Расскажите нам о себе" {...field} />
+                    <EditorText text={field.value} setText={field.onChange} options={{
+                      code:true,
+                      quotes:true,
+                      links:true
+                    }}/>
                   </FormControl>
                 </FormItem>
               )}
