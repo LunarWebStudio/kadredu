@@ -68,7 +68,7 @@ export const UsernameInputSchema = z.object({
     })
     .min(1, "Ник не заполнен")
     .max(255, "Ник слишком длинный")
-    .regex(/^[a-zA-Z_]+$/)
+    .regex(/^[a-zA-Z0-9_]+$/, "Ник должен содержать только буквы, цифры и подчеркивания")
 });
 
 export const RoleInputSchema = z.object({
