@@ -28,6 +28,7 @@ import { type Role } from "~/server/db/schema";
 import GroupFilter from "~/app/dashboard/(teacher)/users/group_filter";
 import RoleFilter from "~/app/dashboard/(teacher)/users/role_filter";
 import GrantCoins from "~/app/dashboard/(teacher)/users/grant_coins";
+import UserAvatar from "~/components/avatar";
 
 export default async function Users({
   searchParams
@@ -72,18 +73,11 @@ export default async function Users({
             {users.map(user => (
               <TableRow key={user.id}>
                 <TableCell>
-                  {user.profilePicture ? (
-                    <S3Image
-                      src={user.profilePicture.storageId}
-                      blurDataURL={user.profilePicture.blurPreview}
-                      alt={user.name ?? "Не указано"}
-                      width={500}
-                      height={500}
-                      className="size-14 object-contain"
-                    />
-                  ) : (
-                    <Skeleton className="size-14 rounded-md" />
-                  )}
+                  <UserAvatar
+                    image={user.profilePicture ?? undefined}
+                    name={user.name ?? "Неизвестно"}
+                    className="size-14"
+                  />
                 </TableCell>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>

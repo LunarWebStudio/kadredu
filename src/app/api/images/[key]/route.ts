@@ -9,15 +9,21 @@ export async function GET(_: NextRequest, params: {
 }) {
   const url = await GetSignedUrl(params.params.key);
 
-  const data = await axios.get<ArrayBuffer>(url, {
-    responseType: "arraybuffer"
-  });
+  try {
+    const data = await axios.get<ArrayBuffer>(url, {
+      responseType: "arraybuffer"
+    });
 
-  return new Response(data.data, {
-    status: 200,
-    headers: {
-      "Content-Type": "image/webp",
-      "Content-Length": data.data.byteLength.toString()
-    },
-  });
+    return new Response(data.data, {
+      status: 200,
+      headers: {
+        "Content-Type": "image/webp",
+        "Content-Length": data.data.byteLength.toString()
+      },
+    });
+  } catch (e) {
+    return new Response("", {
+      status: 404
+    });
+  }
 }
