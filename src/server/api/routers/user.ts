@@ -11,7 +11,7 @@ import { env } from "~/env";
 
 export const userRouter = createTRPCRouter({
   updadeSelf: verificationProcedure
-    .input(UserUpdateInputSchema)
+    .input(UserUpdateInputSchema) 
     .mutation(async ({ ctx, input }) => {
       await ctx.db.transaction(async (tx) => {
         let imageId: string | undefined = undefined

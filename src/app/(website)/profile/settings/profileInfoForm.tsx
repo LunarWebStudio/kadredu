@@ -36,6 +36,9 @@ export default function AboutMeForm({session}:{
   const { toast } = useToast();
   const updateSelfMutation = api.user.updadeSelf.useMutation({
     onSuccess() {
+      toast({
+        title:"Профиль сохранен",
+      })
       router.refresh();
     },
     onError(err) {

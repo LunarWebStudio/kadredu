@@ -11,8 +11,9 @@ import { Form, FormField, FormItem, FormLabel } from "~/components/ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Textarea } from "~/components/ui/textarea";
 import { useToast } from "~/components/ui/use-toast";
+import { GetStatusResume, Statuses } from "~/lib/shared/enums";
 import { OnError } from "~/lib/shared/onError";
-import { type Resume, ResumeInputSchema, type TeamRole, Statuses } from "~/lib/shared/types";
+import { type Resume, ResumeInputSchema, type TeamRole } from "~/lib/shared/types";
 import { cn } from "~/lib/utils";
 import { type Status } from "~/server/db/schema";
 import { api } from "~/trpc/react";
@@ -27,21 +28,22 @@ export default function ResumeForm({roles,resume}:
 ){
   const [roleOpen,setRoleOpen] = useState(false)
   const [statusOpen,setStatusOpen] = useState(false)
-
-
   const router = useRouter()
   const {toast} = useToast()
 
   const form = useForm({
     resolver:zodResolver(ResumeInputSchema),
-    defaultValues:{
+    defaultValues:{ 
       roleId: resume?.roleId ?? "",
-      status: Statuses.find(status => resume?.status == status.code)?.code ?? "",
+      status: GetStatusResume(resume?.status)?.code ?? "",
       experience:resume?.experience ?? ""
     }
   })
   const updateSelfResumeMutation = api.resume.updateSelf.useMutation({
     onSuccess() {
+      toast({
+        title:"Резюме сохранено",
+      })
       router.refresh();
     },
     onError(err) {
@@ -127,34 +129,35 @@ export default function ResumeForm({roles,resume}:
                         type="button"
                       >
                         {
-                          Statuses.find(status => status.code === field.value)
-                            ?.name ?? "Выберите статус"
+                          GetStatusResume(field.value as Status)?.name ?? "Выберите статус"
                         }
-                        <ChevronDown />
+                        <ChevronDown /> 
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent align="end">
                       <Command>
                         <CommandList>
                           <CommandGroup>
-                            {Statuses.map(status => (
-                              <CommandItem
-                                key={status.code}
-                                value={status.name ?? `${undefined}`}
-                                onSelect={() => {
-                                  field.onChange(status.code);
-                                  setStatusOpen(false)
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 size-4",
-                                    field.value === status.code ? "opacity-100" : "opacity-0"
-                                  )}
-                                />
-                                {status.name}
-                              </CommandItem>
-                            ))}
+                            {
+                              Statuses.map(status =>(
+                                <CommandItem
+                                  key={status.code}
+                                  value={status.name}
+                                  onSelect={() => {
+                                    field.onChange(status.code);
+                                    setStatusOpen(false)
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 size-4",
+                                      field.value === status.code ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                  {status.name}
+                                </CommandItem>
+                              ))
+                            }
                           </CommandGroup>
                         </CommandList>
                       </Command>
@@ -180,7 +183,7 @@ export default function ResumeForm({roles,resume}:
     </div>
   )
 }
-
+ 
                   
 function RoleList({
   roles,

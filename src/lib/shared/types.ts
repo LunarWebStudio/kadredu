@@ -1,7 +1,7 @@
 import type { inferProcedureOutput } from "@trpc/server";
 import { z } from "zod";
 import type { AppRouter } from "~/server/api/root";
-import { type Status, statusSchema } from "~/server/db/schema";
+import { statusSchema } from "~/server/db/schema";
 import { day } from "~/lib/shared/time";
 import { DESCRIPTION_LIMIT, MAX_PROFILE_PICTURE_SIZE, NAME_LIMIT } from "~/lib/shared/const";
 
@@ -213,55 +213,36 @@ export const ResumeInputSchema = z.object({
 
 export type Resume = inferProcedureOutput<AppRouter["resume"]["getSelf"]>;
 
-export const Statuses:Array<{code:Status,name:string}> = [
-  {
-    code:"OPEN_TO_OFFERS",
-    name:"Открыт к предложениям"
-  },
-  {
-    code:"SEARCH",
-    name:"В поиске"
-  },
-  {
-    code:"WORK",
-    name:"Работаю"
-  }
-]
-
 // user
 export type User = inferProcedureOutput<AppRouter["user"]["getAll"]>[number];
 
-export const UserUpdateInputSchema = z.object({
-  name: z
-    .string({
-      required_error: "ФИО не заполнено",
-      invalid_type_error: "ФИО не является строкой"
-    })
-    .min(1, "ФИО не заполнено")
-    .max(NAME_LIMIT)
-    .optional(),
-    username: z
+
+export const UserUpdateInputSchema = z.intersection(
+  z.object({
+    name: z
       .string({
-        required_error:"Никнейм не заполнен",
+        required_error: "ФИО не заполнено",
+        invalid_type_error: "ФИО не является строкой"
       })
-      .min(1,"Никнейм не заполнен")
+      .min(1, "ФИО не заполнено")
       .max(NAME_LIMIT)
       .optional(),
-  description: z
-    .string({
-      required_error: "Описание не заполнено",
-      invalid_type_error: "Описание не является строкой"
-    })
-    .max(DESCRIPTION_LIMIT)
-    .optional(),
-  profilePictureImage: z
-    .string({
-      required_error: "Фото не выбрано",
-      invalid_type_error: "Фото не является строкой"
-    })
-    .max(MAX_PROFILE_PICTURE_SIZE, "Фото слишком большое")
-    .optional()
-})
+    description: z
+      .string({
+        required_error: "Описание не заполнено",
+        invalid_type_error: "Описание не является строкой"
+      })
+      .max(DESCRIPTION_LIMIT)
+      .optional(),
+    profilePictureImage: z
+      .string({
+        required_error: "Фото не выбрано",
+        invalid_type_error: "Фото не является строкой"
+      })
+      .max(MAX_PROFILE_PICTURE_SIZE, "Фото слишком большое")
+      .optional()
+  })
+  ,UsernameInputSchema)
 
 // subject
 export const SubjectInputSchema = z.object({

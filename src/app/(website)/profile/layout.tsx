@@ -17,7 +17,7 @@ export default async function ProfileLayout({
   const session = await getServerAuthSession();
 
   return (
-    <div className="flex flex-row gap-4 p-4 px-[120px]">
+    <div className="flex flex-row gap-4 p-4 container">
       <aside className="w-[350px] flex flex-col gap-4 py-4 px-6">
         <div className="rounded-xl bg-secondary space-y-6 p-6">
           <div className="flex flex-col gap-4 justify-center items-center">
