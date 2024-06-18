@@ -27,6 +27,7 @@ import Link from "next/link";
 import { type Role } from "~/server/db/schema";
 import GroupFilter from "~/app/dashboard/(teacher)/users/group_filter";
 import RoleFilter from "~/app/dashboard/(teacher)/users/role_filter";
+import GrantCoins from "~/app/dashboard/(teacher)/users/grant_coins";
 
 export default async function Users({
   searchParams
@@ -107,9 +108,14 @@ export default async function Users({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Действия</DropdownMenuLabel>
-                        <DropdownMenuItem>
-                          Выдать награду
-                        </DropdownMenuItem>
+                        {session?.user.role.includes("ADMIN") && (
+                          <>
+                            <GrantCoins userId={user.id} />
+                            <DropdownMenuItem>
+                              Выдать награду
+                            </DropdownMenuItem>
+                          </>
+                        )}
                         {user.username && (
                           <DropdownMenuItem>
                             <Link href={`/@${user.username}`}>

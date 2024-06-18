@@ -3,11 +3,11 @@ import { z } from "zod";
 import { UploadFile } from "~/lib/server/file_upload";
 import { ProcessImage } from "~/lib/server/images";
 
-import { createTRPCRouter, protectedProcedure, teacherProcedure, verificationProcedure } from "~/server/api/trpc";
+import { adminProcedure, createTRPCRouter, protectedProcedure, teacherProcedure, verificationProcedure } from "~/server/api/trpc";
 import { images, roleSchema, users } from "~/server/db/schema";
 import { DESCRIPTION_LIMIT, MAX_PROFILE_PICTURE_SIZE, NAME_LIMIT } from "~/lib/shared/const";
 import { TRPCError } from "@trpc/server";
-import { IdInputSchema, UsernameInputSchema } from "~/lib/shared/types";
+import { CoinsInputSchema, IdInputSchema, UsernameInputSchema } from "~/lib/shared/types";
 import { env } from "~/env";
 
 export const userRouter = createTRPCRouter({
@@ -192,5 +192,26 @@ export const userRouter = createTRPCRouter({
           username: true,
         }
       });
+    }),
+  grantCoins: adminProcedure
+    .input(z.intersection(IdInputSchema, CoinsInputSchema))
+    .mutation(async ({ ctx, input }) => {
+      const coins = await ctx.db.query.users.findFirst({
+        where: eq(users.id, input.id),
+        columns: {
+          coins: true
+        }
+      })
+
+      if (!coins) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Пользователь не найден"
+        })
+      }
+
+      await ctx.db.update(users).set({
+        coins: coins?.coins + input.coins
+      }).where(eq(users.id, ctx.session.user.id));
     })
 });
