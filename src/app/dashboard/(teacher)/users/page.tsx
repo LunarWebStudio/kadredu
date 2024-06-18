@@ -17,8 +17,6 @@ import {
   DropdownMenuTrigger
 } from "~/components/ui/dropdown-menu";
 import { Button } from "~/components/ui/button";
-import S3Image from "~/components/s3Image";
-import { Skeleton } from "~/components/ui/skeleton";
 import GroupSelect from "~/app/dashboard/(teacher)/users/group_select";
 import RoleSelect from "~/app/dashboard/(teacher)/users/role_select";
 import { getServerAuthSession } from "~/server/auth";

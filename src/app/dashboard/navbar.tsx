@@ -14,6 +14,7 @@ import { Button } from "~/components/ui/button";
 import { Menu, X } from "lucide-react";
 import React from "react";
 import SidebarItem from "~/app/dashboard/item";
+import Link from "next/link";
 
 export default async function DashboardNavbar() {
   const session = await getServerAuthSession();
@@ -21,7 +22,9 @@ export default async function DashboardNavbar() {
   return (
     <div className="flex h-nav-dashboard-mobile w-screen flex-col items-center justify-center gap-4 bg-secondary px-6 sm:h-nav-dashboard sm:flex-row sm:justify-between">
       <div className="flex w-full flex-row items-center justify-between sm:w-auto">
-        <Logo />
+        <Link href="/">
+          <Logo />
+        </Link>
         <Sheet>
           <SheetTrigger
             asChild
@@ -36,7 +39,9 @@ export default async function DashboardNavbar() {
           </SheetTrigger>
           <SheetContent className="max-h-screen w-screen px-0">
             <SheetHeader className="mb-4 flex flex-row items-center justify-between px-6">
-              <Logo />
+              <Link href="/">
+                <Logo />
+              </Link>
               <SheetClose>
                 <Button
                   variant="ghost"
@@ -54,18 +59,18 @@ export default async function DashboardNavbar() {
                       section.roles.includes(role)
                     ) ??
                       false)) && (
-                    <div className="mb-4 space-y-2 px-2">
-                      <p className="text-foreground/60">{section.title}</p>
-                      <div className="flex flex-col gap-2">
-                        {section.items.map((item, index) => (
-                          <SidebarItem
-                            {...item}
-                            key={section.title + index}
-                          />
-                        ))}
+                      <div className="mb-4 space-y-2 px-2">
+                        <p className="text-foreground/60">{section.title}</p>
+                        <div className="flex flex-col gap-2">
+                          {section.items.map((item, index) => (
+                            <SidebarItem
+                              {...item}
+                              key={section.title + index}
+                            />
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </React.Fragment>
               ))}
             </aside>
