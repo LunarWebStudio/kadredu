@@ -65,7 +65,7 @@ export default async function ProfileLayout({
                 text: "text-green-400",
                 text_hover: "hover:text-green-400"
               }}
-              href={`/tutorials/${session?.user.username}`}
+              href={`/profile/${session?.user.username}/tutorials`}
               icon={<GraduationCap className={iconClassName} />}
               locked={GetLevel(session?.user.experiencePoints ?? 0) < 3}
             />

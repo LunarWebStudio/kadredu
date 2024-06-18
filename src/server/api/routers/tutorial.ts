@@ -2,7 +2,7 @@ import { eq, and, ilike } from "drizzle-orm";
 import { z } from "zod";
 import { TutorialInputShema, IdInputSchema } from "~/lib/shared/types";
 import { adminProcedure, createTRPCRouter, publicProcedure} from "~/server/api/trpc";
-import { images, tutorials} from "~/server/db/schema";
+import { images, tutorials, users} from "~/server/db/schema";
 import { ProcessImage } from "~/lib/server/images";
 import { createId } from "@paralleldrive/cuid2";
 import { UploadFile } from "~/lib/server/file_upload";
@@ -121,6 +121,13 @@ export const tutorialsRouter = createTRPCRouter ({
               },
               image: true
             }
+        })
+      }),
+    getByUserId: publicProcedure
+      .input(IdInputSchema)
+      .mutation(async ({ ctx }) => {
+        return await ctx.db.query.tutorials.findMany({
+          where: eq(tutorials.authorId, users.id)
         })
       })
 })

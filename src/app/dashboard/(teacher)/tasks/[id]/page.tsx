@@ -2,7 +2,7 @@ import {  type Task } from "~/lib/shared/types";
 import { api } from "~/trpc/server";
 import CreateUpdateTask from "~/app/dashboard/(teacher)/tasks/[id]/create_update";
 
-export default async function CreateUpdateTutorialPage({
+export default async function CreateUpdateTaskPage({
     params
 } : {
     params: {

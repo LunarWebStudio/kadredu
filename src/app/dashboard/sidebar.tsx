@@ -38,6 +38,11 @@ export const sidebarItems: SidebarItem[] = [
         title: "Роли в команду"
       },
       {
+        icon: <Crown className={iconClassName} />,
+        href: "/dashboard/type",
+        title: "Тип мероприятия"
+      },
+      {
         icon: <BookA className={iconClassName} />,
         href: "/dashboard/topics",
         title: "Темы для статей"
@@ -73,6 +78,11 @@ export const sidebarItems: SidebarItem[] = [
         icon: <User className={iconClassName} />,
         href: "/dashboard/users",
         title: "Пользователи"
+      },
+      {
+        icon: <Crown className={iconClassName} />,
+        href: "/dashboard/events",
+        title: "Мероприятия"
       },
       {
         icon: <Glasses className={iconClassName} />,

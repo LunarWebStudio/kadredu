@@ -80,8 +80,8 @@ export const RoleInputSchema = z.object({
     .min(1, "Роль не может быть пустой")
     .max(255, "Роль слишком длинная")
 });
-export type Topic = inferProcedureOutput<AppRouter["topic"]["getAll"]>[number];
 
+export type Topic = inferProcedureOutput<AppRouter["topic"]["getAll"]>[number];
 export const TopicsInputShema = z.object({
   name: z
     .string({
@@ -92,8 +92,69 @@ export const TopicsInputShema = z.object({
     .max(255, "Название темы слишком длинное")
 });
 
-export type Tutorial = inferProcedureOutput<AppRouter["tutorial"]["getAll"]>[number];
+export type Event = inferProcedureOutput<AppRouter["event"]["getAll"]>[number];
+export const EventInputShema = z.object({
+  name: z
+  .string({
+    required_error: "Мероприятие не указано",
+    invalid_type_error: "Мероприятие не является строкой"
+  })
+  .min(1, "Мероприятие не указано")
+  .max(255, "Мероприятие слишком длинное"),
+  description: z
+  .string({
+    required_error: "Описание не указано",
+    invalid_type_error: "Описание не является строкой"
+  })
+  .min(1, "Описание не указано"),
+  imageId: z
+  .string({
+    required_error: "Фото не задано",
+    invalid_type_error: "Фото не является строкой"
+  }),
+  dateStart: z
+  .date({
+    invalid_type_error: "Начало мероприятия не является датой"
+  }).min(new Date(new Date().getTime() - day)).nullable(),
+  dateEnd: z
+  .date({
+    invalid_type_error: "Конец мероприятия не является датой"
+  }).min(new Date(new Date().getTime() - day)).nullable(),
+  typeId: z
+  .string({
+    required_error: "Тип не указан",
+    invalid_type_error: "Тип не является строкой"
+  })
+  .min(1, "Тип не указан")
+  .max(255, "Тип слишком длинный"),
+  groupId: z
+  .string({
+    required_error: "Группа не указана",
+    invalid_type_error: "Группа не является строкой"
+  })
+  .min(1, "Группа не указана")
+  .max(255, "Группа слишком длинная"),
+  address: z
+  .string({
+    required_error: "Адрес не указан",
+    invalid_type_error: "Адрес не является строкой"
+  })
+  .min(1, "Адрес не указан")
+  .max(255, "Адрес слишком длинный"),
+})
 
+export type TypeEvent = inferProcedureOutput<AppRouter["type"]["getAll"]>[number];
+export const TypeInputShema = z.object({
+  name: z
+  .string({
+    required_error: "Тип не указан",
+    invalid_type_error: "Тип не является строкой"
+  })
+  .min(1, "Тип не указан")
+  .max(255, "Тип слишком длинный"),
+})
+
+export type Tutorial = inferProcedureOutput<AppRouter["tutorial"]["getAll"]>[number];
 export const TutorialInputShema = z.object({
   name: z
     .string({

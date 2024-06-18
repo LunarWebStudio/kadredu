@@ -8,6 +8,8 @@ import { subjectsRouter } from "~/server/api/routers/subjects";
 import { topicsRouter } from "~/server/api/routers/topics";
 import { tutorialsRouter } from "~/server/api/routers/tutorial";
 import { tasksRouter } from "~/server/api/routers/task";
+import { typeRouter } from "~/server/api/routers/type";
+import { eventRouter } from "~/server/api/routers/event";
 
 export const appRouter = createTRPCRouter({
   user: userRouter,
@@ -19,6 +21,8 @@ export const appRouter = createTRPCRouter({
   tutorial: tutorialsRouter,
   subject: subjectsRouter,
   task: tasksRouter,
+  type: typeRouter,
+  event: eventRouter,
 });
 
 export type AppRouter = typeof appRouter;
