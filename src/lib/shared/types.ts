@@ -1,7 +1,12 @@
 import type { inferProcedureOutput } from "@trpc/server";
 import { z } from "zod";
 import type { AppRouter } from "~/server/api/root";
+import { statusSchema } from "~/server/db/schema";
 import { day } from "~/lib/shared/time";
+import { DESCRIPTION_LIMIT, MAX_PROFILE_PICTURE_SIZE, NAME_LIMIT } from "~/lib/shared/const";
+
+
+
 
 // building
 export type Building = inferProcedureOutput<
@@ -87,6 +92,9 @@ export const RoleInputSchema = z.object({
     .min(1, "Роль не может быть пустой")
     .max(255, "Роль слишком длинная")
 });
+
+export type TeamRole = inferProcedureOutput<AppRouter["teamRoles"]["getAll"]>[number]
+
 export type Topic = inferProcedureOutput<AppRouter["topic"]["getAll"]>[number];
 
 export const TopicsInputShema = z.object({
@@ -148,7 +156,7 @@ export const TutorialInputShema = z.object({
     })
 })
 
-
+// tasks
 export type Task = inferProcedureOutput<AppRouter["task"]["getAll"]>[number];
 
 export const TaskInputShema = z.object({
@@ -201,9 +209,49 @@ export const TaskInputShema = z.object({
     .min(1, "Группа не указана"),
 })
 
+
+// resume
+export const ResumeInputSchema = z.object({
+  roleId:z.string()
+  .min(1,"Выберите роль"),
+  status:statusSchema,
+  experience:z.string().optional()
+})
+
+export type Resume = inferProcedureOutput<AppRouter["resume"]["getSelf"]>;
+
 // user
 export type User = inferProcedureOutput<AppRouter["user"]["getAll"]>[number];
 
+
+export const UserUpdateInputSchema = z.intersection(
+  z.object({
+    name: z
+      .string({
+        required_error: "ФИО не заполнено",
+        invalid_type_error: "ФИО не является строкой"
+      })
+      .min(1, "ФИО не заполнено")
+      .max(NAME_LIMIT)
+      .optional(),
+    description: z
+      .string({
+        required_error: "Описание не заполнено",
+        invalid_type_error: "Описание не является строкой"
+      })
+      .max(DESCRIPTION_LIMIT)
+      .optional(),
+    profilePictureImage: z
+      .string({
+        required_error: "Фото не выбрано",
+        invalid_type_error: "Фото не является строкой"
+      })
+      .max(MAX_PROFILE_PICTURE_SIZE, "Фото слишком большое")
+      .optional()
+  })
+  ,UsernameInputSchema)
+
+// subject
 export const SubjectInputSchema = z.object({
   name: z
     .string({
@@ -224,3 +272,4 @@ export const SubjectInputSchema = z.object({
 export type Subject = inferProcedureOutput<
   AppRouter["subject"]["getAll"]
 >[number];
+

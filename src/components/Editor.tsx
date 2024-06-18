@@ -161,14 +161,14 @@ export default function EditorText({
     return null;
   }
   return (
-    <div className="flex flex-col h-full gap-4 p-6 rounded-xl focus:outline-none">
+    <div className="flex flex-col h-full gap-4 rounded-xl focus:outline-none">
       <EditorControllers
         editor={editor}
         options={options}
       />
       <EditorContent
         editor={editor}
-        className="p-4 border h-full border-input rounded-xl tiptap"
+        className="p-4 border border-input rounded-xl tiptap dark:bg-neutral-800 bg-white tiptap"
       />
     </div>
   );
@@ -194,12 +194,12 @@ function EditorControllers({
 
   return (
     <>
-      <div className="flex flex-row gap-4">
+      <div className="flex flex-row gap-4 dark:bg-inherit bg-white">
         <Select
           onValueChange={(value) => {
             setCurrentHeading(HeadingsSheet.find((e) => e.type === value) ?? HeadingsSheet[0]!)
           }}>
-          <SelectTrigger className="w-fit px-6 gap-4 hover:bg-gray-300 transition-all">
+          <SelectTrigger className="w-fit px-6 gap-4 dark:bg-neutral-800 bg-white hover:bg-gray-300 transition-all">
             <SelectValue placeholder="Форматирование" />
           </SelectTrigger>
           <SelectContent>

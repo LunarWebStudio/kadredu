@@ -37,7 +37,7 @@ export const buildingRouter = createTRPCRouter({
         .optional()
     )
     .query(({ ctx, input }) => {
-      return ctx.db.query.buildings.findMany({
+      return ctx.db.query.buildings.findMany({ 
         where: input?.search
           ? or(
               ilike(buildings.title, `%${input.search}%`),
