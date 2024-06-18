@@ -17,8 +17,6 @@ import {
   DropdownMenuTrigger
 } from "~/components/ui/dropdown-menu";
 import { Button } from "~/components/ui/button";
-import S3Image from "~/components/s3Image";
-import { Skeleton } from "~/components/ui/skeleton";
 import GroupSelect from "~/app/dashboard/(teacher)/users/group_select";
 import RoleSelect from "~/app/dashboard/(teacher)/users/role_select";
 import { getServerAuthSession } from "~/server/auth";
@@ -27,6 +25,8 @@ import Link from "next/link";
 import { type Role } from "~/server/db/schema";
 import GroupFilter from "~/app/dashboard/(teacher)/users/group_filter";
 import RoleFilter from "~/app/dashboard/(teacher)/users/role_filter";
+import GrantCoins from "~/app/dashboard/(teacher)/users/grant_coins";
+import UserAvatar from "~/components/avatar";
 
 export default async function Users({
   searchParams
@@ -71,18 +71,11 @@ export default async function Users({
             {users.map(user => (
               <TableRow key={user.id}>
                 <TableCell>
-                  {user.profilePicture ? (
-                    <S3Image
-                      src={user.profilePicture.storageId}
-                      blurDataURL={user.profilePicture.blurPreview}
-                      alt={user.name ?? "Не указано"}
-                      width={500}
-                      height={500}
-                      className="size-14 object-contain"
-                    />
-                  ) : (
-                    <Skeleton className="size-14 rounded-md" />
-                  )}
+                  <UserAvatar
+                    image={user.profilePicture ?? undefined}
+                    name={user.name ?? "Неизвестно"}
+                    className="size-14"
+                  />
                 </TableCell>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
@@ -107,9 +100,14 @@ export default async function Users({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Действия</DropdownMenuLabel>
-                        <DropdownMenuItem>
-                          Выдать награду
-                        </DropdownMenuItem>
+                        {session?.user.role.includes("ADMIN") && (
+                          <>
+                            <GrantCoins userId={user.id} />
+                            <DropdownMenuItem>
+                              Выдать награду
+                            </DropdownMenuItem>
+                          </>
+                        )}
                         {user.username && (
                           <DropdownMenuItem>
                             <Link href={`/@${user.username}`}>

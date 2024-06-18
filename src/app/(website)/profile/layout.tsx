@@ -1,4 +1,4 @@
-import { BookHeart, BriefcaseBusiness, GraduationCap, SquareUserRound } from "lucide-react";
+import { BookHeart, BriefcaseBusiness, GraduationCap, Settings, SquareUserRound } from "lucide-react";
 import { type ReactNode } from "react";
 import UserAvatar from "~/components/avatar";
 import LevelBar from "~/components/level_bar";
@@ -69,7 +69,16 @@ export default async function ProfileLayout({
               icon={<GraduationCap className={iconClassName} />}
               locked={GetLevel(session?.user.experiencePoints ?? 0) < 3}
             />
-
+            <SidebarItem
+              title="Настройки"
+              color={{
+                bg: "bg-slate-400",
+                text: "text-slate-400",
+                text_hover: "hover:text-slate-400"
+              }}
+              href="/settings"
+              icon={<Settings className={iconClassName} />}
+            />
           </div>
         </div>
         <div className="rounded-xl bg-secondary p-6 space-y-6">

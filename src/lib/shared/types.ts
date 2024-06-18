@@ -73,8 +73,15 @@ export const UsernameInputSchema = z.object({
     })
     .min(1, "Ник не заполнен")
     .max(255, "Ник слишком длинный")
-    .regex(/^[a-zA-Z_]+$/)
+    .regex(/^[a-zA-Z0-9_]+$/, "Ник должен содержать только буквы, цифры и подчеркивания")
 });
+
+export const CoinsInputSchema = z.object({
+  coins: z.coerce.number({
+    required_error: "Количество монет не заполнено",
+    invalid_type_error: "Количество монет не является числом"
+  }).positive("Количество монет должно быть больше 0"),
+})
 
 export const RoleInputSchema = z.object({
   name: z

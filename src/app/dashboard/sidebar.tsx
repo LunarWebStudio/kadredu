@@ -20,7 +20,7 @@ type SidebarItem = {
 export const sidebarItems: SidebarItem[] = [
   {
     title: "Администратор",
-    roles: ["ADMIN"] as Role[],
+    roles: ["ADMIN"],
     items: [
       {
         icon: <Building className={iconClassName} />,

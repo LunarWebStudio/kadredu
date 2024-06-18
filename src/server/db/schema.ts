@@ -108,7 +108,6 @@ export const teamRoles = createTable("rolesTeam", {
     .unique(),
 });
 
- 
 export const topics = createTable("topics", {
   id: text("id")
     .$defaultFn(() => createId())
@@ -124,7 +123,7 @@ export const tutorials = createTable("tutorials", {
     .primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
   imageId: text("imageId").references(() => images.id, { onDelete: "cascade" }).notNull(),
-  text: varchar("text", {length: 255}).notNull(),
+  text: varchar("text", { length: 255 }).notNull(),
   authorId: text("authorId").references(() => users.id).notNull(),
   createdAt: timestamp("createdAt", {
     mode: "date",
@@ -136,7 +135,7 @@ export const tutorials = createTable("tutorials", {
   subjectId: text("subjectId").references(() => subjects.id),
 })
 
-export const tutorialsRelations = relations(tutorials, ({one}) => ({
+export const tutorialsRelations = relations(tutorials, ({ one }) => ({
   author: one(users, { fields: [tutorials.authorId], references: [users.id] }),
   topic: one(topics, { fields: [tutorials.topicId], references: [topics.id] }),
   subject: one(subjects, { fields: [tutorials.subjectId], references: [subjects.id] }),
@@ -166,7 +165,7 @@ export const tasks = createTable("tasks", {
   }).defaultNow(),
 })
 
-export const tasksRelations = relations(tasks, ({one}) => ({
+export const tasksRelations = relations(tasks, ({ one }) => ({
   author: one(users, { fields: [tasks.authorId], references: [users.id] }),
   subject: one(subjects, { fields: [tasks.subjectId], references: [subjects.id] }),
   group: one(groups, { fields: [tasks.groupId], references: [groups.id] }),
@@ -218,7 +217,9 @@ export const users = createTable("user", {
     withTimezone: true,
   }).defaultNow(),
   groupId: text("groupId").references((): AnyPgColumn => groups.id),
-  resumeId:text("resumeId").references((): AnyPgColumn => resume.id )
+  resumeId:text("resumeId").references((): AnyPgColumn => resume.id ),
+  githubUsername: varchar("githubUsername", { length: 255 }),
+  githubToken: text("githubToken"),
 });
 
 export const usersRelations = relations(users, ({ many, one }) => ({

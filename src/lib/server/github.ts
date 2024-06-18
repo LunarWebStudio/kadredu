@@ -1,69 +1,77 @@
 import { Octokit } from "octokit";
-import { env } from "~/env";
 
+export class Github {
+  private octokit: Octokit;
+  private username: string;
 
-const octokit = new Octokit({ auth: env.GITHUB_TOKEN });
+  constructor({ token, username }: {
+    token: string;
+    username: string;
+  }) {
+    this.octokit = new Octokit({ auth: token });
+    this.username = username;
+  }
 
-export async function GetRepos(username: string) {
-  const { data } = await octokit.rest.repos.listForUser({
-    username
-  })
+  public async GetRepos() {
+    const { data } = await this.octokit.rest.repos.listForUser({
+      username: this.username
+    })
 
-  return data;
-}
+    return data;
+  }
 
-export async function GetRepo(owner: string, repo: string) {
-  const repoData = await octokit.rest.repos.get({
-    owner,
-    repo
-  })
+  public async GetRepo(repo: string) {
+    const repoData = await this.octokit.rest.repos.get({
+      owner: this.username,
+      repo
+    })
 
-  return {
-    name: repoData.data.name,
-    description: repoData.data.description,
-    url: repoData.data.html_url,
-    owner: repoData.data.owner.login,
-    default_branch: repoData.data.default_branch,
-  };
-}
+    return {
+      name: repoData.data.name,
+      description: repoData.data.description,
+      url: repoData.data.html_url,
+      owner: repoData.data.owner.login,
+      default_branch: repoData.data.default_branch,
+    };
+  }
 
-export async function GetReadme(owner: string, repo: string) {
-  const { data } = await octokit.rest.repos.getReadme({
-    owner,
-    repo
-  })
+  public async GetReadme(repo: string) {
+    const { data } = await this.octokit.rest.repos.getReadme({
+      owner: this.username,
+      repo
+    })
 
-  const b64 = Buffer.from(data.content, "base64").toString("utf-8");
-  return b64;
-}
+    const b64 = Buffer.from(data.content, "base64").toString("utf-8");
+    return b64;
+  }
 
-export async function GetLanguages(owner: string, repo: string) {
-  const { data } = await octokit.rest.repos.listLanguages({
-    owner,
-    repo
-  })
+  public async GetLanguages(repo: string) {
+    const { data } = await this.octokit.rest.repos.listLanguages({
+      owner: this.username,
+      repo
+    })
 
-  let total = 0;
-  Object.keys(data).forEach(key => {
-    total += data[key]!;
-  });
+    let total = 0;
+    Object.keys(data).forEach(key => {
+      total += data[key]!;
+    });
 
-  return Object.keys(data).map(key => ({
-    name: key,
-    percent: data[key]! / total * 100
-  }))
+    return Object.keys(data).map(key => ({
+      name: key,
+      percent: data[key]! / total * 100
+    }))
+  }
 
-}
+  public async GetTree(repo: string) {
+    const files = await this.octokit.rest.git.getTree({
+      owner: this.username,
+      repo,
+      tree_sha: (await this.GetRepo(repo)).default_branch
+    })
 
-export async function GetTree(owner: string, repo: string) {
-  const files = await octokit.rest.git.getTree({
-    owner,
-    repo,
-    tree_sha: (await GetRepo(owner, repo)).default_branch
-  })
-
-  return files.data.tree.map(r => ({
-    path: r.path,
-    url: r.url,
-  }));
+    return files.data.tree.map(r => ({
+      path: r.path,
+      url: r.url,
+    }));
+  }
 }

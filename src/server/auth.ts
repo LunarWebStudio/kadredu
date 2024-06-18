@@ -7,6 +7,7 @@ import {
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
 import EmailProvider from "next-auth/providers/email";
+import GithubProvider from "next-auth/providers/github";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
@@ -55,6 +56,30 @@ export const authOptions: NextAuthOptions = {
     redirect({ baseUrl }) {
       return baseUrl;
     },
+    async signIn({ account, profile }) {
+      if (account?.provider !== "github") {
+        return true
+      }
+
+      const session = await getServerAuthSession()
+      if (!session) {
+        return false
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      const login = (profile as any)?.login as string;
+      if (!login) {
+        return false
+      }
+
+      await db.update(users).set({
+        githubUsername: login,
+        githubToken: account.access_token
+      })
+        .where(eq(users.id, session.user.id))
+
+      return true
+    },
     session: async ({ session, user }) => {
       const dbUser = await GetUser(user.id);
 
@@ -92,6 +117,15 @@ export const authOptions: NextAuthOptions = {
       server: env.EMAIL_SERVER,
       from: env.EMAIL_FROM,
       maxAge: 10 * 60
+    }),
+    GithubProvider({
+      clientId: env.GITHUB_CLIENT_ID,
+      clientSecret: env.GITHUB_CLIENT_SECRET,
+      authorization: {
+        params: {
+          scope: "user:email,read:user,read:repo"
+        }
+      }
     })
   ]
 };
