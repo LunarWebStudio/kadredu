@@ -17,10 +17,8 @@ import {
   DropdownMenuTrigger
 } from "~/components/ui/dropdown-menu";
 import { Button } from "~/components/ui/button";
-import CreateUpdateTopics from "~/app/dashboard/(admin)/topics/create_update";
-import DeleteTopics from "~/app/dashboard/(admin)/topics/delete";
-import CreateUpdateType from "./create_update";
-import DeleteType from "./delete";
+import CreateUpdateType from "~/app/dashboard/(admin)/type/create_update";
+import DeleteType from "~/app/dashboard/(admin)/type/delete";
 
 export default async function Themes({
   searchParams

@@ -17,6 +17,41 @@ import { z } from "zod";
 
 export const createTable = pgTableCreator(name => `kadredu_${name}`);
 
+export const statusEnum = pgEnum("role", [
+  "SEARCH",
+  "WORK",
+  "OPEN_TO_OFFERS"
+]);
+
+export const statusSchema = z.enum(statusEnum.enumValues, {
+  message: "Недопустимый статус"
+});
+
+export type Status = z.infer<typeof statusSchema>;
+
+export const resume = createTable("resumes", {
+  id: text("id")
+  .$defaultFn(()=> createId())
+  .notNull()
+  .primaryKey(),
+  userId:text("userId")
+  .notNull()
+  .unique()
+  .references(()=>users.id),
+  roleId: text("roleId")
+  .references(()=>teamRoles.id)
+  .notNull(),
+  status:statusEnum("status")
+  .default("SEARCH")
+  .notNull(),
+  experience: text("experience")
+});
+
+export const resumeRelations = relations(resume,({one})=>({
+  role:one(teamRoles,{fields:[resume.roleId],references:[teamRoles.id]}),
+  user:one(users,{fields:[resume.userId],references:[users.id]})
+}))
+
 export const images = createTable("images", {
   id: text("id")
     .$defaultFn(() => createId())
@@ -72,7 +107,7 @@ export const teamRoles = createTable("rolesTeam", {
     .notNull()
     .unique(),
 });
- 
+
 export const topics = createTable("topics", {
   id: text("id")
     .$defaultFn(() => createId())
@@ -123,7 +158,7 @@ export const tutorials = createTable("tutorials", {
     .primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
   imageId: text("imageId").references(() => images.id, { onDelete: "cascade" }).notNull(),
-  text: varchar("text", {length: 255}).notNull(),
+  text: varchar("text", { length: 255 }).notNull(),
   authorId: text("authorId").references(() => users.id).notNull(),
   createdAt: timestamp("createdAt", {
     mode: "date",
@@ -135,7 +170,7 @@ export const tutorials = createTable("tutorials", {
   subjectId: text("subjectId").references(() => subjects.id),
 })
 
-export const tutorialsRelations = relations(tutorials, ({one}) => ({
+export const tutorialsRelations = relations(tutorials, ({ one }) => ({
   author: one(users, { fields: [tutorials.authorId], references: [users.id] }),
   topic: one(topics, { fields: [tutorials.topicId], references: [topics.id] }),
   subject: one(subjects, { fields: [tutorials.subjectId], references: [subjects.id] }),
@@ -165,7 +200,7 @@ export const tasks = createTable("tasks", {
   }).defaultNow(),
 })
 
-export const tasksRelations = relations(tasks, ({one}) => ({
+export const tasksRelations = relations(tasks, ({ one }) => ({
   author: one(users, { fields: [tasks.authorId], references: [users.id] }),
   subject: one(subjects, { fields: [tasks.subjectId], references: [subjects.id] }),
   group: one(groups, { fields: [tasks.groupId], references: [groups.id] }),
@@ -180,6 +215,7 @@ export const rolesEnum = pgEnum("role", [
   "STUDENT",
   "UNKNOWN",
 ]);
+
 export const roleSchema = z.enum(rolesEnum.enumValues, {
   message: "Недопустимая роль"
 });
@@ -216,12 +252,16 @@ export const users = createTable("user", {
     withTimezone: true,
   }).defaultNow(),
   groupId: text("groupId").references((): AnyPgColumn => groups.id),
+  resumeId:text("resumeId").references((): AnyPgColumn => resume.id ),
+  githubUsername: varchar("githubUsername", { length: 255 }),
+  githubToken: text("githubToken"),
 });
 
 export const usersRelations = relations(users, ({ many, one }) => ({
   accounts: many(accounts),
   group: one(groups, { fields: [users.groupId], references: [groups.id] }),
   profilePicture: one(images, { fields: [users.profilePictureId], references: [images.id] }),
+  resume:one(resume,{fields:[users.resumeId],references:[resume.userId]})
 }));
 
 export const accounts = createTable(

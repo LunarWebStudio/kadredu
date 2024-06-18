@@ -35,7 +35,8 @@ export const env = createEnv({
     S3_ACCESS_KEY: z.string(),
     S3_SECRET_KEY: z.string(),
 
-    GITHUB_TOKEN: z.string(),
+    GITHUB_CLIENT_ID: z.string(),
+    GITHUB_CLIENT_SECRET: z.string(),
   },
 
   client: {},
@@ -57,7 +58,8 @@ export const env = createEnv({
     S3_ACCESS_KEY: process.env.S3_ACCESS_KEY,
     S3_SECRET_KEY: process.env.S3_SECRET_KEY,
 
-    GITHUB_TOKEN: process.env.GITHUB_TOKEN
+    GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
+    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
   },
 
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,

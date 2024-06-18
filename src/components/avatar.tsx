@@ -19,7 +19,7 @@ export default function UserAvatar({
     <Avatar className={className}>
       <AvatarImage
         asChild
-        src={""}
+        src={`/api/images/${image?.storageId}`}
       >
         <S3Image
           src={image?.storageId ?? ""}

@@ -1,6 +1,6 @@
 import {  type Event } from "~/lib/shared/types";
 import { api } from "~/trpc/server";
-import CreateUpdateEvent from "./create_update";
+import CreateUpdateEvent from "~/app/dashboard/(teacher)/events/[id]/create_update";
 
 export default async function CreateUpdateEventPage({
     params

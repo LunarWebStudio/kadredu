@@ -287,7 +287,7 @@ export default function CreateUpdateTask({
                     control={form.control}
                     name="description"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="px-6">
                         <EditorText text={field.value} setText={field.onChange} options={{links: true, code: true, quotes: true}}/>
                       </FormItem>
                     )}

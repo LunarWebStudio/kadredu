@@ -1,4 +1,4 @@
-import { type Role } from "~/server/db/schema";
+import {type Status, type Role } from "~/server/db/schema";
 
 export type RoleData = {
   name: string;
@@ -45,4 +45,26 @@ export function GetRoleData(role: Role | undefined): RoleData {
         className: "text-gray-800 bg-gray-100 border-gray-200 border"
       }
   }
+}
+
+export type StatusData = {
+  code:Status,
+  name:string
+}
+export const Statuses:StatusData[] =[
+  {
+    code:"WORK",
+    name:"Работаю"
+  },
+  {
+    code:"SEARCH",
+    name:"В поиске",
+  },
+  {
+    code:"OPEN_TO_OFFERS",
+    name:"Открыт к предложениям"
+  }
+]
+export const GetStatusResume = (status?:Status):StatusData | undefined =>{
+  return Statuses.find(el => el.code === status)
 }

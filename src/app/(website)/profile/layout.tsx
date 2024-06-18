@@ -1,4 +1,4 @@
-import { BookHeart, BriefcaseBusiness, GraduationCap, SquareUserRound } from "lucide-react";
+import { BookHeart, BriefcaseBusiness, GraduationCap, Settings, SquareUserRound } from "lucide-react";
 import { type ReactNode } from "react";
 import UserAvatar from "~/components/avatar";
 import LevelBar from "~/components/level_bar";
@@ -17,7 +17,7 @@ export default async function ProfileLayout({
   const session = await getServerAuthSession();
 
   return (
-    <div className="flex flex-row gap-4 p-4">
+    <div className="flex flex-row gap-4 p-4 container">
       <aside className="w-[350px] flex flex-col gap-4 py-4 px-6">
         <div className="rounded-xl bg-secondary space-y-6 p-6">
           <div className="flex flex-col gap-4 justify-center items-center">
@@ -69,7 +69,16 @@ export default async function ProfileLayout({
               icon={<GraduationCap className={iconClassName} />}
               locked={GetLevel(session?.user.experiencePoints ?? 0) < 3}
             />
-
+            <SidebarItem
+              title="Настройки"
+              color={{
+                bg: "bg-slate-400",
+                text: "text-slate-400",
+                text_hover: "hover:text-slate-400"
+              }}
+              href="/settings"
+              icon={<Settings className={iconClassName} />}
+            />
           </div>
         </div>
         <div className="rounded-xl bg-secondary p-6 space-y-6">

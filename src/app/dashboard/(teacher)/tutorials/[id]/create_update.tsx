@@ -276,7 +276,7 @@ export default function CreateUpdateTutorial({
                     control={form.control}
                     name="text"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="px-6">
                         <EditorText text={field.value} setText={field.onChange} options={{links: true, code: true, quotes: true}}/>
                       </FormItem>
                     )}
