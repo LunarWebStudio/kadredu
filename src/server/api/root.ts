@@ -1,15 +1,16 @@
-import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
-import { userRouter } from "~/server/api/routers/user";
 import { buildingRouter } from "~/server/api/routers/building";
-import { imageRouter } from "~/server/api/routers/image";
 import { groupRouter } from "~/server/api/routers/group";
+import { imageRouter } from "~/server/api/routers/image";
+import { portfolioRouter } from "~/server/api/routers/portfolio";
+import { resumeRouter } from "~/server/api/routers/resume";
 import { teamRolesRouter } from "~/server/api/routers/roles";
 import { subjectsRouter } from "~/server/api/routers/subjects";
-import { topicsRouter } from "~/server/api/routers/topics";
-import { resumeRouter } from "~/server/api/routers/resume";
-import { tutorialsRouter } from "~/server/api/routers/tutorial";
 import { tasksRouter } from "~/server/api/routers/task";
-
+import { topicsRouter } from "~/server/api/routers/topics";
+import { tutorialsRouter } from "~/server/api/routers/tutorial";
+import { userRouter } from "~/server/api/routers/user";
+import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
+import { githubRouter } from "./routers/github";
 
 export const appRouter = createTRPCRouter({
   user: userRouter,
@@ -21,7 +22,9 @@ export const appRouter = createTRPCRouter({
   tutorial: tutorialsRouter,
   subject: subjectsRouter,
   resume: resumeRouter,
-  task: tasksRouter
+  task: tasksRouter,
+  portfolio: portfolioRouter,
+  github: githubRouter
 });
 
 export type AppRouter = typeof appRouter;

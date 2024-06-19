@@ -1,23 +1,28 @@
-import AboutMeForm from "~/app/(website)/profile/settings/profileInfoForm";
-import { getServerAuthSession } from "~/server/auth";
+import ProfileTemplate from "~/app/(website)/profile/[username]/templ";
 import GithubConnect from "~/app/(website)/profile/settings/github";
-import { api } from "~/trpc/server";
+import AboutMeForm from "~/app/(website)/profile/settings/profileInfoForm";
 import ResumeForm from "~/app/(website)/profile/settings/resumeForm";
 import ThemeSwitcher from "~/app/(website)/profile/settings/themeSwitcher";
+import { getServerAuthSession } from "~/server/auth";
+import { api } from "~/trpc/server";
 
-export default async function SettingsPage(){
-  const session = await getServerAuthSession()
-  const roles = await api.teamRoles.getAll()
-  const resume = await api.resume.getSelf()
-  return(
-    <>
-      <div className="mt-4 space-y-5 w-full">
-        <h3 className=" text-2xl relative">Настройки <div className="absolute -bottom-1 left-0 border-b-2 border-slate-400  w-[34px]"></div></h3>
-          <AboutMeForm session={session ?? undefined} />
-          <GithubConnect />
-          <ResumeForm roles={roles} resume={resume ?? undefined} />
-          <ThemeSwitcher />
-      </div>
-    </>
-  )
+export default async function SettingsPage() {
+  const session = await getServerAuthSession();
+  const roles = await api.teamRoles.getAll();
+  const resume = await api.resume.getSelf();
+  return (
+    <ProfileTemplate
+      title="Настройки"
+      className="bg-slate-400"
+    >
+      <AboutMeForm session={session ?? undefined} />
+      <GithubConnect />
+      <ResumeForm
+        roles={roles}
+        resume={resume ?? undefined}
+      />
+      <ThemeSwitcher />
+    </ProfileTemplate>
+  );
 }
+

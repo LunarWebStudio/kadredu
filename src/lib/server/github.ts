@@ -17,7 +17,13 @@ export class Github {
       username: this.username
     })
 
-    return data;
+    return data.map(r => ({
+      name: r.name,
+      description: r.description,
+      url: r.html_url,
+      owner: r.owner.login,
+      default_branch: r.default_branch,
+    }));
   }
 
   public async GetRepo(repo: string) {
@@ -56,10 +62,14 @@ export class Github {
       total += data[key]!;
     });
 
-    return Object.keys(data).map(key => ({
+    const percentage = Object.keys(data).map(key => ({
       name: key,
       percent: data[key]! / total * 100
     }))
+
+    percentage.sort((a, b) => b.percent - a.percent)
+
+    return percentage;
   }
 
   public async GetTree(repo: string) {

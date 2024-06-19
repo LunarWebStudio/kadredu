@@ -1,10 +1,10 @@
-import * as React from "react"
+import * as React from "react";
 
-import { cn } from "~/lib/utils"
-import { Button } from "~/components/ui/button"
+import { Button } from "~/components/ui/button";
+import { cn } from "~/lib/utils";
 
 export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> { }
+  extends React.InputHTMLAttributes<HTMLInputElement> {}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, max, ...props }, ref) => {
@@ -13,19 +13,31 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {type === "file" ? (
           <label
             className={cn(
-              "flex flex-col lg:flex-row gap-2 w-full lg:items-center ",
+              "flex w-full flex-col gap-2 lg:flex-row lg:items-center ",
               className,
-              props.disabled ? "cursor-not-allowed animate-pulse" : "cursor-pointer"
+              props.disabled
+                ? "animate-pulse cursor-not-allowed"
+                : "cursor-pointer"
             )}
           >
-            <input type="file" className="hidden" {...props} />
+            <input
+              type="file"
+              className="hidden"
+              {...props}
+            />
             <Button
               disabled={props.disabled}
-              type="button" className="w-fit px-8 pointer-events-none">
+              type="button"
+              className="pointer-events-none w-fit px-8"
+            >
               Загрузить
             </Button>
             <p className="text-xs md:text-sm">
-              В формате {props.accept?.split(",").map((ext) => ext.split("/")[1]?.toUpperCase()).join(", ")}
+              В формате{" "}
+              {props.accept
+                ?.split(",")
+                .map(ext => ext.split("/")[1]?.toUpperCase())
+                .join(", ")}
               <br />
               Максимальный размер {max}MB
             </p>
@@ -33,19 +45,18 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         ) : (
           <input
             type={type}
-            className={
-              cn(
-                "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-                className
-              )}
+            className={cn(
+              "flex h-10 w-full rounded-md border border-input bg-secondary px-3 py-2 text-sm ring-offset-secondary file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+              className
+            )}
             ref={ref}
             {...props}
           />
         )}
       </>
-    )
+    );
   }
-)
-Input.displayName = "Input"
+);
+Input.displayName = "Input";
 
-export { Input }
+export { Input };

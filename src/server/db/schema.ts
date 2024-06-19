@@ -1,18 +1,18 @@
+import { createId } from "@paralleldrive/cuid2";
 import { relations, sql } from "drizzle-orm";
 import {
-  type AnyPgColumn,
-  index,
-  integer,
-  pgEnum,
-  pgTableCreator,
-  primaryKey,
-  text,
-  timestamp,
-  varchar,
-  boolean,
+    boolean,
+    index,
+    integer,
+    pgEnum,
+    pgTableCreator,
+    primaryKey,
+    text,
+    timestamp,
+    varchar,
+    type AnyPgColumn,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
-import { createId } from "@paralleldrive/cuid2";
 import { z } from "zod";
 
 export const createTable = pgTableCreator(name => `kadredu_${name}`);
@@ -31,25 +31,25 @@ export type Status = z.infer<typeof statusSchema>;
 
 export const resume = createTable("resumes", {
   id: text("id")
-  .$defaultFn(()=> createId())
-  .notNull()
-  .primaryKey(),
-  userId:text("userId")
-  .notNull()
-  .unique()
-  .references(()=>users.id),
+    .$defaultFn(() => createId())
+    .notNull()
+    .primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .unique()
+    .references(() => users.id),
   roleId: text("roleId")
-  .references(()=>teamRoles.id)
-  .notNull(),
-  status:statusEnum("status")
-  .default("SEARCH")
-  .notNull(),
+    .references(() => teamRoles.id)
+    .notNull(),
+  status: statusEnum("status")
+    .default("SEARCH")
+    .notNull(),
   experience: text("experience")
 });
 
-export const resumeRelations = relations(resume,({one})=>({
-  role:one(teamRoles,{fields:[resume.roleId],references:[teamRoles.id]}),
-  user:one(users,{fields:[resume.userId],references:[users.id]})
+export const resumeRelations = relations(resume, ({ one }) => ({
+  role: one(teamRoles, { fields: [resume.roleId], references: [teamRoles.id] }),
+  user: one(users, { fields: [resume.userId], references: [users.id] })
 }))
 
 export const images = createTable("images", {
@@ -217,16 +217,41 @@ export const users = createTable("user", {
     withTimezone: true,
   }).defaultNow(),
   groupId: text("groupId").references((): AnyPgColumn => groups.id),
-  resumeId:text("resumeId").references((): AnyPgColumn => resume.id ),
+  resumeId: text("resumeId").references((): AnyPgColumn => resume.id),
   githubUsername: varchar("githubUsername", { length: 255 }),
   githubToken: text("githubToken"),
 });
+
+
+export const portfolioProjects = createTable("portfolioProjects", {
+  id: text("id")
+    .$defaultFn(() => createId())
+    .notNull()
+    .primaryKey(),
+
+  name: varchar("name", { length: 255 }).notNull(),
+  emoji: varchar("emoji", { length: 15 }).notNull(),
+  description: varchar("description", { length: 255 }).notNull(),
+
+  userId: text("userId")
+    .notNull()
+    .unique()
+    .references(() => users.id),
+
+  repoName: varchar("repoName", { length: 255 }).notNull(),
+  repoOwner: varchar("repoOwner", { length: 255 }).notNull(),
+});
+
+export const portfolioProjectsRelations = relations(portfolioProjects, ({ one }) => ({
+  user: one(users, { fields: [portfolioProjects.userId], references: [users.id] })
+}))
 
 export const usersRelations = relations(users, ({ many, one }) => ({
   accounts: many(accounts),
   group: one(groups, { fields: [users.groupId], references: [groups.id] }),
   profilePicture: one(images, { fields: [users.profilePictureId], references: [images.id] }),
-  resume:one(resume,{fields:[users.resumeId],references:[resume.userId]})
+  resume: one(resume, { fields: [users.resumeId], references: [resume.userId] }),
+  projects: many(portfolioProjects)
 }));
 
 export const accounts = createTable(
