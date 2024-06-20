@@ -1,4 +1,5 @@
 import { buildingRouter } from "~/server/api/routers/building";
+import { githubRouter } from "~/server/api/routers/github";
 import { groupRouter } from "~/server/api/routers/group";
 import { imageRouter } from "~/server/api/routers/image";
 import { portfolioRouter } from "~/server/api/routers/portfolio";
@@ -10,7 +11,6 @@ import { topicsRouter } from "~/server/api/routers/topics";
 import { tutorialsRouter } from "~/server/api/routers/tutorial";
 import { userRouter } from "~/server/api/routers/user";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
-import { githubRouter } from "./routers/github";
 
 export const appRouter = createTRPCRouter({
   user: userRouter,

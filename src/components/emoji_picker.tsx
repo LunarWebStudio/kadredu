@@ -32,6 +32,7 @@ export default function EmojiPicker({
             setEmoji(val.native);
             setOpen(false);
           }}
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           i18n={i18n}
           theme={theme.resolvedTheme}
         />
