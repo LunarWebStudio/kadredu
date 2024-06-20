@@ -12,7 +12,7 @@ import {
   githubProcedure,
   protectedProcedure
 } from "~/server/api/trpc";
-import { portfolioProjects, users } from "~/server/db/schema";
+import { portfolioProjects, projectLike, users } from "~/server/db/schema";
 
 export const portfolioRouter = createTRPCRouter({
   create: githubProcedure
@@ -39,6 +39,7 @@ export const portfolioRouter = createTRPCRouter({
   update: protectedProcedure
     .input(z.intersection(IdInputSchema, PortfolioProjectInputSchema))
     .mutation(async ({ ctx, input }) => {
+      // TODO: Update когда макс сделает кнопку
       return null;
     }),
   delete: protectedProcedure
@@ -57,6 +58,7 @@ export const portfolioRouter = createTRPCRouter({
           ilike(portfolioProjects.repoOwner, `%${input.username}%`)
         ),
         with: {
+          likes: true,
           user: true
         }
       })
@@ -88,6 +90,7 @@ export const portfolioRouter = createTRPCRouter({
       const repo = await ctx.db.query.portfolioProjects.findFirst({
         where: eq(portfolioProjects.id, input.id),
         with: {
+          likes: true,
           user: true
         }
       })
@@ -121,5 +124,27 @@ export const portfolioRouter = createTRPCRouter({
         tree: await github.GetTree(repo.repoName),
         readme: await github.GetReadme(repo.repoName)
       }
+    }),
+  toggleLike: protectedProcedure
+    .input(IdInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      const condition = and(
+        eq(projectLike.projectId, input.id),
+        eq(projectLike.userId, ctx.session.user.id)
+      )
+
+      const like = await ctx.db.query.projectLike.findFirst({
+        where: condition
+      })
+
+      if (like) {
+        await ctx.db.delete(projectLike).where(condition)
+        return;
+      }
+
+      await ctx.db.insert(projectLike).values({
+        projectId: input.id,
+        userId: ctx.session.user.id
+      })
     })
 });

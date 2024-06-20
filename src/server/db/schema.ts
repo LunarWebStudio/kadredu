@@ -10,10 +10,11 @@ import {
     text,
     timestamp,
     varchar,
-    type AnyPgColumn,
+    type AnyPgColumn
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 import { z } from "zod";
+
 
 export const createTable = pgTableCreator(name => `kadredu_${name}`);
 
@@ -242,9 +243,32 @@ export const portfolioProjects = createTable("portfolioProjects", {
   repoOwner: varchar("repoOwner", { length: 255 }).notNull(),
 });
 
-export const portfolioProjectsRelations = relations(portfolioProjects, ({ one }) => ({
-  user: one(users, { fields: [portfolioProjects.userId], references: [users.id] })
+export const portfolioProjectsRelations = relations(portfolioProjects, ({ one, many }) => ({
+  user: one(users, { fields: [portfolioProjects.userId], references: [users.id] }),
+  likes: many(projectLike),
 }))
+
+export const projectLike = createTable("projectLike", {
+  userId: text("userId")
+    .notNull()
+    .unique()
+    .references(() => users.id),
+
+  projectId: text("projectId")
+    .notNull()
+    .unique()
+    .references(() => portfolioProjects.id),
+}, (t) => ({
+  compoundKey: primaryKey({
+    columns: [t.projectId, t.userId],
+  }),
+}));
+
+export const projectLikeRelations = relations(projectLike, ({ one }) => ({
+  user: one(users, { fields: [projectLike.userId], references: [users.id] }),
+  project: one(portfolioProjects, { fields: [projectLike.projectId], references: [portfolioProjects.id] })
+}))
+
 
 export const usersRelations = relations(users, ({ many, one }) => ({
   accounts: many(accounts),

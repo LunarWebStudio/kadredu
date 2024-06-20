@@ -311,6 +311,9 @@ export const PortfolioProjectInputSchema = z.object({
 export type PortfolioProject = inferProcedureOutput<
   AppRouter["portfolio"]["getByUsername"]
 >[number];
+export type OnePortfolioProject = inferProcedureOutput<
+  AppRouter["portfolio"]["getOne"]
+>;
 
 export type GithubRepository = inferProcedureOutput<
   AppRouter["github"]["getOwnedRepos"]

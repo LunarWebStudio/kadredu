@@ -35,7 +35,7 @@ export default function ProjectCard({
           )}
           <div className="flex items-center gap-1">
             <Heart className="size-4" />
-            <p>10</p>
+            <p>{project.likes.length}</p>
           </div>
         </div>
       </div>

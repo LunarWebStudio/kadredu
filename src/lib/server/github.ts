@@ -79,9 +79,12 @@ export class Github {
       tree_sha: (await this.GetRepo(repo)).default_branch
     })
 
-    return files.data.tree.map(r => ({
-      path: r.path,
-      url: r.url,
-    }));
+    return files.data.tree
+      .sort((a, _) => a.type === "tree" ? -1 : 1)
+      .map(r => ({
+        path: r.path,
+        url: r.url,
+        type: r.type,
+      }));
   }
 }
