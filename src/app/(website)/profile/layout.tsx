@@ -118,7 +118,7 @@ export default async function ProfileLayout({
           </div>
         </div>
       </aside>
-      {children}
+      <div className="shrink grow">{children}</div>
     </div>
   );
 }
