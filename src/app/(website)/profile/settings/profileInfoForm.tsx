@@ -19,13 +19,13 @@ import { UserUpdateInputSchema } from "~/lib/shared/types";
 import { api } from "~/trpc/react";
 
 
-export default function AboutMeForm({session}:{
-  session?:Session
+export default function AboutMeForm({ session }: {
+  session?: Session
 }) {
   const form = useForm({
     resolver: zodResolver(UserUpdateInputSchema),
     defaultValues: {
-      profilePictureImage:"",
+      profilePictureImage: "",
       name: session?.user.name ?? "",
       username: session?.user.username ?? "",
       description: session?.user.description ?? "",
@@ -37,7 +37,7 @@ export default function AboutMeForm({session}:{
   const updateSelfMutation = api.user.updadeSelf.useMutation({
     onSuccess() {
       toast({
-        title:"Профиль сохранен",
+        title: "Профиль сохранен",
       })
       router.refresh();
     },
@@ -55,8 +55,8 @@ export default function AboutMeForm({session}:{
   }
 
   return (
-    <div className="w-full dark:bg-neutral-900 bg-white rounded-2xl">
-      <div className="w-full px-6 py-4 border-b-2 text-lg font-bold dark:border-neutral-700 border-gray-300 dark:text-slate-300 text-slate-500">
+    <div className="w-full bg-secondary rounded-2xl">
+      <div className="w-full px-6 py-4 border-b-2 text-lg font-bold text-muted-foreground">
         Аккаунт
       </div>
       <div className="w-full p-6">
@@ -70,14 +70,14 @@ export default function AboutMeForm({session}:{
                   <FormLabel>ФОТО</FormLabel>
                   <div className="flex items-center justify-center">
                     <label className="relative size-fit group cursor-pointer">
-                     {
+                      {
                         field.value ?
                           <Avatar className="size-20">
                             <AvatarImage src={field.value} />
                             <AvatarFallback></AvatarFallback>
                           </Avatar>
-                          : 
-                          <UserAvatar 
+                          :
+                          <UserAvatar
                             image={session?.user.profilePicture ?? undefined}
                             name={session?.user.name ?? "Неизвестно"}
                             className="size-20"
@@ -87,11 +87,11 @@ export default function AboutMeForm({session}:{
                         <Pen className="size-4" />
                       </div>
 
-                      <input accept="image/png, image/webp, image/jpg, image/jpeg"  type="file" className="hidden" {...field} value="" onChange={(e) => {
+                      <input accept="image/png, image/webp, image/jpg, image/jpeg" type="file" className="hidden" {...field} value="" onChange={(e) => {
                         if (!e.target.files?.[0]) return;
 
                         ImagesToBase64([e.target.files[0]]).then((images) => {
-                          
+
                           field.onChange(images[0]!);
                         }).catch(() => {
                           toast({
@@ -106,14 +106,14 @@ export default function AboutMeForm({session}:{
                 </FormItem>
               )}
             />
-            <FormField 
+            <FormField
               control={form.control}
               name="username"
-              render={({field})=>(
+              render={({ field }) => (
                 <FormItem>
                   <RequiredFormLabel>НИК</RequiredFormLabel>
                   <FormControl>
-                    <Input className="dark:bg-neutral-800 bg-white" type="text" placeholder="Никнейм" {...field}/>
+                    <Input type="text" placeholder="Никнейм" {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -125,7 +125,7 @@ export default function AboutMeForm({session}:{
                 <FormItem>
                   <RequiredFormLabel>ФИО</RequiredFormLabel>
                   <FormControl>
-                    <Input className="dark:bg-neutral-800 bg-white" type="text" placeholder="Фамилия Имя Отчество" {...field} />
+                    <Input type="text" placeholder="Фамилия Имя Отчество" {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -138,10 +138,10 @@ export default function AboutMeForm({session}:{
                   <FormLabel>О себе</FormLabel>
                   <FormControl className="">
                     <EditorText text={field.value} setText={field.onChange} options={{
-                      code:true,
-                      quotes:true,
-                      links:true
-                    }}/>
+                      code: true,
+                      quotes: true,
+                      links: true
+                    }} />
                   </FormControl>
                 </FormItem>
               )}

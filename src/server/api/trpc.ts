@@ -60,7 +60,7 @@ export const protectedProcedure = verificationProcedure.use(({ ctx, next }) => {
 });
 
 const FORBIDDEN_MESSAGE = "У вас недостаточно прав для данного действия";
-const HIGH_LEVEL_THRESHOLD = 3;
+export const HIGH_LEVEL_THRESHOLD = 3;
 export const highLevelProcedure = protectedProcedure.use(({ ctx, next }) => {
   if (
     ctx.session?.user.role.includes("ADMIN") ||
@@ -73,7 +73,9 @@ export const highLevelProcedure = protectedProcedure.use(({ ctx, next }) => {
     });
   }
 
-  if (GetLevel(ctx.session.user.experiencePoints) < HIGH_LEVEL_THRESHOLD) {
+  if (
+    GetLevel(ctx.session.user.experiencePoints).level < HIGH_LEVEL_THRESHOLD
+  ) {
     throw new TRPCError({ code: "FORBIDDEN", message: FORBIDDEN_MESSAGE });
   }
 

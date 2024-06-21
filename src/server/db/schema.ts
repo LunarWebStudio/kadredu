@@ -1,6 +1,7 @@
+import { createId } from "@paralleldrive/cuid2";
 import { relations, sql } from "drizzle-orm";
 import {
-  type AnyPgColumn,
+  boolean,
   index,
   integer,
   pgEnum,
@@ -9,10 +10,9 @@ import {
   text,
   timestamp,
   varchar,
-  boolean,
+  type AnyPgColumn,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
-import { createId } from "@paralleldrive/cuid2";
 import { z } from "zod";
 
 export const createTable = pgTableCreator(name => `kadredu_${name}`);
@@ -31,25 +31,25 @@ export type Status = z.infer<typeof statusSchema>;
 
 export const resume = createTable("resumes", {
   id: text("id")
-  .$defaultFn(()=> createId())
-  .notNull()
-  .primaryKey(),
-  userId:text("userId")
-  .notNull()
-  .unique()
-  .references(()=>users.id),
+    .$defaultFn(() => createId())
+    .notNull()
+    .primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .unique()
+    .references(() => users.id),
   roleId: text("roleId")
-  .references(()=>teamRoles.id)
-  .notNull(),
-  status:statusEnum("status")
-  .default("SEARCH")
-  .notNull(),
+    .references(() => teamRoles.id)
+    .notNull(),
+  status: statusEnum("status")
+    .default("SEARCH")
+    .notNull(),
   experience: text("experience")
 });
 
-export const resumeRelations = relations(resume,({one})=>({
-  role:one(teamRoles,{fields:[resume.roleId],references:[teamRoles.id]}),
-  user:one(users,{fields:[resume.userId],references:[users.id]})
+export const resumeRelations = relations(resume, ({ one }) => ({
+  role: one(teamRoles, { fields: [resume.roleId], references: [teamRoles.id] }),
+  user: one(users, { fields: [resume.userId], references: [users.id] })
 }))
 
 export const images = createTable("images", {
@@ -129,8 +129,8 @@ export const tutorials = createTable("tutorials", {
     mode: "date",
     withTimezone: true,
   }).defaultNow(),
-  price: integer("price").notNull().default(0), // число+
-  timeRead: integer("timeRead").notNull().default(0), // число+
+  price: integer("price").notNull().default(0),
+  timeRead: integer("timeRead").notNull().default(0),
   topicId: text("topicId").references(() => topics.id).notNull(),
   subjectId: text("subjectId").references(() => subjects.id),
 })
@@ -153,8 +153,8 @@ export const tasks = createTable("tasks", {
     mode: "date",
     withTimezone: true,
   }),
-  experience: integer("experience").notNull().default(0), // число+
-  coin: integer("coin").notNull().default(0), // число+
+  experience: integer("experience").notNull().default(0),
+  coin: integer("coin").notNull().default(0),
   tutorialId: text("tutorialId").references(() => tutorials.id),
   subjectId: text("subjectId").notNull().references(() => subjects.id),
   groupId: text("groupId").notNull().references(() => groups.id),
@@ -217,7 +217,7 @@ export const users = createTable("user", {
     withTimezone: true,
   }).defaultNow(),
   groupId: text("groupId").references((): AnyPgColumn => groups.id),
-  resumeId:text("resumeId").references((): AnyPgColumn => resume.id ),
+  resumeId: text("resumeId").references((): AnyPgColumn => resume.id),
   githubUsername: varchar("githubUsername", { length: 255 }),
   githubToken: text("githubToken"),
 });
@@ -226,7 +226,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   accounts: many(accounts),
   group: one(groups, { fields: [users.groupId], references: [groups.id] }),
   profilePicture: one(images, { fields: [users.profilePictureId], references: [images.id] }),
-  resume:one(resume,{fields:[users.resumeId],references:[resume.userId]})
+  resume: one(resume, { fields: [users.resumeId], references: [resume.userId] })
 }));
 
 export const accounts = createTable(

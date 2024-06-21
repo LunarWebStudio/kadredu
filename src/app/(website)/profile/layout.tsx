@@ -1,30 +1,43 @@
-import { BookHeart, BriefcaseBusiness, GraduationCap, Settings, SquareUserRound } from "lucide-react";
+import {
+  BookHeart,
+  BriefcaseBusiness,
+  GraduationCap,
+  Settings,
+  SquareUserRound
+} from "lucide-react";
 import { type ReactNode } from "react";
+import SidebarItem from "~/app/(website)/profile/sidebar_item";
 import UserAvatar from "~/components/avatar";
 import LevelBar from "~/components/level_bar";
-import { getServerAuthSession } from "~/server/auth";
-import SidebarItem from "~/app/(website)/profile/sidebar_item";
-import GetLevel from "~/lib/shared/level";
 import S3Image from "~/components/s3Image";
+import GetLevel from "~/lib/shared/level";
+import { HIGH_LEVEL_THRESHOLD } from "~/server/api/trpc";
+import { getServerAuthSession } from "~/server/auth";
 
 const iconClassName = "size-6";
 
 export default async function ProfileLayout({
   children
 }: {
-  children: ReactNode;
+  children: ReactNode
 }) {
   const session = await getServerAuthSession();
 
   return (
-    <div className="flex flex-row gap-4 p-4 container">
-      <aside className="w-[350px] flex flex-col gap-4 py-4 px-6">
-        <div className="rounded-xl bg-secondary space-y-6 p-6">
-          <div className="flex flex-col gap-4 justify-center items-center">
-            <UserAvatar image={session?.user.profilePicture ?? undefined} name={session?.user.name ?? ""} className="size-16" />
+    <div className="container flex flex-row gap-4 p-4">
+      <aside className="flex w-[350px] flex-col gap-4 px-6 py-4">
+        <div className="space-y-6 rounded-xl bg-secondary p-6">
+          <div className="flex flex-col items-center justify-center gap-4">
+            <UserAvatar
+              image={session?.user.profilePicture ?? undefined}
+              name={session?.user.name ?? ""}
+              className="size-16"
+            />
             <h4>{session?.user.username}</h4>
-            <p className="text-center text-muted-foreground">{session?.user.name}</p>
-            <LevelBar experience={session?.user.experiencePoints ?? 0} />
+            <p className="text-center text-muted-foreground">
+              {session?.user.name}
+            </p>
+            <LevelBar />
           </div>
           <p className="text-muted-foreground/70">Меню</p>
           <div className="flex flex-col gap-4">
@@ -67,7 +80,10 @@ export default async function ProfileLayout({
               }}
               href={`/tutorials/${session?.user.username}`}
               icon={<GraduationCap className={iconClassName} />}
-              locked={GetLevel(session?.user.experiencePoints ?? 0) < 3}
+              locked={
+                GetLevel(session?.user.experiencePoints ?? 0).level <
+                HIGH_LEVEL_THRESHOLD
+              }
             />
             <SidebarItem
               title="Настройки"
@@ -76,14 +92,14 @@ export default async function ProfileLayout({
                 text: "text-slate-400",
                 text_hover: "hover:text-slate-400"
               }}
-              href="/settings"
+              href="/profile/settings"
               icon={<Settings className={iconClassName} />}
             />
           </div>
         </div>
-        <div className="rounded-xl bg-secondary p-6 space-y-6">
+        <div className="space-y-6 rounded-xl bg-secondary p-6">
           <p className="text-muted-foreground/70">Группа</p>
-          <div className="flex flex-row gap-4 items-center">
+          <div className="flex flex-row items-center gap-4">
             <div className="size-16">
               <S3Image
                 className="size-full object-contain"
@@ -95,11 +111,14 @@ export default async function ProfileLayout({
                 alt={session?.user.group?.title ?? ""}
               />
             </div>
-            <p className="font-bold tracking-tighter">{session?.user.group?.building.title} / {session?.user.group?.title}</p>
+            <p className="font-bold tracking-tighter">
+              {session?.user.group?.building.title} /{" "}
+              {session?.user.group?.title}
+            </p>
           </div>
         </div>
       </aside>
-      {children}
+      <div className="shrink grow">{children}</div>
     </div>
   );
 }

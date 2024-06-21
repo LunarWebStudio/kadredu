@@ -13,36 +13,35 @@ import { Textarea } from "~/components/ui/textarea";
 import { useToast } from "~/components/ui/use-toast";
 import { GetStatusResume, Statuses } from "~/lib/shared/enums";
 import { OnError } from "~/lib/shared/onError";
-import { type Resume, ResumeInputSchema, type TeamRole } from "~/lib/shared/types";
+import { ResumeInputSchema, type Resume, type TeamRole } from "~/lib/shared/types";
 import { cn } from "~/lib/utils";
 import { type Status } from "~/server/db/schema";
 import { api } from "~/trpc/react";
 
-
-
-export default function ResumeForm({roles,resume}:
-  {
-    roles:TeamRole[],
-    resume:Resume | undefined
-  }
-){
-  const [roleOpen,setRoleOpen] = useState(false)
-  const [statusOpen,setStatusOpen] = useState(false)
+export default function ResumeForm({
+  roles,
+  resume
+}: {
+  roles: TeamRole[],
+  resume: Resume | undefined
+}) {
+  const [roleOpen, setRoleOpen] = useState(false)
+  const [statusOpen, setStatusOpen] = useState(false)
   const router = useRouter()
-  const {toast} = useToast()
+  const { toast } = useToast()
 
   const form = useForm({
-    resolver:zodResolver(ResumeInputSchema),
-    defaultValues:{ 
+    resolver: zodResolver(ResumeInputSchema),
+    defaultValues: {
       roleId: resume?.roleId ?? "",
       status: GetStatusResume(resume?.status)?.code ?? "",
-      experience:resume?.experience ?? ""
+      experience: resume?.experience ?? ""
     }
   })
   const updateSelfResumeMutation = api.resume.updateSelf.useMutation({
     onSuccess() {
       toast({
-        title:"Резюме сохранено",
+        title: "Резюме сохранено",
       })
       router.refresh();
     },
@@ -54,24 +53,25 @@ export default function ResumeForm({roles,resume}:
       })
     }
   })
-  const onSubmit = (data:z.infer<typeof ResumeInputSchema>) => {
+  const onSubmit = (data: z.infer<typeof ResumeInputSchema>) => {
     updateSelfResumeMutation.mutate({
       ...data
     })
   }
 
-  return(
-    <div className="w-full dark:bg-neutral-900 bg-white rounded-2xl">
-      <div className="w-full px-6 py-4 border-b-2 text-lg font-bold dark:border-neutral-700 border-gray-300 dark:text-slate-300 text-slate-500">
+
+  return (
+    <div className="w-full rounded-xl bg-secondary">
+      <div className="w-full px-6 py-4 border-b-2 text-lg font-bold text-muted-foreground">
         Резюме
       </div>
       <div className="w-full p-6">
-         <Form {...form}>
-          <form className=" space-y-4" onSubmit={form.handleSubmit((data)=>{
+        <Form {...form}>
+          <form className=" space-y-4" onSubmit={form.handleSubmit((data) => {
             onSubmit({
-              roleId:data.roleId,
-              experience:data.experience,
-              status:data.status as Status
+              roleId: data.roleId,
+              experience: data.experience,
+              status: data.status as Status
             })
             OnError(toast)
           })}>
@@ -89,7 +89,7 @@ export default function ResumeForm({roles,resume}:
                   >
                     <PopoverTrigger className="hidden w-full lg:flex " asChild>
                       <Button
-                        className="w-full justify-between dark:bg-neutral-800 bg-white"
+                        className="w-full justify-between bg-secondary"
                         variant="outline"
                         type="button"
                       >
@@ -116,7 +116,7 @@ export default function ResumeForm({roles,resume}:
             <FormField
               control={form.control}
               name="status"
-              render={({field})=>(
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>
                     Статус
@@ -124,14 +124,14 @@ export default function ResumeForm({roles,resume}:
                   <Popover open={statusOpen} onOpenChange={setStatusOpen}>
                     <PopoverTrigger asChild>
                       <Button
-                        className="w-full justify-between dark:bg-neutral-800 bg-white "
+                        className="w-full justify-between bg-secondary"
                         variant="outline"
                         type="button"
                       >
                         {
                           GetStatusResume(field.value as Status)?.name ?? "Выберите статус"
                         }
-                        <ChevronDown /> 
+                        <ChevronDown />
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent align="end">
@@ -139,7 +139,7 @@ export default function ResumeForm({roles,resume}:
                         <CommandList>
                           <CommandGroup>
                             {
-                              Statuses.map(status =>(
+                              Statuses.map(status => (
                                 <CommandItem
                                   key={status.code}
                                   value={status.name}
@@ -169,22 +169,21 @@ export default function ResumeForm({roles,resume}:
             <FormField
               control={form.control}
               name="experience"
-              render={({field})=>(
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Опыт работы</FormLabel>
-                  <Textarea className="w-full h-20 dark:bg-neutral-800 bg-white" placeholder="Несколько компаний" {...field}/>
+                  <Textarea className="w-full h-20 bg-secondary" placeholder="Несколько компаний" {...field} />
                 </FormItem>
               )}
             />
             <Button className="w-full" disabled={updateSelfResumeMutation.isPending}>Сохранить</Button>
           </form>
-         </Form>
+        </Form>
       </div>
     </div>
   )
 }
- 
-                  
+
 function RoleList({
   roles,
   currentRoleId,
@@ -194,17 +193,17 @@ function RoleList({
   roles: TeamRole[],
   currentRoleId: string,
   setCurrentRole: (id: string) => void,
-  setRoleState:(arg:boolean) => void
+  setRoleState: (arg: boolean) => void
 }) {
 
   return (
     <Command>
-      <CommandInput placeholder="Роль..."/>
+      <CommandInput placeholder="Роль..." />
       <CommandList>
         <CommandEmpty>Роли не найдены.</CommandEmpty>
         <CommandGroup>
           {roles.map(role => (
-            <CommandItem 
+            <CommandItem
               key={role.id}
               value={role.name ?? `${undefined}`}
               onSelect={() => {
@@ -226,4 +225,3 @@ function RoleList({
     </Command>
   );
 }
-                  
