@@ -36,7 +36,7 @@ export default function CreateUpdateTutorial({
     resolver: zodResolver(TutorialInputShema),
     defaultValues: {
       name: tutorial?.name ?? "",
-      imageId: tutorial?.imageId ?? "",
+      imageId: "",
       text: tutorial?.text ?? "",
       authorId: tutorial?.authorId ?? "",
       price: tutorial?.price ?? 0,

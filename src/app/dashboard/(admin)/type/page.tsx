@@ -17,8 +17,8 @@ import {
   DropdownMenuTrigger
 } from "~/components/ui/dropdown-menu";
 import { Button } from "~/components/ui/button";
-import CreateUpdateType from "~/app/dashboard/(admin)/type/create_update";
-import DeleteType from "~/app/dashboard/(admin)/type/delete";
+import CreateUpdateEventType from "~/app/dashboard/(admin)/type/create_update";
+import DeleteEventType from "~/app/dashboard/(admin)/type/delete";
 
 export default async function Themes({
   searchParams
@@ -27,13 +27,13 @@ export default async function Themes({
     search?: string
   }
 }) {
-  const types = await api.type.getAll({
+  const eventTypes = await api.eventType.getAll({
     search: searchParams.search
   });
 
   return (
     <DashboardTemplate
-      navbar={<CreateUpdateType />}
+      navbar={<CreateUpdateEventType />}
       title="Тип мероприятия"
     >
       <div className="max-h-full grow overflow-y-scroll">
@@ -45,9 +45,9 @@ export default async function Themes({
           </TableHeader>
 
           <TableBody>
-            {types.map(type => (
-              <TableRow key={type.id}>
-                <TableCell>{type.name}</TableCell>
+            {eventTypes.map(eventType => (
+              <TableRow key={eventType.id}>
+                <TableCell>{eventType.name}</TableCell>
 
                 <TableCell>
                   <div className="flex items-center justify-end">
@@ -64,8 +64,8 @@ export default async function Themes({
 
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Действия</DropdownMenuLabel>
-                        <CreateUpdateType type={type}/>
-                        <DeleteType type={type}/>
+                        <CreateUpdateEventType type={eventType}/>
+                        <DeleteEventType type={eventType}/>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>

@@ -10,21 +10,21 @@ import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import { useToast } from "~/components/ui/use-toast";
-import { TypeInputShema, type TypeEvent } from "~/lib/shared/types";
+import { EventTypeInputShema, type EventType } from "~/lib/shared/types";
 import { api } from "~/trpc/react";
 import { OnError } from "~/lib/shared/onError";
 import { type z } from "zod";
 
 
-export default function CreateUpdateType({
+export default function CreateUpdateEventType({
   type,
 }: {
-  type?: TypeEvent;
+  type?: EventType;
 }) {
   const [open, setOpen] = useState(false);
 
   const form = useForm({
-    resolver: zodResolver(TypeInputShema),
+    resolver: zodResolver(EventTypeInputShema),
     defaultValues: {
       name: type?.name ?? "",
     }
@@ -33,7 +33,7 @@ export default function CreateUpdateType({
   const router = useRouter();
   const { toast } = useToast();
 
-  const createTypeMutation = api.type.create.useMutation({
+  const createTypeMutation = api.eventType.create.useMutation({
     onSuccess: () => {
       toast({
         title: "Тип мероприятия создан",
@@ -51,7 +51,7 @@ export default function CreateUpdateType({
     },
   })
 
-  const updateTypeMutation = api.type.update.useMutation({
+  const updateTypeMutation = api.eventType.update.useMutation({
     onSuccess: () => {
       toast({
         title: "Тип мероприятия обновлен",
@@ -68,7 +68,7 @@ export default function CreateUpdateType({
     },
   })
 
-  const onSubmit = (data: z.infer<typeof TypeInputShema>) => {
+  const onSubmit = (data: z.infer<typeof EventTypeInputShema>) => {
     if (type) {
       updateTypeMutation.mutate({ id: type.id, ...data })
     } else {

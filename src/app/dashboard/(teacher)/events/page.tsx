@@ -61,18 +61,20 @@ export default async function Events({
                         {events.map(event => (
                             <TableRow key={event.id}>
                                 <TableCell>
+                                    <div className="h-20 aspect-video bg-muted overflow-hidden">
                                     {event.image ? (
                                         <S3Image
                                         src={event.image.storageId}
                                         blurDataURL={event.image.blurPreview}
                                         alt={event.name ?? "Не указано"}
-                                        width={500}
-                                        height={500}
-                                        className="size-14 object-contain"
+                                        width={200}
+                                        height={200}
+                                        className="size-full object-cover rounded-md"
                                         />
                                     ) : (
-                                        <Skeleton className="size-14 rounded-md" />
+                                        <Skeleton className="size-full rounded-md" />
                                     )}
+                                    </div>
                                 </TableCell>
 
                                 <TableCell>
@@ -103,11 +105,11 @@ export default async function Events({
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Действия</DropdownMenuLabel>
 
-                                                <DeleteEvent event={event}/>
-
                                                 <DropdownMenuItem>
                                                     <Link href={`/dashboard/events/${event.id}`}>Редактировать</Link>
                                                 </DropdownMenuItem>
+                                                <DeleteEvent event={event}/>
+
                                             </DropdownMenuContent>
                     
                                         </DropdownMenu>

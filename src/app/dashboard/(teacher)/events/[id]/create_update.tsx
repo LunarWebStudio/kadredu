@@ -7,7 +7,7 @@ import { Form, FormField, FormItem, FormControl, FormDescription } from "~/compo
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { useToast } from "~/components/ui/use-toast";
-import { type Event, EventInputShema, type TypeEvent, type Group } from "~/lib/shared/types";
+import { type Event, EventInputShema, type EventType, type Group } from "~/lib/shared/types";
 import { api } from "~/trpc/react";
 import { OnError } from "~/lib/shared/onError";
 import { type z } from "zod";
@@ -28,7 +28,7 @@ export default function CreateUpdateEvent({
   groups
 }: {
     event?: Event;
-    types?: TypeEvent[];
+    types?: EventType[];
     groups?: Group[];
 }) {
 
@@ -37,10 +37,10 @@ export default function CreateUpdateEvent({
     defaultValues: {
       name: event?.name ?? "",
       description: event?.description ?? "",
-      imageId: event?.imageId ?? "",
+      imageId: "",
       dateStart: event?.dateStart as Date | null,
       dateEnd: event?.dateEnd as Date | null,
-      typeId: event?.typeId ?? "",
+      eventTypeId: event?.eventTypeId ?? "",
       groupId: event?.groupId ?? "",
       address: event?.address ?? "",
     }
@@ -123,7 +123,7 @@ export default function CreateUpdateEvent({
                             src={form.watch("imageId")}
                             width={60}
                             height={60}
-                            className="object-cover rounded-lg w-full aspect-[2/1]"
+                            className="object-cover rounded-lg w-full aspect-video"
                             alt="Image"
                           />
                         ) : (
@@ -134,10 +134,10 @@ export default function CreateUpdateEvent({
                                 alt={event.name}
                                 width={300}
                                 height={300}
-                                className="object-cover rounded-lg w-full aspect-[2/1]" 
+                                className="object-cover rounded-lg w-full aspect-video" 
                               />
                             ) : (
-                              <Skeleton className="rounded-lg w-full aspect-[3/1]"/>
+                              <Skeleton className="rounded-lg w-full aspect-video"/>
                             )}
                           </>
                       )}
@@ -231,7 +231,7 @@ export default function CreateUpdateEvent({
 
                 <FormField
                   control={form.control}
-                  name="typeId"
+                  name="eventTypeId"
                   render={({ field }) => (
                     <FormItem>
                       <Select value={field.value} onValueChange={field.onChange}>
@@ -271,7 +271,7 @@ export default function CreateUpdateEvent({
                         </SelectContent>
                       </Select>
                       <FormDescription className="pb-2">
-                        Выберите тип
+                        Выберите группу
                       </FormDescription>
                     </FormItem>
                   )}

@@ -94,10 +94,10 @@ export default async function Tutorials({
                     
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Действия</DropdownMenuLabel>
-                                                <DeleteTutorial tutorial={tutorial}/>
                                                 <DropdownMenuItem>
                                                     <Link href={`/dashboard/tutorials/${tutorial.id}`}>Редактировать</Link>
                                                 </DropdownMenuItem>
+                                                <DeleteTutorial tutorial={tutorial}/>
                                             </DropdownMenuContent>
                     
                                         </DropdownMenu>

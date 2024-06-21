@@ -116,7 +116,7 @@ export const topics = createTable("topics", {
   name: varchar("name", { length: 255 }).notNull().unique()
 });
 
-export const type = createTable("type", {
+export const eventType = createTable("eventType", {
   id: text("id")
   .$defaultFn(() => createId())
   .notNull()
@@ -140,13 +140,13 @@ export const events = createTable("events", {
     mode: "date",
     withTimezone: true,
   }),
-  typeId: text("typeId").references(() => type.id).notNull(),
+  eventTypeId: text("eventTypeId").references(() => eventType.id).notNull(),
   groupId: text("groupId").references(() => groups.id).notNull(),
   address: varchar("address", { length: 255 }).notNull(),
 })
 
 export const eventsRelations = relations(events, ({one}) => ({
-  type: one(type, { fields: [events.typeId], references: [type.id] }),
+  type: one(eventType, { fields: [events.eventTypeId], references: [eventType.id] }),
   group: one(groups, { fields: [events.groupId], references: [groups.id] }),
   image: one(images, { fields: [events.imageId], references: [images.id] }),
 }))

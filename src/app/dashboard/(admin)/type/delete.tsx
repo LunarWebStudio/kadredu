@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { type TypeEvent } from "~/lib/shared/types";
+import { type EventType } from "~/lib/shared/types";
 import { api } from "~/trpc/react";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import {
@@ -17,11 +17,11 @@ import {
 } from "~/components/ui/alert-dialog";
 import { useToast } from "~/components/ui/use-toast";
 
-export default function DeleteType({ type }: { type: TypeEvent }) {
+export default function DeleteEventType({ type }: { type: EventType }) {
   const router = useRouter();
   const { toast } = useToast();
 
-  const deleteTypeMutation = api.type.delete.useMutation({
+  const deleteTypeMutation = api.eventType.delete.useMutation({
     onSuccess: () => {
       toast({
         title: "Тип мероприятия удален"

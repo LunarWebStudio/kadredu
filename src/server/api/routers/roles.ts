@@ -55,7 +55,7 @@ export const teamRolesRouter = {
       if (!existRole) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Роль не найденна"
+          message: "Роль не найдена"
         });
       }
       return (

@@ -10,7 +10,7 @@ export default async function CreateUpdateEventPage({
     }
 }) {
     let event: Event | undefined = undefined;
-    const types = await api.type.getAll({});
+    const types = await api.eventType.getAll({});
     const groups = await api.group.getAll({});
 
     if(params.id != "create") {

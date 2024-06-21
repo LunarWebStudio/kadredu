@@ -104,11 +104,11 @@ export default async function Tasks({
                     
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Действия</DropdownMenuLabel>
-                                                <DeleteTask task={task}/>
-
                                                 <DropdownMenuItem>
                                                     <Link href={`/dashboard/tasks/${task.id}`}>Редактировать</Link>
                                                 </DropdownMenuItem>
+                                                <DeleteTask task={task}/>
+
                                             </DropdownMenuContent>
                     
                                         </DropdownMenu>

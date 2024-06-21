@@ -5,9 +5,6 @@ import { statusSchema } from "~/server/db/schema";
 import { day } from "~/lib/shared/time";
 import { DESCRIPTION_LIMIT, MAX_PROFILE_PICTURE_SIZE, NAME_LIMIT } from "~/lib/shared/const";
 
-
-
-
 // building
 export type Building = inferProcedureOutput<
   AppRouter["building"]["getAll"]
@@ -134,7 +131,7 @@ export const EventInputShema = z.object({
   .date({
     invalid_type_error: "Конец мероприятия не является датой"
   }).min(new Date(new Date().getTime() - day)).nullable(),
-  typeId: z
+  eventTypeId: z
   .string({
     required_error: "Тип не указан",
     invalid_type_error: "Тип не является строкой"
@@ -157,8 +154,8 @@ export const EventInputShema = z.object({
   .max(255, "Адрес слишком длинный"),
 })
 
-export type TypeEvent = inferProcedureOutput<AppRouter["type"]["getAll"]>[number];
-export const TypeInputShema = z.object({
+export type EventType = inferProcedureOutput<AppRouter["eventType"]["getAll"]>[number];
+export const EventTypeInputShema = z.object({
   name: z
   .string({
     required_error: "Тип не указан",

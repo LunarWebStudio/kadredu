@@ -9,7 +9,7 @@ import { topicsRouter } from "~/server/api/routers/topics";
 import { resumeRouter } from "~/server/api/routers/resume";
 import { tutorialsRouter } from "~/server/api/routers/tutorial";
 import { tasksRouter } from "~/server/api/routers/task";
-import { typeRouter } from "~/server/api/routers/type";
+import { eventTypeRouter } from "~/server/api/routers/type";
 import { eventRouter } from "~/server/api/routers/event";
 
 
@@ -23,7 +23,7 @@ export const appRouter = createTRPCRouter({
   tutorial: tutorialsRouter,
   subject: subjectsRouter,
   task: tasksRouter,
-  type: typeRouter,
+  eventType: eventTypeRouter,
   event: eventRouter,
   resume: resumeRouter,
 });
