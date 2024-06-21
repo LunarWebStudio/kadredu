@@ -1,4 +1,21 @@
+import { MoreHorizontal } from "lucide-react";
+import Link from "next/link";
+import DeleteUser from "~/app/dashboard/(teacher)/users/delete";
+import GrantCoins from "~/app/dashboard/(teacher)/users/grant_coins";
+import GroupFilter from "~/app/dashboard/(teacher)/users/group_filter";
+import GroupSelect from "~/app/dashboard/(teacher)/users/group_select";
+import RoleFilter from "~/app/dashboard/(teacher)/users/role_filter";
+import RoleSelect from "~/app/dashboard/(teacher)/users/role_select";
 import DashboardTemplate from "~/app/dashboard/templ";
+import UserAvatar from "~/components/avatar";
+import { Button } from "~/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger
+} from "~/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -7,26 +24,10 @@ import {
   TableHeader,
   TableRow
 } from "~/components/ui/table";
-import { MoreHorizontal } from "lucide-react";
-import { api } from "~/trpc/server";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger
-} from "~/components/ui/dropdown-menu";
-import { Button } from "~/components/ui/button";
-import GroupSelect from "~/app/dashboard/(teacher)/users/group_select";
-import RoleSelect from "~/app/dashboard/(teacher)/users/role_select";
 import { getServerAuthSession } from "~/server/auth";
-import DeleteUser from "~/app/dashboard/(teacher)/users/delete";
-import Link from "next/link";
 import { type Role } from "~/server/db/schema";
-import GroupFilter from "~/app/dashboard/(teacher)/users/group_filter";
-import RoleFilter from "~/app/dashboard/(teacher)/users/role_filter";
-import GrantCoins from "~/app/dashboard/(teacher)/users/grant_coins";
-import UserAvatar from "~/components/avatar";
+import { api } from "~/trpc/server";
+import GrantExperience from "~/app/dashboard/(teacher)/users/grant_experience";
 
 export default async function Users({
   searchParams
@@ -103,6 +104,7 @@ export default async function Users({
                         {session?.user.role.includes("ADMIN") && (
                           <>
                             <GrantCoins userId={user.id} />
+                            <GrantExperience userId={user.id} />
                             <DropdownMenuItem>
                               Выдать награду
                             </DropdownMenuItem>
