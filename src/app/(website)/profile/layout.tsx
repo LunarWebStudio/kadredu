@@ -67,7 +67,7 @@ export default async function ProfileLayout({
                 text: "text-amber-400",
                 text_hover: "hover:text-amber-400"
               }}
-              href={`/profile/${session?.user.username}/portfolio`}
+              href={`/profile/tasks`}
               icon={<BookHeart className={iconClassName} />}
             />
             <SidebarItem

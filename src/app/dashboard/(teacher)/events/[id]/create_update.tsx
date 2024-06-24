@@ -216,7 +216,7 @@ export default function CreateUpdateEvent({
                                         setDate={field.onChange}
                                         mode="single"
                                         disabled={{
-                                            before: new Date()
+                                          before: form.watch("dateStart") || new Date()
                                         }}
                                     />
                                 </FormControl>
@@ -294,7 +294,7 @@ export default function CreateUpdateEvent({
                 />
 
 
-                <Button disabled={updateEventMutation.isPending || createEventMutation.isPending} style={{width: "100%"}} type="submit">
+                <Button disabled={updateEventMutation.isPending || createEventMutation.isPending} className="w-full" type="submit">
                   {event ? (
                     "Сохранить"
                   ) : (

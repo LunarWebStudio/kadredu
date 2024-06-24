@@ -188,6 +188,7 @@ export const tasks = createTable("tasks", {
     mode: "date",
     withTimezone: true,
   }),
+  isApproved: boolean("isApproved").notNull().default(false),
   experience: integer("experience").notNull().default(0), // число+
   coin: integer("coin").notNull().default(0), // число+
   tutorialId: text("tutorialId").references(() => tutorials.id),
@@ -206,6 +207,19 @@ export const tasksRelations = relations(tasks, ({ one }) => ({
   group: one(groups, { fields: [tasks.groupId], references: [groups.id] }),
   tutorial: one(tutorials, { fields: [tasks.tutorialId], references: [tutorials.id] }),
 }))
+
+export const taskSubmission = createTable("taskSubmission", {
+  taskId: text("taskId").references(() => tasks.id).notNull(),
+  userId: text("userId").references(() => users.id).notNull(),
+
+  files: text("files").array().notNull(),
+  text: text("text").notNull(),
+
+  createdAt: timestamp("createdAt", {
+    mode: "date",
+    withTimezone: true,
+  }).defaultNow(),
+})
 
 export const rolesEnum = pgEnum("role", [
   "ADMIN",
@@ -348,6 +362,8 @@ export const subjects = createTable("subjects", {
 })
 
 export const subjectsRelations = relations(subjects, ({ one }) => ({
+  // ТУТ ПОМЕНЯТЬ НА teacher ЕМАЕ БЛИН
+  // УПУСТИЛ ИЗ ВИДУ
   teacherInfo: one(users, { fields: [subjects.teacherId], references: [users.id] })
 }))
 

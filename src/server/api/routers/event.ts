@@ -18,8 +18,8 @@ export const eventRouter = createTRPCRouter ({
                 const processed_image = await ProcessImage({
                   imageB64: input.imageId,
                   size: {
-                    width: 100,
-                    height: 200
+                    width: 1920,
+                    height: 1080
                   },
                   fit: "contain"
                 });
@@ -78,8 +78,8 @@ export const eventRouter = createTRPCRouter ({
                     const processed_image = await ProcessImage({
                       imageB64: input.imageId,
                       size: {
-                        width: 500,
-                        height: 500
+                        width: 1920,
+                        height: 1080
                       },
                       fit: "contain"
                     });

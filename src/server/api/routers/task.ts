@@ -58,6 +58,29 @@ export const tasksRouter = createTRPCRouter ({
               }
             })
         }),
+    getAllBySubjectId: publicProcedure
+        .input(IdInputSchema)
+        .mutation(async ({ ctx, input }) => {
+            return await ctx.db.query.tasks.findMany({
+              where: eq(tasks.subjectId, input.id),
+              with: {
+                subject: {
+                    with: {
+                        teacherInfo: true
+                    }
+                },
+                // taskSubmission: {
+                    // where: eq(taskSubmission.userId, ctx.session.user.id),
+                // },
+                group: {
+                    columns: {
+                        id: true,
+                        title: true
+                    }
+                }
+              }
+            })
+    }),
     update: adminProcedure
         .input(z.intersection(IdInputSchema, TaskInputShema))
         .mutation(async ({ctx, input}) => {
@@ -80,9 +103,8 @@ export const tasksRouter = createTRPCRouter ({
                     }
                 },
                 subject: {
-                    columns: {
-                        id: true,
-                        name: true
+                    with: {
+                        teacherInfo: true
                     }
                 },
                 tutorial: {
