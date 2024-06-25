@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { and, eq, ilike } from "drizzle-orm";
 import { z } from "zod";
 import { IdInputSchema, TaskInputShema } from "~/lib/shared/types";
@@ -20,6 +21,25 @@ export const tasksRouter = createTRPCRouter({
   delete: teacherProcedure
     .input(IdInputSchema)
     .mutation(async ({ ctx, input }) => {
+      if (
+        !ctx.session.user.role.includes("ADMIN") ||
+        !ctx.session.user.role.includes("LEAD_CYCLE_COMISSION")
+      ) {
+        const authorId = await ctx.db.query.tasks.findFirst({
+          where: eq(tasks.id, input.id),
+          columns: {
+            authorId: true
+          }
+        });
+
+        if (authorId?.authorId !== ctx.session.user.id) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Вы не можете удалять чужие задания"
+          });
+        }
+      }
+
       await ctx.db.delete(tasks).where(eq(tasks.id, input.id));
     }),
   getAll: teacherProcedure
@@ -30,11 +50,14 @@ export const tasksRouter = createTRPCRouter({
         })
         .optional()
     )
-
     .query(async ({ ctx, input }) => {
       return await ctx.db.query.tasks.findMany({
         where: and(
-          input?.search ? ilike(tasks.name, `%${input.search}%`) : undefined
+          input?.search ? ilike(tasks.name, `%${input.search}%`) : undefined,
+          !ctx.session.user.role.includes("ADMIN") &&
+            !ctx.session.user.role.includes("LEAD_CYCLE_COMISSION")
+            ? eq(tasks.authorId, ctx.session.user.id)
+            : undefined
         ),
 
         with: {
@@ -69,6 +92,25 @@ export const tasksRouter = createTRPCRouter({
   update: teacherProcedure
     .input(z.intersection(IdInputSchema, TaskInputShema))
     .mutation(async ({ ctx, input }) => {
+      if (
+        !ctx.session.user.role.includes("ADMIN") ||
+        !ctx.session.user.role.includes("LEAD_CYCLE_COMISSION")
+      ) {
+        const authorId = await ctx.db.query.tasks.findFirst({
+          where: eq(tasks.id, input.id),
+          columns: {
+            authorId: true
+          }
+        });
+
+        if (authorId?.authorId !== ctx.session.user.id) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Вы не можете редактировать чужие задания"
+          });
+        }
+      }
+
       await ctx.db
         .update(tasks)
         .set({
@@ -112,4 +154,3 @@ export const tasksRouter = createTRPCRouter({
       });
     })
 });
-
