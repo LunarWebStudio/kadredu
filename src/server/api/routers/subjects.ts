@@ -1,15 +1,15 @@
+import { TRPCError } from "@trpc/server";
+import { and, arrayContains, eq, ilike, or } from "drizzle-orm";
+import { z } from "zod";
 import { IdInputSchema, SubjectInputSchema } from "~/lib/shared/types";
 import {
   leadCycleComissionProcedure,
-  publicProcedure
+  protectedProcedure
 } from "~/server/api/trpc";
-import { and, arrayContains, eq, ilike, or } from "drizzle-orm";
 import { subjects, users } from "~/server/db/schema";
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
 
 export const subjectsRouter = {
-  getAll: publicProcedure
+  getAll: protectedProcedure
     .input(
       z
         .object({
