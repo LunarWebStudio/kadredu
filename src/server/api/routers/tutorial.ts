@@ -50,7 +50,17 @@ export const tutorialsRouter = createTRPCRouter({
   delete: highLevelProcedure
     .input(IdInputSchema)
     .mutation(async ({ ctx, input }) => {
-      // TODO: сделать проверку на автора
+      if (!ctx.session.user.role.includes("ADMIN")) {
+        const authorId = await ctx.db.query.tutorials.findFirst({
+          where: eq(tutorials.id, input.id)
+        })
+        if (authorId?.authorId !== ctx.session.user.id) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Недостаточно прав для данного действия"
+          })
+        }
+      }
 
       await ctx.db.delete(tutorials).where(eq(tutorials.id, input.id))
     }),
@@ -62,7 +72,8 @@ export const tutorialsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       return await ctx.db.query.tutorials.findMany({
         where: and(
-          input?.search ? ilike(tutorials.name, `%${input.search}%`) : undefined
+          input?.search ? ilike(tutorials.name, `%${input.search}%`) : undefined,
+          ctx.session.user.role.includes("ADMIN") ? undefined : eq(tutorials.authorId, ctx.session.user.id)
         ),
 
         with: {
@@ -75,6 +86,18 @@ export const tutorialsRouter = createTRPCRouter({
   update: highLevelProcedure
     .input(z.intersection(IdInputSchema, TutorialInputShema))
     .mutation(async ({ ctx, input }) => {
+      if (!ctx.session.user.role.includes("ADMIN")) {
+        const authorId = await ctx.db.query.tutorials.findFirst({
+          where: eq(tutorials.id, input.id)
+        })
+        if (authorId?.authorId !== ctx.session.user.id) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Недостаточно прав для данного действия"
+          })
+        }
+      }
+
       await ctx.db.transaction(async (tx) => {
         let imageId: string | undefined = undefined
         if (input.imageId) {
@@ -107,6 +130,7 @@ export const tutorialsRouter = createTRPCRouter({
         }).where(eq(tutorials.id, input.id));
       })
     }),
+  // TODO: проверить покупку
   getOne: protectedProcedure
     .input(IdInputSchema)
     .mutation(async ({ ctx, input }) => {
