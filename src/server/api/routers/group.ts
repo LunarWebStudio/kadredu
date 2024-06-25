@@ -6,7 +6,7 @@ import { UploadFile } from "~/lib/server/file_upload";
 import { ProcessImage } from "~/lib/server/images";
 import { GroupInputSchema, IdInputSchema } from "~/lib/shared/types";
 
-import { adminProcedure, createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { adminProcedure, createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { groups, images } from "~/server/db/schema";
 
 export const groupRouter = createTRPCRouter({
@@ -83,7 +83,7 @@ export const groupRouter = createTRPCRouter({
   delete: adminProcedure.input(IdInputSchema).mutation(async ({ ctx, input }) => {
     await ctx.db.delete(groups).where(eq(groups.id, input.id));
   }),
-  getAll: publicProcedure
+  getAll: protectedProcedure
     .input(z.object({
       buildingId: z.string().optional(),
       search: z.string().optional()
