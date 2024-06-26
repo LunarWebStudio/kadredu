@@ -1,12 +1,12 @@
 import { createId } from "@paralleldrive/cuid2";
 import { TRPCError } from "@trpc/server";
-import { and, eq, ilike } from "drizzle-orm";
+import { and, eq, ilike, sql } from "drizzle-orm";
 import { z } from "zod";
 import { UploadFile } from "~/lib/server/file_upload";
 import { ProcessImage } from "~/lib/server/images";
 import { IdInputSchema, TutorialInputShema } from "~/lib/shared/types";
 import { createTRPCRouter, highLevelProcedure, protectedProcedure } from "~/server/api/trpc";
-import { images, tutorials } from "~/server/db/schema";
+import { images, purshases, tutorials, users } from "~/server/db/schema";
 
 export const tutorialsRouter = createTRPCRouter({
   create: highLevelProcedure
@@ -79,7 +79,8 @@ export const tutorialsRouter = createTRPCRouter({
         with: {
           author: true,
           subject: true,
-          image: true
+          image: true,
+          topic: true,
         }
       })
     }),
@@ -134,6 +135,15 @@ export const tutorialsRouter = createTRPCRouter({
   getOne: protectedProcedure
     .input(IdInputSchema)
     .mutation(async ({ ctx, input }) => {
+      const purshase = await ctx.db.query.purshases.findFirst({
+        where: eq(purshases.productId, input.id)
+      })
+      if (!purshase) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Нет доступа"
+        })
+      }
       return await ctx.db.query.tutorials.findFirst({
         where: eq(tutorials.id, input.id),
 
@@ -145,8 +155,39 @@ export const tutorialsRouter = createTRPCRouter({
               email: true
             }
           },
+          topic: true,
           image: true
         }
+      })
+    }),
+  buyOne: protectedProcedure
+    .input(IdInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      const existTutor = await ctx.db.query.tutorials.findFirst({
+        where: eq(tutorials.id, input.id)
+      })
+      if (!existTutor) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Туториал не найден"
+        })
+      }
+      await ctx.db.transaction(async tx => {
+        if ((ctx.session.user.coins - existTutor.price) < 0) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "Недостаточно монет"
+          })
+        }
+        await tx.update(users).set({
+          coins: sql`${users.coins} - ${existTutor.price}`
+        }).where(eq(users.id, ctx.session.user.id))
+
+        await tx.insert(purshases).values({
+          productId: existTutor.id,
+          userId: ctx.session.user.id,
+          price: existTutor.price,
+        })
       })
     })
 })
