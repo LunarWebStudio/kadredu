@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { and, eq, ilike } from "drizzle-orm";
 import { z } from "zod";
 import { IdInputSchema, TopicsInputShema } from "~/lib/shared/types";
@@ -12,7 +13,22 @@ export const topicsRouter = createTRPCRouter({
   create: adminProcedure
     .input(TopicsInputShema)
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.insert(topics).values(input);
+      try {
+        await ctx.db.insert(topics).values(input);
+      } catch (err: any) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (err.code === "23505") {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Тема с таким названием уже существует"
+          });
+        }
+
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Не удалось создать тему"
+        });
+      }
     }),
 
   delete: adminProcedure
@@ -40,7 +56,32 @@ export const topicsRouter = createTRPCRouter({
   update: adminProcedure
     .input(z.intersection(IdInputSchema, TopicsInputShema))
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.update(topics).set(input).where(eq(topics.id, input.id));
+      const t = await ctx.db.query.topics.findFirst({
+        where: eq(topics.id, input.id)
+      });
+
+      if (!t) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Тема не найдена"
+        });
+      }
+
+      try {
+        await ctx.db.update(topics).set(input).where(eq(topics.id, input.id));
+      } catch (err: any) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (err.code === "23505") {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Тема с таким названием уже существует"
+          });
+        }
+
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Не удалось создать тему"
+        });
+      }
     })
 });
-

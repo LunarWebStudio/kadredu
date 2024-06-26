@@ -62,15 +62,31 @@ export const teamRolesRouter = {
           message: "Роль не найденна"
         });
       }
-      return (
-        await ctx.db
-          .update(teamRoles)
-          .set({
-            name: input.name
-          })
-          .where(eq(teamRoles.id, input.id))
-          .returning()
-      )[0];
+
+      try {
+        return (
+          await ctx.db
+            .update(teamRoles)
+            .set({
+              name: input.name
+            })
+            .where(eq(teamRoles.id, input.id))
+            .returning()
+        )[0];
+      } catch (err: any) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (err.code === "23505") {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Роль с таким названием уже существует"
+          });
+        }
+
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Не удалось создать роль"
+        });
+      }
     }),
   delete: adminProcedure
     .input(IdInputSchema)
