@@ -87,20 +87,17 @@ export default function AboutMeForm({ session }: {
                         <Pen className="size-4" />
                       </div>
 
-                      <input accept="image/png, image/webp, image/jpg, image/jpeg" type="file" className="hidden" {...field} value="" onChange={(e) => {
-                        if (!e.target.files?.[0]) return;
-
-                        ImagesToBase64([e.target.files[0]]).then((images) => {
-
-                          field.onChange(images[0]!);
-                        }).catch(() => {
-                          toast({
-                            title: "Ошибка",
-                            description: "Не удалось загрузить изображение",
-                            variant: "destructive",
-                          })
-                        })
-                      }} />
+                      <input
+                        accept="image/png, image/webp, image/jpg, image/jpeg"
+                        type="file"
+                        className="hidden"
+                        {...field}
+                        value=""
+                        onChange={async (e) => {
+                          if (!e.target.files?.[0]) return;
+                          field.onChange((await ImagesToBase64([e.target.files[0]] as const))[0])
+                        }}
+                      />
                     </label>
                   </div>
                 </FormItem>

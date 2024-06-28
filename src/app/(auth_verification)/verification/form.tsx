@@ -75,19 +75,16 @@ export default function VerificationForm() {
                     <div className="transition-all ease-in-out duration-300 group-hover:scale-105 absolute translate-y-1/2 right-1/2 translate-x-1/2 bottom-0 size-8 bg-primary flex items-center justify-center rounded-full text-background">
                       <Pen className="size-4" />
                     </div>
-                    <input accept="image/png, image/webp, image/jpg, image/jpeg" type="file" className="hidden" {...field} value="" onChange={(e) => {
-                      if (!e.target.files?.[0]) return;
-
-                      ImagesToBase64([e.target.files[0]]).then((images) => {
-                        field.onChange(images[0]!);
-                      }).catch(() => {
-                        toast({
-                          title: "Ошибка",
-                          description: "Не удалось загрузить изображение",
-                          variant: "destructive",
-                        })
-                      })
-                    }} />
+                    <input
+                      accept="image/png, image/webp, image/jpg, image/jpeg"
+                      type="file"
+                      className="hidden"
+                      {...field}
+                      value=""
+                      onChange={async (e) => {
+                        if (!e.target.files?.[0]) return;
+                        field.onChange((await ImagesToBase64([e.target.files[0]] as const))[0])
+                      }} />
                   </label>
                 </div>
               </FormItem>

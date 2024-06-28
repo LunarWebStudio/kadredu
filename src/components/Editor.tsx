@@ -318,8 +318,9 @@ function PasteImage({ editor }: {
           disabled={uploadImageMutation.isPending}
           onChange={async (e) => {
             if (!e.target.files?.[0]) return;
-            const image = (await ImagesToBase64([e.target.files[0]]))[0]!;
-            uploadImageMutation.mutate({ image: image })
+            uploadImageMutation.mutate({
+              image: (await ImagesToBase64([e.target.files[0]] as const))[0]
+            })
           }}
         />
       </DialogContent>
