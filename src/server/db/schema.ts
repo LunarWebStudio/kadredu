@@ -15,6 +15,7 @@ import {
 import { type AdapterAccount } from "next-auth/adapters";
 import { z } from "zod";
 
+
 export const createTable = pgTableCreator(name => `kadredu_${name}`);
 
 export const statusEnum = pgEnum("role", [
@@ -244,11 +245,59 @@ export const users = createTable("user", {
   githubToken: text("githubToken"),
 });
 
+
+export const portfolioProjects = createTable("portfolioProjects", {
+  id: text("id")
+    .$defaultFn(() => createId())
+    .notNull()
+    .primaryKey(),
+
+  name: varchar("name", { length: 255 }).notNull(),
+  emoji: varchar("emoji", { length: 15 }).notNull(),
+  description: varchar("description", { length: 255 }).notNull(),
+
+  userId: text("userId")
+    .notNull()
+    .unique()
+    .references(() => users.id),
+
+  repoName: varchar("repoName", { length: 255 }).notNull(),
+  repoOwner: varchar("repoOwner", { length: 255 }).notNull(),
+});
+
+export const portfolioProjectsRelations = relations(portfolioProjects, ({ one, many }) => ({
+  user: one(users, { fields: [portfolioProjects.userId], references: [users.id] }),
+  likes: many(projectLike),
+}))
+
+export const projectLike = createTable("projectLike", {
+  userId: text("userId")
+    .notNull()
+    .unique()
+    .references(() => users.id),
+
+  projectId: text("projectId")
+    .notNull()
+    .unique()
+    .references(() => portfolioProjects.id),
+}, (t) => ({
+  compoundKey: primaryKey({
+    columns: [t.projectId, t.userId],
+  }),
+}));
+
+export const projectLikeRelations = relations(projectLike, ({ one }) => ({
+  user: one(users, { fields: [projectLike.userId], references: [users.id] }),
+  project: one(portfolioProjects, { fields: [projectLike.projectId], references: [portfolioProjects.id] })
+}))
+
+
 export const usersRelations = relations(users, ({ many, one }) => ({
   accounts: many(accounts),
   group: one(groups, { fields: [users.groupId], references: [groups.id] }),
   profilePicture: one(images, { fields: [users.profilePictureId], references: [images.id] }),
-  resume: one(resume, { fields: [users.resumeId], references: [resume.userId] })
+  resume: one(resume, { fields: [users.resumeId], references: [resume.userId] }),
+  projects: many(portfolioProjects)
 }));
 
 export const accounts = createTable(

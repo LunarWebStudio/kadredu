@@ -3,8 +3,11 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 import GetLevel from "~/lib/shared/level";
 
+import { eq } from "drizzle-orm";
+import { Github } from "~/lib/server/github";
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
+import { users } from "~/server/db/schema";
 
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   const session = await getServerAuthSession();
@@ -60,7 +63,42 @@ export const protectedProcedure = verificationProcedure.use(({ ctx, next }) => {
 });
 
 const FORBIDDEN_MESSAGE = "У вас недостаточно прав для данного действия";
-export const HIGH_LEVEL_THRESHOLD = 3;
+const HIGH_LEVEL_THRESHOLD = 3;
+
+export const githubProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+  const data = await ctx.db.query.users.findFirst({
+    where: eq(users.id, ctx.session.user.id),
+    columns: {
+      githubUsername: true,
+      githubToken: true
+    }
+  });
+
+  if (!data?.githubToken || !data?.githubUsername) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: FORBIDDEN_MESSAGE
+    });
+  }
+
+  return next({
+    ctx: {
+      session: {
+        ...ctx.session,
+        user: {
+          ...ctx.session.user,
+          githubUsername: data.githubUsername,
+          githubToken: data.githubToken
+        }
+      },
+      github: new Github({
+        username: data.githubUsername,
+        token: data.githubToken
+      })
+    }
+  });
+});
+
 export const highLevelProcedure = protectedProcedure.use(({ ctx, next }) => {
   if (
     ctx.session?.user.role.includes("ADMIN") ||
