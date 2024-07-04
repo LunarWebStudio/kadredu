@@ -11,6 +11,7 @@ import UserAvatar from "~/components/avatar";
 import LevelBar from "~/components/level_bar";
 import S3Image from "~/components/s3Image";
 import GetLevel from "~/lib/shared/level";
+import { HIGH_LEVEL_THRESHOLD } from "~/server/api/trpc";
 import { getServerAuthSession } from "~/server/auth";
 
 const iconClassName = "size-6";
@@ -36,7 +37,7 @@ export default async function ProfileLayout({
             <p className="text-center text-muted-foreground">
               {session?.user.name}
             </p>
-            <LevelBar experience={session?.user.experiencePoints ?? 0} />
+            <LevelBar />
           </div>
           <p className="text-muted-foreground/70">Меню</p>
           <div className="flex flex-col gap-4">
@@ -79,7 +80,10 @@ export default async function ProfileLayout({
               }}
               href={`/tutorials/${session?.user.username}`}
               icon={<GraduationCap className={iconClassName} />}
-              locked={GetLevel(session?.user.experiencePoints ?? 0) < 3}
+              locked={
+                GetLevel(session?.user.experiencePoints ?? 0).level <
+                HIGH_LEVEL_THRESHOLD
+              }
             />
             <SidebarItem
               title="Настройки"
@@ -114,7 +118,7 @@ export default async function ProfileLayout({
           </div>
         </div>
       </aside>
-      {children}
+      <div className="shrink grow">{children}</div>
     </div>
   );
 }

@@ -1,16 +1,16 @@
 import { createId } from "@paralleldrive/cuid2";
 import { relations, sql } from "drizzle-orm";
 import {
-    boolean,
-    index,
-    integer,
-    pgEnum,
-    pgTableCreator,
-    primaryKey,
-    text,
-    timestamp,
-    varchar,
-    type AnyPgColumn
+  boolean,
+  index,
+  integer,
+  pgEnum,
+  pgTableCreator,
+  primaryKey,
+  text,
+  timestamp,
+  varchar,
+  type AnyPgColumn,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 import { z } from "zod";
@@ -117,6 +117,28 @@ export const topics = createTable("topics", {
   name: varchar("name", { length: 255 }).notNull().unique()
 });
 
+export const purshases = createTable("purshases", {
+  id: text("id")
+    .$defaultFn(() => createId())
+    .notNull()
+    .primaryKey(),
+  productId: text("productId")
+    .notNull(),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id),
+  price: integer("price")
+    .notNull(),
+  purshasedAt: timestamp("purshasedAt", {
+    mode: "string",
+    withTimezone: true,
+  }).defaultNow()
+})
+
+export const purshasesRelation = relations(purshases, ({ one }) => ({
+  user: one(users, { fields: [purshases.userId], references: [users.id] })
+}))
+
 export const tutorials = createTable("tutorials", {
   id: text("id")
     .$defaultFn(() => createId())
@@ -130,8 +152,8 @@ export const tutorials = createTable("tutorials", {
     mode: "date",
     withTimezone: true,
   }).defaultNow(),
-  price: integer("price").notNull().default(0), // число+
-  timeRead: integer("timeRead").notNull().default(0), // число+
+  price: integer("price").notNull().default(0),
+  timeRead: integer("timeRead").notNull().default(0),
   topicId: text("topicId").references(() => topics.id).notNull(),
   subjectId: text("subjectId").references(() => subjects.id),
 })
@@ -154,8 +176,8 @@ export const tasks = createTable("tasks", {
     mode: "date",
     withTimezone: true,
   }),
-  experience: integer("experience").notNull().default(0), // число+
-  coin: integer("coin").notNull().default(0), // число+
+  experience: integer("experience").notNull().default(0),
+  coin: integer("coin").notNull().default(0),
   tutorialId: text("tutorialId").references(() => tutorials.id),
   subjectId: text("subjectId").notNull().references(() => subjects.id),
   groupId: text("groupId").notNull().references(() => groups.id),

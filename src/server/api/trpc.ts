@@ -111,7 +111,9 @@ export const highLevelProcedure = protectedProcedure.use(({ ctx, next }) => {
     });
   }
 
-  if (GetLevel(ctx.session.user.experiencePoints) < HIGH_LEVEL_THRESHOLD) {
+  if (
+    GetLevel(ctx.session.user.experiencePoints).level < HIGH_LEVEL_THRESHOLD
+  ) {
     throw new TRPCError({ code: "FORBIDDEN", message: FORBIDDEN_MESSAGE });
   }
 

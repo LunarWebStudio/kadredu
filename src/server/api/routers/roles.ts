@@ -2,15 +2,16 @@ import { TRPCError } from "@trpc/server";
 import { and, eq, ilike } from "drizzle-orm";
 import { z } from "zod";
 import { IdInputSchema, RoleInputSchema } from "~/lib/shared/types";
-import { adminProcedure, publicProcedure } from "~/server/api/trpc";
+import { adminProcedure, protectedProcedure } from "~/server/api/trpc";
 import { teamRoles } from "~/server/db/schema";
 
 export const teamRolesRouter = {
-  getAll: publicProcedure
+  getAll: protectedProcedure
     .input(
-      z.object({
-        search: z.string().optional()
-      })
+      z
+        .object({
+          search: z.string().optional()
+        })
         .optional()
     )
     .query(async ({ ctx, input }) => {
@@ -29,7 +30,10 @@ export const teamRolesRouter = {
     .mutation(async ({ ctx, input }) => {
       try {
         return (
-          await ctx.db.insert(teamRoles).values({ name: input.name }).returning()
+          await ctx.db
+            .insert(teamRoles)
+            .values({ name: input.name })
+            .returning()
         )[0];
       } catch (err: any) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -37,13 +41,13 @@ export const teamRolesRouter = {
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: "Роль с таким названием уже существует"
-          })
+          });
         }
 
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Не удалось создать роль"
-        })
+        });
       }
     }),
   update: adminProcedure
@@ -58,15 +62,31 @@ export const teamRolesRouter = {
           message: "Роль не найденна"
         });
       }
-      return (
-        await ctx.db
-          .update(teamRoles)
-          .set({
-            name: input.name
-          })
-          .where(eq(teamRoles.id, input.id))
-          .returning()
-      )[0];
+
+      try {
+        return (
+          await ctx.db
+            .update(teamRoles)
+            .set({
+              name: input.name
+            })
+            .where(eq(teamRoles.id, input.id))
+            .returning()
+        )[0];
+      } catch (err: any) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (err.code === "23505") {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Роль с таким названием уже существует"
+          });
+        }
+
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Не удалось создать роль"
+        });
+      }
     }),
   delete: adminProcedure
     .input(IdInputSchema)

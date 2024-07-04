@@ -3,16 +3,16 @@
 @tailwind utilities;
 
 @layer base {
-  
+
   ul {
-   @apply list-disc pl-4;
+    @apply list-disc pl-4;
   }
 
   ol {
     @apply list-decimal pl-4;
   }
 
-  .tiptap{
+  .tiptap {
     pre {
       @apply bg-muted font-mono font-semibold p-4 rounded-lg text-foreground/80;
     }
@@ -67,12 +67,15 @@
 
     @apply focus-visible:outline-none focus-visible:outline-transparent
   }
+
   blockquote {
     @apply text-primary underline-offset-4 hover:underline;
   }
-  .tiptap a{
+
+  .tiptap a {
     @apply text-blue-600 underline cursor-pointer
   }
+
   :root {
     --background: 210 40% 96%;
     --foreground: 222 47% 11%;
@@ -105,8 +108,8 @@
     --radius: 0.5rem;
     --nav-height: 6rem;
 
-    --dashboard-nav-height: 4rem; 
-    --dashboard-mobile-nav-height: 9rem; 
+    --dashboard-nav-height: 4rem;
+    --dashboard-mobile-nav-height: 9rem;
   }
 }
 
@@ -138,6 +141,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -164,5 +168,9 @@
 
   .text-primary-gradient {
     @apply bg-gradient-to-b from-[#CE5BEB] to-primary text-transparent bg-clip-text;
+  }
+
+  .bg-primary-gradient {
+    @apply bg-gradient-to-b from-[#CE5BEB] to-primary;
   }
 }

@@ -89,6 +89,15 @@ export const CoinsInputSchema = z.object({
     .positive("Количество монет должно быть больше 0")
 });
 
+export const ExperienceInputSchema = z.object({
+  experience: z.coerce
+    .number({
+      required_error: "Количество опыта не заполнено",
+      invalid_type_error: "Количество опыта не является числом"
+    })
+    .positive("Количество опыта должно быть больше 0")
+});
+
 export const RoleInputSchema = z.object({
   name: z
     .string({
@@ -223,6 +232,63 @@ export const ResumeInputSchema = z.object({
   status: statusSchema,
   experience: z.string().optional()
 });
+
+export const TaskInputShema = z.intersection(
+  z.object({
+    name: z
+      .string({
+        required_error: "Название не указано",
+        invalid_type_error: "Название не является строкой"
+      })
+      .min(1, "Название темы не указано")
+      .max(255, "Название темы слишком длинное"),
+    deadline: z
+      .date({
+        invalid_type_error: "Срок не является датой"
+      })
+      .min(new Date(new Date().getTime() - day))
+      .nullable(),
+    description: z
+      .string({
+        required_error: "Описание не указано",
+        invalid_type_error: "Описание не является строкой"
+      })
+      .min(1, "Описание не указано"),
+    coin: z.coerce
+      .number({
+        required_error: "Монета не указана",
+        invalid_type_error: "Монета не является строкой"
+      })
+      .min(1, "Монета не указана"),
+    tutorialId: z
+      .string({
+        required_error: "Туториал не указан",
+        invalid_type_error: "Туториал не является строкой"
+      })
+      .min(1, "Туториал не указан"),
+    subjectId: z
+      .string({
+        required_error: "Предмет не указан",
+        invalid_type_error: "Предмет не является строкой"
+      })
+      .min(1, "Предмет не указан"),
+    groupId: z
+      .string({
+        required_error: "Группа не указана",
+        invalid_type_error: "Группа не является строкой"
+      })
+      .min(1, "Группа не указана")
+  }),
+  ExperienceInputSchema
+);
+
+// resume
+export const ResumeInputSchema = z.object({
+  roleId: z.string()
+    .min(1, "Выберите роль"),
+  status: statusSchema,
+  experience: z.string().optional()
+})
 
 export type Resume = inferProcedureOutput<AppRouter["resume"]["getSelf"]>;
 

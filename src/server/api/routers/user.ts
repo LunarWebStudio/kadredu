@@ -3,16 +3,15 @@ import { z } from "zod";
 import { UploadFile } from "~/lib/server/file_upload";
 import { ProcessImage } from "~/lib/server/images";
 
+import { TRPCError } from "@trpc/server";
+import { env } from "~/env";
+import { CoinsInputSchema, ExperienceInputSchema, IdInputSchema, UserUpdateInputSchema, UsernameInputSchema } from "~/lib/shared/types";
 import { adminProcedure, createTRPCRouter, protectedProcedure, teacherProcedure, verificationProcedure } from "~/server/api/trpc";
 import { images, roleSchema, users } from "~/server/db/schema";
-import { TRPCError } from "@trpc/server";
-import { IdInputSchema, UserUpdateInputSchema, UsernameInputSchema, CoinsInputSchema } from "~/lib/shared/types";
-
-import { env } from "~/env";
 
 export const userRouter = createTRPCRouter({
   updadeSelf: verificationProcedure
-    .input(UserUpdateInputSchema) 
+    .input(UserUpdateInputSchema)
     .mutation(async ({ ctx, input }) => {
       await ctx.db.transaction(async (tx) => {
         let imageId: string | undefined = undefined
@@ -38,7 +37,7 @@ export const userRouter = createTRPCRouter({
 
         await tx.update(users).set({
           name: input.name,
-          username:input.username,
+          username: input.username,
           description: input.description,
           profilePictureId: imageId
         }).where(eq(users.id, ctx.session.user.id));
@@ -180,7 +179,7 @@ export const userRouter = createTRPCRouter({
       })
 
       if (!coins) {
-        throw new TRPCError({ 
+        throw new TRPCError({
           code: "NOT_FOUND",
           message: "Пользователь не найден"
         })
@@ -189,5 +188,26 @@ export const userRouter = createTRPCRouter({
       await ctx.db.update(users).set({
         coins: coins?.coins + input.coins
       }).where(eq(users.id, ctx.session.user.id));
-    })
+    }),
+  grantExperience: adminProcedure
+    .input(z.intersection(IdInputSchema, ExperienceInputSchema))
+    .mutation(async ({ ctx, input }) => {
+      const experience = await ctx.db.query.users.findFirst({
+        where: eq(users.id, input.id),
+        columns: {
+          experiencePoints: true
+        }
+      })
+
+      if (!experience) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Пользователь не найден"
+        })
+      }
+
+      await ctx.db.update(users).set({
+        experiencePoints: experience?.experiencePoints + input.experience
+      }).where(eq(users.id, ctx.session.user.id));
+    }),
 });

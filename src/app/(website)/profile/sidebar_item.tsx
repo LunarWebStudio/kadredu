@@ -12,49 +12,51 @@ export default function SidebarItem({
   color,
   locked
 }: {
-  title: string;
-  icon: ReactNode;
-  href: string;
+  title: string,
+  icon: ReactNode,
+  href: string,
   color: {
-    bg: string;
-    text: string;
-    text_hover: string;
-  };
-  locked?: boolean;
+    bg: string,
+    text: string,
+    text_hover: string
+  },
+  locked?: boolean
 }) {
   const pathname = usePathname();
-  const active = pathname.startsWith(href);
+  const active = pathname === href;
 
   return (
-    <Link href={href} className="w-full">
+    <Link
+      href={href}
+      className="w-full"
+    >
       <div
         className={cn(
-          "p-2 rounded-lg bg-secondary w-full flex flex-row gap-4 items-center transition-all duration-300 ease-in-out group",
-          !locked && cn(color.text_hover, `hover:shadow-xl hover:font-bold hover:scale-[1.02] z-10`),
-          active && cn(
-            "shadow-lg font-bold scale-[1.02]",
-            color.text,
-          ),
+          "group flex w-full flex-row items-center gap-4 rounded-lg bg-secondary p-2 transition-all duration-300 ease-in-out",
+          !locked &&
+            cn(
+              color.text_hover,
+              `z-10 hover:scale-[1.02] hover:font-bold hover:shadow-xl`
+            ),
+          active && cn("scale-[1.02] font-bold shadow-lg", color.text),
           locked && "cursor-not-allowed opacity-80"
         )}
       >
-        <div className={cn(
-          "size-10 rounded-lg flex items-center justify-center text-white",
-          color.bg
-        )}>
+        <div
+          className={cn(
+            "flex size-10 items-center justify-center rounded-lg text-white",
+            color.bg
+          )}
+        >
           {icon}
         </div>
-        <p
-          className={cn(
-            active && color.text
-          )}
-        >{title}</p>
+        <p className={cn(active && color.text)}>{title}</p>
         {locked && (
-          <div className="ml-auto group-hover:animate-pulse group-hover:scale-105 transition-all ease-in-out duration-300">
+          <div className="ml-auto transition-all duration-300 ease-in-out group-hover:scale-105 group-hover:animate-pulse">
             <LockKeyhole className="size-6" />
           </div>
         )}
       </div>
     </Link>
-  )
+  );
 }

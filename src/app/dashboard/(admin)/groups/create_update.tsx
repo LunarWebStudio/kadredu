@@ -1,24 +1,24 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "~/components/ui/dialog";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "~/components/ui/select";
-import { Form, FormField, FormItem, FormControl, FormDescription } from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
-import { Button } from "~/components/ui/button";
-import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
-import { useToast } from "~/components/ui/use-toast";
-import { type Building, GroupInputSchema, type Group } from "~/lib/shared/types";
-import { api } from "~/trpc/react";
-import { OnError } from "~/lib/shared/onError";
-import Image from "next/image";
 import { type z } from "zod";
-import { Skeleton } from "~/components/ui/skeleton";
-import { ImagesToBase64 } from "~/lib/shared/images";
 import S3Image from "~/components/s3Image";
+import { Button } from "~/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog";
+import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
+import { Form, FormControl, FormDescription, FormField, FormItem } from "~/components/ui/form";
+import { Input } from "~/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import { Skeleton } from "~/components/ui/skeleton";
+import { useToast } from "~/components/ui/use-toast";
+import { ImagesToBase64 } from "~/lib/shared/images";
+import { OnError } from "~/lib/shared/onError";
+import { GroupInputSchema, type Building, type Group } from "~/lib/shared/types";
+import { api } from "~/trpc/react";
 
 export default function CreateUpdateGroup({
   group,
@@ -144,16 +144,9 @@ export default function CreateUpdateGroup({
                       value=""
                       max={5}
                       accept="image/png, image/jpeg, image/webp"
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         if (!e.target.files?.[0]) return;
-                        ImagesToBase64([e.target.files[0]]).then(data => {
-                          field.onChange(data[0]!);
-                        }).catch(_ => {
-                          toast({
-                            title: "Ошибка загрузки изображения",
-                            variant: "destructive",
-                          });
-                        });
+                        field.onChange((await ImagesToBase64([e.target.files[0]] as const))[0])
                       }}
                     />
                   </FormControl>

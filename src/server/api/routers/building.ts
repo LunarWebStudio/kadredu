@@ -4,7 +4,7 @@ import { BuildingInputSchema, IdInputSchema } from "~/lib/shared/types";
 import {
   adminProcedure,
   createTRPCRouter,
-  publicProcedure
+  protectedProcedure
 } from "~/server/api/trpc";
 import { buildings } from "~/server/db/schema";
 
@@ -28,7 +28,7 @@ export const buildingRouter = createTRPCRouter({
   delete: adminProcedure.input(IdInputSchema).mutation(({ ctx, input }) => {
     return ctx.db.delete(buildings).where(eq(buildings.id, input.id));
   }),
-  getAll: publicProcedure
+  getAll: protectedProcedure
     .input(
       z
         .object({
@@ -37,7 +37,7 @@ export const buildingRouter = createTRPCRouter({
         .optional()
     )
     .query(({ ctx, input }) => {
-      return ctx.db.query.buildings.findMany({ 
+      return ctx.db.query.buildings.findMany({
         where: input?.search
           ? or(
               ilike(buildings.title, `%${input.search}%`),

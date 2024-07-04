@@ -1,18 +1,17 @@
 "use client";
-import { useEditor, EditorContent } from "@tiptap/react";
-import { type Editor, ReactNodeViewRenderer, NodeViewWrapper, NodeViewContent } from "@tiptap/react";
-import { Button } from "~/components/ui/button";
+import { EditorContent, NodeViewContent, NodeViewWrapper, ReactNodeViewRenderer, useEditor, type Editor } from "@tiptap/react";
 import {
   Bold,
+  Code2,
   Image as ImageIcon,
   Italic,
-  Strikethrough,
   List,
   ListOrdered,
-  UnderlineIcon,
   Quote,
-  Code2
+  Strikethrough,
+  UnderlineIcon
 } from "lucide-react";
+import { Button } from "~/components/ui/button";
 
 import {
   Select,
@@ -28,35 +27,36 @@ import StarterKit from "@tiptap/starter-kit";
 import { useEffect, useState } from "react";
 import { Toggle } from "~/components/ui/toggle";
 
-import Paragraph from '@tiptap/extension-paragraph'
-import Underline from '@tiptap/extension-underline'
-import Image from '@tiptap/extension-image'
-import Link from '@tiptap/extension-link'
-import Blockquote from '@tiptap/extension-blockquote'
+import Blockquote from '@tiptap/extension-blockquote';
 import CodeBlock from "@tiptap/extension-code-block";
-import { type Level } from '@tiptap/extension-heading'
-import { api } from "~/trpc/react";
+import { type Level } from '@tiptap/extension-heading';
+import Image from '@tiptap/extension-image';
+import Link from '@tiptap/extension-link';
+import Paragraph from '@tiptap/extension-paragraph';
+import Underline from '@tiptap/extension-underline';
 import { useToast } from "~/components/ui/use-toast";
+import { api } from "~/trpc/react";
 
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
-import html from 'highlight.js/lib/languages/xml'
-import css from 'highlight.js/lib/languages/css'
-import js from 'highlight.js/lib/languages/javascript'
-import ts from 'highlight.js/lib/languages/typescript'
-import bash from 'highlight.js/lib/languages/bash'
-import php from 'highlight.js/lib/languages/php'
-import json from 'highlight.js/lib/languages/json'
-import python from 'highlight.js/lib/languages/python'
-import csharp from 'highlight.js/lib/languages/csharp'
-import c from 'highlight.js/lib/languages/c'
-import cpp from 'highlight.js/lib/languages/cpp'
-import java from 'highlight.js/lib/languages/java'
-import go from 'highlight.js/lib/languages/go'
-import rust from 'highlight.js/lib/languages/rust'
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import bash from 'highlight.js/lib/languages/bash';
+import c from 'highlight.js/lib/languages/c';
+import cpp from 'highlight.js/lib/languages/cpp';
+import csharp from 'highlight.js/lib/languages/csharp';
+import css from 'highlight.js/lib/languages/css';
+import go from 'highlight.js/lib/languages/go';
+import java from 'highlight.js/lib/languages/java';
+import js from 'highlight.js/lib/languages/javascript';
+import json from 'highlight.js/lib/languages/json';
+import php from 'highlight.js/lib/languages/php';
+import python from 'highlight.js/lib/languages/python';
+import rust from 'highlight.js/lib/languages/rust';
+import ts from 'highlight.js/lib/languages/typescript';
+import html from 'highlight.js/lib/languages/xml';
 
-import { lowlight } from 'lowlight'
+import { lowlight } from 'lowlight';
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
+import { Skeleton } from "~/components/ui/skeleton";
 
 lowlight.registerLanguage('html', html)
 lowlight.registerLanguage('css', css)
@@ -125,11 +125,13 @@ Link.configure({
 export default function EditorText({
   text,
   setText,
-  options
+  options,
+  disabled,
 }: {
   text: string,
-  setText: (text: string) => void
-  options?: Options
+  setText?: (text: string) => void
+  options?: Options,
+  disabled?: boolean
 }) {
   const editor = useEditor({
     extensions: [
@@ -150,22 +152,43 @@ export default function EditorText({
 
     ],
     onUpdate: ({ editor }) => {
-      setText(editor.getText())
+      setText ? setText(editor.getHTML()) : ""
     },
     content: text
   });
+  if (disabled) {
+    editor?.setEditable(false)
+  }
+
 
 
   if (!editor) {
-    // TODO: Placeholder
-    return null;
+    return (
+      <div className="space-y-2">
+        <div className="flex gap-2">
+          <Skeleton className="w-40 h-10 rounded-md" />
+          <Skeleton className="size-10 rounded-md" />
+          <Skeleton className="size-10 rounded-md" />
+          <Skeleton className="size-10 rounded-md" />
+          <Skeleton className="size-10 rounded-md" />
+          <Skeleton className="size-10 rounded-md" />
+          <Skeleton className="size-10 rounded-md" />
+        </div>
+        <Skeleton className="h-40 w-full rounded-md" />
+      </div>
+    );
   }
   return (
     <div className="flex flex-col h-full gap-4 rounded-xl focus:outline-none">
-      <EditorControllers
-        editor={editor}
-        options={options}
-      />
+      {
+        disabled ?? (
+          <EditorControllers
+            editor={editor}
+            options={options}
+          />
+
+        )
+      }
       <EditorContent
         editor={editor}
         className="p-4 border border-input rounded-xl tiptap dark:bg-neutral-800 bg-white tiptap"
@@ -306,8 +329,9 @@ function PasteImage({ editor }: {
           disabled={uploadImageMutation.isPending}
           onChange={async (e) => {
             if (!e.target.files?.[0]) return;
-            const image = (await ImagesToBase64([e.target.files[0]]))[0]!;
-            uploadImageMutation.mutate({ image: image })
+            uploadImageMutation.mutate({
+              image: (await ImagesToBase64([e.target.files[0]] as const))[0]
+            })
           }}
         />
       </DialogContent>
