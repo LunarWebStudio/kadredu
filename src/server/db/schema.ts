@@ -116,6 +116,28 @@ export const topics = createTable("topics", {
   name: varchar("name", { length: 255 }).notNull().unique()
 });
 
+export const purshases = createTable("purshases", {
+  id: text("id")
+    .$defaultFn(() => createId())
+    .notNull()
+    .primaryKey(),
+  productId: text("productId")
+    .notNull(),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id),
+  price: integer("price")
+    .notNull(),
+  purshasedAt: timestamp("purshasedAt", {
+    mode: "string",
+    withTimezone: true,
+  }).defaultNow()
+})
+
+export const purshasesRelation = relations(purshases, ({ one }) => ({
+  user: one(users, { fields: [purshases.userId], references: [users.id] })
+}))
+
 export const tutorials = createTable("tutorials", {
   id: text("id")
     .$defaultFn(() => createId())

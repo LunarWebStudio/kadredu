@@ -4,11 +4,10 @@ import { UploadFile } from "~/lib/server/file_upload";
 import { ProcessImage } from "~/lib/server/images";
 
 import { TRPCError } from "@trpc/server";
+import { env } from "~/env";
 import { CoinsInputSchema, ExperienceInputSchema, IdInputSchema, UserUpdateInputSchema, UsernameInputSchema } from "~/lib/shared/types";
 import { adminProcedure, createTRPCRouter, protectedProcedure, teacherProcedure, verificationProcedure } from "~/server/api/trpc";
 import { images, roleSchema, users } from "~/server/db/schema";
-
-import { env } from "~/env";
 
 export const userRouter = createTRPCRouter({
   updadeSelf: verificationProcedure

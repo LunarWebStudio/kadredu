@@ -18,7 +18,6 @@ export default function GithubConnect() {
         redirect: true
       });
     } catch (err) {
-      console.error(err);
       toast({
         title: "Ошибка",
         description: "Не удалось подключиться к GitHub",

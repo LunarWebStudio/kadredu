@@ -125,11 +125,13 @@ Link.configure({
 export default function EditorText({
   text,
   setText,
-  options
+  options,
+  disabled,
 }: {
   text: string,
-  setText: (text: string) => void
-  options?: Options
+  setText?: (text: string) => void
+  options?: Options,
+  disabled?: boolean
 }) {
   const editor = useEditor({
     extensions: [
@@ -150,10 +152,14 @@ export default function EditorText({
 
     ],
     onUpdate: ({ editor }) => {
-      setText(editor.getText())
+      setText ? setText(editor.getHTML()) : ""
     },
     content: text
   });
+  if (disabled) {
+    editor?.setEditable(false)
+  }
+
 
 
   if (!editor) {
@@ -174,10 +180,15 @@ export default function EditorText({
   }
   return (
     <div className="flex flex-col h-full gap-4 rounded-xl focus:outline-none">
-      <EditorControllers
-        editor={editor}
-        options={options}
-      />
+      {
+        disabled ?? (
+          <EditorControllers
+            editor={editor}
+            options={options}
+          />
+
+        )
+      }
       <EditorContent
         editor={editor}
         className="p-4 border border-input rounded-xl tiptap dark:bg-neutral-800 bg-white tiptap"

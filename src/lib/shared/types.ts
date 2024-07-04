@@ -166,10 +166,11 @@ export const TutorialInputShema = z.object({
       invalid_type_error: "Время не является числом"
     })
     .min(1, "Время не указано"),
-  subjectId: z.string({
-    invalid_type_error: "Предмет не является строкой"
-  })
-});
+  subjectId: z
+    .string({
+      invalid_type_error: "Предмет не является строкой"
+    })
+})
 
 // tasks
 export type Task = inferProcedureOutput<AppRouter["task"]["getAll"]>[number];
@@ -225,10 +226,11 @@ export const TaskInputShema = z.intersection(
 
 // resume
 export const ResumeInputSchema = z.object({
-  roleId: z.string().min(1, "Выберите роль"),
+  roleId: z.string()
+    .min(1, "Выберите роль"),
   status: statusSchema,
   experience: z.string().optional()
-});
+})
 
 export type Resume = inferProcedureOutput<AppRouter["resume"]["getSelf"]>;
 
@@ -284,3 +286,4 @@ export const SubjectInputSchema = z.object({
 export type Subject = inferProcedureOutput<
   AppRouter["subject"]["getAll"]
 >[number];
+
