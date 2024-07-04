@@ -54,6 +54,7 @@ export default async function Events({
                             <TableHead>Название</TableHead>
                             <TableHead>Дата</TableHead>
                             <TableHead>Тип</TableHead>
+                            <TableHead></TableHead>
                         </TableRow>
                     </TableHeader>
         

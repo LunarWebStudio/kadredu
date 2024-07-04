@@ -55,6 +55,7 @@ export default async function Tasks({
                             <TableHead>Туториал</TableHead>
                             <TableHead>Опыт</TableHead>
                             <TableHead>Монеты</TableHead>
+                            <TableHead></TableHead>
                         </TableRow>
                     </TableHeader>
         

@@ -41,6 +41,7 @@ export default async function Themes({
           <TableHeader>
             <TableRow>
               <TableHead>Название</TableHead>
+              <TableHead></TableHead>
             </TableRow>
           </TableHeader>
 

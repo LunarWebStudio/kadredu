@@ -53,6 +53,7 @@ export default async function Tutorials({
                         <TableHead>Автор</TableHead>
                         <TableHead>Предмет</TableHead>
                         <TableHead>Дата создания</TableHead>
+                        <TableHead></TableHead>
                     </TableRow>
                     </TableHeader>
         

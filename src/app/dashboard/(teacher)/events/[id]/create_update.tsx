@@ -21,6 +21,7 @@ import EditorText from "~/components/Editor";
 import DashboardTemplate from "~/app/dashboard/templ";
 import BackButton from "~/components/backButton";
 import { DatePicker } from "~/components/date_picker";
+import { useEffect } from "react";
 
 export default function CreateUpdateEvent({
   event,

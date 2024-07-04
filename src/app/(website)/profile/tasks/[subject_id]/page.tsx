@@ -1,4 +1,3 @@
-import {  type Task } from "~/lib/shared/types";
 import { api } from "~/trpc/server";
 import Link from "next/link";
 import { AlarmClock } from "lucide-react";
@@ -12,7 +11,6 @@ export default async function TaskSubjectPage({
     }
 }) {
     const tasks = await api.task.getAllBySubjectId({ id: params.subject_id });
-    const date = new Date();
     
     return (
         <div className="w-full h-screen mt-4">
