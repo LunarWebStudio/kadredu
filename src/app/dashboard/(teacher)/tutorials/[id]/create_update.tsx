@@ -18,7 +18,7 @@ import { Skeleton } from "~/components/ui/skeleton";
 import { useToast } from "~/components/ui/use-toast";
 import { ImagesToBase64 } from "~/lib/shared/images";
 import { OnError } from "~/lib/shared/onError";
-import { TutorialInputShema, type Subject, type Topic, type Tutorial } from "~/lib/shared/types";
+import { OneTutorial, TutorialInputShema, type Subject, type Topic } from "~/lib/shared/types";
 import { api } from "~/trpc/react";
 
 
@@ -27,7 +27,7 @@ export default function CreateUpdateTutorial({
   topics,
   subjects
 }: {
-  tutorial?: Tutorial;
+  tutorial?: OneTutorial;
   topics?: Topic[];
   subjects: Subject[];
 }) {

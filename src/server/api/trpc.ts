@@ -63,7 +63,7 @@ export const protectedProcedure = verificationProcedure.use(({ ctx, next }) => {
 });
 
 const FORBIDDEN_MESSAGE = "У вас недостаточно прав для данного действия";
-const HIGH_LEVEL_THRESHOLD = 3;
+export const HIGH_LEVEL_THRESHOLD = 3;
 
 export const githubProcedure = protectedProcedure.use(async ({ ctx, next }) => {
   const data = await ctx.db.query.users.findFirst({

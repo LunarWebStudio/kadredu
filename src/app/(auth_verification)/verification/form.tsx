@@ -23,6 +23,8 @@ export default function VerificationForm() {
       invalid_type_error: "Имя должно быть строкой",
     }).min(1, "Заполните имя"),
     description: z.string().optional(),
+    // TODO: fix
+    username: z.string()
   })
 
   const form = useForm({
@@ -31,6 +33,7 @@ export default function VerificationForm() {
       profilePictureImage: "",
       name: "",
       description: "",
+      username: ""
     }
   })
 

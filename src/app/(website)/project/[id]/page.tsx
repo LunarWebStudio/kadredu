@@ -49,7 +49,7 @@ export default async function Project({
           </Link>
           <LikeProject
             projectId={project.id}
-            isLiked={project.likes.some(l => l.userId === session.user.id)}
+            isLiked={project.likes.some(l => l.userId === session?.user.id)}
           />
         </div>
       </div>

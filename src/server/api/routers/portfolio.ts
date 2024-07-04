@@ -1,15 +1,16 @@
 import { TRPCError } from "@trpc/server";
 import { and, eq, ilike } from "drizzle-orm";
+import { z } from "zod";
 import { Github } from "~/lib/server/github";
 import {
-    IdInputSchema,
-    PortfolioProjectInputSchema,
-    UsernameInputSchema
+  IdInputSchema,
+  PortfolioProjectInputSchema,
+  UsernameInputSchema
 } from "~/lib/shared/types";
 import {
-    createTRPCRouter,
-    githubProcedure,
-    protectedProcedure
+  createTRPCRouter,
+  githubProcedure,
+  protectedProcedure
 } from "~/server/api/trpc";
 import { portfolioProjects, projectLike, users } from "~/server/db/schema";
 
@@ -35,12 +36,12 @@ export const portfolioRouter = createTRPCRouter({
           repoName: repo.name
         }).returning())[0]!;
     }),
-  // update: protectedProcedure
-  //   .input(z.intersection(IdInputSchema, PortfolioProjectInputSchema))
-  //   .mutation(async ({ ctx, input }) => {
-  //     // TODO: Update когда макс сделает кнопку
-  //     return null;
-  //   }),
+  update: protectedProcedure
+    .input(z.intersection(IdInputSchema, PortfolioProjectInputSchema))
+    .mutation(async () => {
+      // TODO: Update когда макс сделает кнопку
+      return null;
+    }),
   delete: protectedProcedure
     .input(IdInputSchema)
     .mutation(async ({ ctx, input }) => {

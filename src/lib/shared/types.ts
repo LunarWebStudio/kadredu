@@ -128,6 +128,10 @@ export type Tutorial = inferProcedureOutput<
   AppRouter["tutorial"]["getAll"]
 >[number];
 
+export type OneTutorial = NonNullable<
+  inferProcedureOutput<AppRouter["tutorial"]["getOne"]>
+>;
+
 export const TutorialInputShema = z.object({
   name: z
     .string({
