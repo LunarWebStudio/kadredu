@@ -1,26 +1,26 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { type User } from "~/lib/shared/types";
-import { api } from "~/trpc/react";
-import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import {
   AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogCancel,
-  AlertDialogFooter,
-  AlertDialogDescription,
-  AlertDialogAction,
-  AlertDialogTrigger
+  AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
+import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import { useToast } from "~/components/ui/use-toast";
+import type { User } from "~/lib/shared/types";
+import { api } from "~/trpc/react";
 
 export default function DeleteUser({
-  user
+  user,
 }: {
-  user: User
+  user: User;
 }) {
   const router = useRouter();
   const { toast } = useToast();
@@ -39,12 +39,12 @@ export default function DeleteUser({
         variant: "destructive",
       });
     },
-  })
+  });
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <DropdownMenuItem onSelect={e => e.preventDefault()}>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
           Удалить
         </DropdownMenuItem>
       </AlertDialogTrigger>

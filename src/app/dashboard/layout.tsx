@@ -1,17 +1,20 @@
 import { redirect } from "next/navigation";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import DashboardNavbar from "~/app/dashboard/navbar";
 import Sidebar from "~/app/dashboard/sidebar";
 import { getServerAuthSession } from "~/server/auth";
 
 export default async function DashboardLayout({
-  children
+  children,
 }: {
-  children: ReactNode
+  children: ReactNode;
 }) {
   const session = await getServerAuthSession();
 
-  if ((session?.user.role.every((r) => r === "STUDENT") ?? false) || session?.user.role.length === 0) {
+  if (
+    (session?.user.roles.every((r) => r === "STUDENT") ?? false) ||
+    session?.user.roles.length === 0
+  ) {
     redirect("/auth");
   }
 

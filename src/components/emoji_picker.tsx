@@ -4,15 +4,15 @@ import data from "@emoji-mart/data";
 import i18n from "@emoji-mart/data/i18n/ru";
 import Picker from "@emoji-mart/react";
 import { useTheme } from "next-themes";
-import { useState, type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { Popover, PopoverContent } from "~/components/ui/popover";
 
 export default function EmojiPicker({
   setEmoji,
-  children
+  children,
 }: {
-  setEmoji: (emoji: string) => void,
-  children: ReactNode
+  setEmoji: (emoji: string) => void;
+  children: ReactNode;
 }) {
   const theme = useTheme();
   const [open, setOpen] = useState(false);

@@ -8,10 +8,10 @@ import { api } from "~/trpc/react";
 
 export default function LikeProject({
   projectId,
-  isLiked
+  isLiked,
 }: {
-  projectId: string,
-  isLiked: boolean
+  projectId: string;
+  isLiked: boolean;
 }) {
   const [liked, setLiked] = useState(isLiked);
   const heartRef = useRef<SVGSVGElement>(null);
@@ -19,29 +19,29 @@ export default function LikeProject({
   const { toast } = useToast();
 
   const likeMutation = api.portfolio.toggleLike.useMutation({
-    onError: err => {
+    onError: (err) => {
       setLiked(isLiked);
       toast({
         title: "Ошибка",
         description: err.message,
-        variant: "destructive"
+        variant: "destructive",
       });
-    }
+    },
   });
 
   return (
     <MotionConfig
       transition={{
         duration: 0.5,
-        type: "spring"
+        type: "spring",
       }}
     >
       <motion.button
         whileTap={{
-          scale: likeMutation.isPending ? 1 : 0.95
+          scale: likeMutation.isPending ? 1 : 0.95,
         }}
         whileHover={{
-          scale: likeMutation.isPending ? 1 : 1.05
+          scale: likeMutation.isPending ? 1 : 1.05,
         }}
         onClick={() => {
           likeMutation.mutate({ id: projectId });

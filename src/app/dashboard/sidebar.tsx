@@ -1,9 +1,20 @@
-import { BookA, Building, Crown, Group, Award, Calendar, BookUser, User, Glasses, ClipboardList } from "lucide-react";
-import { type Role } from "~/server/db/schema";
-import { MobileSidebarItem } from "~/app/dashboard/item";
-import { getServerAuthSession } from "~/server/auth";
+import {
+  Award,
+  BookA,
+  BookUser,
+  Building,
+  Calendar,
+  ClipboardList,
+  Crown,
+  Glasses,
+  Group,
+  User,
+} from "lucide-react";
 import React from "react";
+import { MobileSidebarItem } from "~/app/dashboard/item";
 import { Separator } from "~/components/ui/separator";
+import { getServerAuthSession } from "~/server/auth";
+import type { Role } from "~/server/db/schema";
 
 const iconClassName = "size-4";
 
@@ -11,11 +22,11 @@ type SidebarItem = {
   title: string;
   roles: Role[];
   items: {
-    icon: React.ReactNode
-    href: string
-    title: string
-  }[]
-}
+    icon: React.ReactNode;
+    href: string;
+    title: string;
+  }[];
+};
 
 export const sidebarItems: SidebarItem[] = [
   {
@@ -25,24 +36,24 @@ export const sidebarItems: SidebarItem[] = [
       {
         icon: <Building className={iconClassName} />,
         href: "/dashboard/buildings",
-        title: "СП"
+        title: "СП",
       },
       {
         icon: <Group className={iconClassName} />,
         href: "/dashboard/groups",
-        title: "Группы"
+        title: "Группы",
       },
       {
         icon: <Crown className={iconClassName} />,
         href: "/dashboard/roles",
-        title: "Роли в команду"
+        title: "Роли в команду",
       },
       {
         icon: <BookA className={iconClassName} />,
         href: "/dashboard/topics",
-        title: "Темы для статей"
-      }
-    ]
+        title: "Темы для статей",
+      },
+    ],
   },
   {
     title: "Глава ПЦК",
@@ -51,19 +62,19 @@ export const sidebarItems: SidebarItem[] = [
       {
         icon: <Award className={iconClassName} />,
         href: "/dashboard/awards",
-        title: "Награды"
+        title: "Награды",
       },
       {
         icon: <Calendar className={iconClassName} />,
         href: "/dashboard/events",
-        title: "События"
+        title: "События",
       },
       {
         icon: <BookUser className={iconClassName} />,
         href: "/dashboard/subjects",
-        title: "Предметы"
-      }
-    ]
+        title: "Предметы",
+      },
+    ],
   },
   {
     title: "Преподаватель",
@@ -72,20 +83,20 @@ export const sidebarItems: SidebarItem[] = [
       {
         icon: <User className={iconClassName} />,
         href: "/dashboard/users",
-        title: "Пользователи"
+        title: "Пользователи",
       },
       {
         icon: <Glasses className={iconClassName} />,
         href: "/dashboard/tutorials",
-        title: "Туториалы"
+        title: "Туториалы",
       },
       {
         icon: <ClipboardList className={iconClassName} />,
         href: "/dashboard/tasks",
-        title: "Задания"
-      }
-    ]
-  }
+        title: "Задания",
+      },
+    ],
+  },
 ];
 
 export default async function Sidebar() {
@@ -95,13 +106,20 @@ export default async function Sidebar() {
     <aside className="px-1 xl:px-6 py-4 bg-secondary h-screen-nav-dashboard hidden sm:block xl:min-w-[19rem]">
       {sidebarItems.map((section, index) => (
         <React.Fragment key={index}>
-          {((session?.user.role.includes("ADMIN") ?? false) || (session?.user.role.some((role) => section.roles.includes(role)) ?? false)) && (
+          {((session?.user.roles.includes("ADMIN") ?? false) ||
+            (session?.user.roles.some((role) => section.roles.includes(role)) ??
+              false)) && (
             <>
               <div className="mb-4 space-y-2 px-2">
-                <p className="text-foreground/60 hidden xl:block">{section.title}</p>
+                <p className="text-foreground/60 hidden xl:block">
+                  {section.title}
+                </p>
                 <div className="flex flex-col gap-2">
                   {section.items.map((item, index) => (
-                    <MobileSidebarItem {...item} key={section.title + index} />
+                    <MobileSidebarItem
+                      {...item}
+                      key={section.title + index}
+                    />
                   ))}
                 </div>
               </div>
@@ -113,4 +131,3 @@ export default async function Sidebar() {
     </aside>
   );
 }
-

@@ -1,13 +1,13 @@
 import { redirect } from "next/navigation";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import Footer from "~/components/footer";
 import Navbar from "~/components/navbar";
 import { getServerAuthSession } from "~/server/auth";
 
 export default async function WebsiteLayout({
-  children
+  children,
 }: {
-  children: ReactNode
+  children: ReactNode;
 }) {
   const session = await getServerAuthSession();
 
@@ -26,9 +26,7 @@ export default async function WebsiteLayout({
   return (
     <main className="bg-background dark:bg-background min-h-screen-nav flex flex-col">
       <Navbar />
-      <div className="grow mt-nav min-h-screen-nav">
-        {children}
-      </div>
+      <div className="grow mt-nav min-h-screen-nav">{children}</div>
       <Footer />
     </main>
   );

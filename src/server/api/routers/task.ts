@@ -5,7 +5,7 @@ import { IdInputSchema, TaskInputShema } from "~/lib/shared/types";
 import {
   createTRPCRouter,
   protectedProcedure,
-  teacherProcedure
+  teacherProcedure,
 } from "~/server/api/trpc";
 import { tasks } from "~/server/db/schema";
 
@@ -15,7 +15,7 @@ export const tasksRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(tasks).values({
         ...input,
-        authorId: ctx.session.user.id
+        authorId: ctx.session.user.id,
       });
     }),
   delete: teacherProcedure
@@ -28,14 +28,14 @@ export const tasksRouter = createTRPCRouter({
         const authorId = await ctx.db.query.tasks.findFirst({
           where: eq(tasks.id, input.id),
           columns: {
-            authorId: true
-          }
+            authorId: true,
+          },
         });
 
         if (authorId?.authorId !== ctx.session.user.id) {
           throw new TRPCError({
             code: "FORBIDDEN",
-            message: "Вы не можете удалять чужие задания"
+            message: "Вы не можете удалять чужие задания",
           });
         }
       }
@@ -46,9 +46,9 @@ export const tasksRouter = createTRPCRouter({
     .input(
       z
         .object({
-          search: z.string().optional()
+          search: z.string().optional(),
         })
-        .optional()
+        .optional(),
     )
     .query(async ({ ctx, input }) => {
       return await ctx.db.query.tasks.findMany({
@@ -57,7 +57,7 @@ export const tasksRouter = createTRPCRouter({
           !ctx.session.user.role.includes("ADMIN") &&
             !ctx.session.user.role.includes("LEAD_CYCLE_COMISSION")
             ? eq(tasks.authorId, ctx.session.user.id)
-            : undefined
+            : undefined,
         ),
 
         with: {
@@ -65,28 +65,28 @@ export const tasksRouter = createTRPCRouter({
             columns: {
               id: true,
               name: true,
-              email: true
-            }
+              email: true,
+            },
           },
           subject: {
             columns: {
               id: true,
-              name: true
-            }
+              name: true,
+            },
           },
           tutorial: {
             columns: {
               id: true,
-              name: true
-            }
+              name: true,
+            },
           },
           group: {
             columns: {
               id: true,
-              title: true
-            }
-          }
-        }
+              title: true,
+            },
+          },
+        },
       });
     }),
   update: teacherProcedure
@@ -99,14 +99,14 @@ export const tasksRouter = createTRPCRouter({
         const authorId = await ctx.db.query.tasks.findFirst({
           where: eq(tasks.id, input.id),
           columns: {
-            authorId: true
-          }
+            authorId: true,
+          },
         });
 
         if (authorId?.authorId !== ctx.session.user.id) {
           throw new TRPCError({
             code: "FORBIDDEN",
-            message: "Вы не можете редактировать чужие задания"
+            message: "Вы не можете редактировать чужие задания",
           });
         }
       }
@@ -114,7 +114,7 @@ export const tasksRouter = createTRPCRouter({
       await ctx.db
         .update(tasks)
         .set({
-          ...input
+          ...input,
         })
         .where(eq(tasks.id, input.id));
     }),
@@ -129,28 +129,28 @@ export const tasksRouter = createTRPCRouter({
             columns: {
               id: true,
               name: true,
-              email: true
-            }
+              email: true,
+            },
           },
           subject: {
             columns: {
               id: true,
-              name: true
-            }
+              name: true,
+            },
           },
           tutorial: {
             columns: {
               id: true,
-              name: true
-            }
+              name: true,
+            },
           },
           group: {
             columns: {
               id: true,
-              title: true
-            }
-          }
-        }
+              title: true,
+            },
+          },
+        },
       });
-    })
+    }),
 });

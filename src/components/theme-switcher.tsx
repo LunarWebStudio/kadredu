@@ -9,7 +9,7 @@ export default function ThemeSwitch() {
   return (
     <Switch
       checked={theme.theme === "dark"}
-      onCheckedChange={checked => {
+      onCheckedChange={(checked) => {
         if (checked) {
           theme.setTheme("dark");
         } else {

@@ -1,5 +1,6 @@
 import { Slot } from "@radix-ui/react-slot";
-import { cva, type VariantProps } from "class-variance-authority";
+import { type VariantProps, cva } from "class-variance-authority";
+import { ChevronDown, Loader } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "~/lib/utils";
@@ -16,40 +17,64 @@ const buttonVariants = cva(
           "border border-input bg-secondary hover:bg-background hover:text-accent-foreground",
         secondary: "bg-muted text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-muted",
-        link: "text-primary underline-offset-4 hover:underline"
+        table_selector: "hover:bg-muted hover:px-4 px-0",
+        link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-4 py-2",
+        table_selector: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
         icon: "h-10 w-10",
-        link: "p-0"
-      }
+        link: "p-0",
+      },
     },
     defaultVariants: {
       variant: "default",
-      size: "default"
-    }
-  }
+      size: "default",
+    },
+  },
 );
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  chevron?: boolean;
+  loading?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  (
+    {
+      className,
+      chevron,
+      loading,
+      disabled,
+      variant,
+      size,
+      asChild = false,
+      ...props
+    },
+    ref,
+  ) => {
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
-        className={cn(buttonVariants({ size, className, variant }))}
+        className={cn(
+          buttonVariants({ size, className, variant }),
+          chevron && "justify-between gap-2",
+        )}
         ref={ref}
         {...props}
-      />
+        disabled={disabled || loading}
+      >
+        {loading && <Loader />}
+        {props.children}
+        {chevron && !loading && <ChevronDown className="mr-2 size-4" />}
+      </Comp>
     );
-  }
+  },
 );
 Button.displayName = "Button";
 

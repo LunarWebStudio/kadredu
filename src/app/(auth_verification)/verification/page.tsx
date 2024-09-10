@@ -1,6 +1,6 @@
-import { getServerAuthSession } from "~/server/auth";
 import { redirect } from "next/navigation";
 import VerificationForm from "~/app/(auth_verification)/verification/form";
+import { getServerAuthSession } from "~/server/auth";
 
 export default async function Verification() {
   const session = await getServerAuthSession();

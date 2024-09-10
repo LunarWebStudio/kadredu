@@ -1,15 +1,15 @@
-import { type ReactNode } from "react";
-import NotFoundPage from "~/app/not-found";
+import { notFound } from "next/navigation";
+import type { ReactNode } from "react";
 import { getServerAuthSession } from "~/server/auth";
 
 export default async function AdminLayout({
-  children
+  children,
 }: {
-  children: ReactNode
+  children: ReactNode;
 }) {
   const session = await getServerAuthSession();
-  if (!session?.user.role.includes("ADMIN")) {
-    return <NotFoundPage />;
+  if (!session?.user.roles.includes("ADMIN")) {
+    return notFound();
   }
 
   return children;

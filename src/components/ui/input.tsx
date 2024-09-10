@@ -1,13 +1,17 @@
 import * as React from "react";
 
 import { Button } from "~/components/ui/button";
+import { ConvertFiles } from "~/lib/client/file";
+import type { ProcessedFile } from "~/lib/shared/types/file";
 import { cn } from "~/lib/utils";
 
 export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  onUpload?: (files: ProcessedFile[]) => void;
+}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, max, ...props }, ref) => {
+  ({ className, type, onUpload, files, max, ...props }, ref) => {
     return (
       <>
         {type === "file" ? (
@@ -17,13 +21,18 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               className,
               props.disabled
                 ? "animate-pulse cursor-not-allowed"
-                : "cursor-pointer"
+                : "cursor-pointer",
             )}
           >
             <input
               type="file"
               className="hidden"
               {...props}
+              onChange={async (e) => {
+                if (!e.target.files || !onUpload) return;
+
+                onUpload(await ConvertFiles(Array.from(e.target.files)));
+              }}
             />
             <Button
               disabled={props.disabled}
@@ -36,7 +45,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               В формате{" "}
               {props.accept
                 ?.split(",")
-                .map(ext => ext.split("/")[1]?.toUpperCase())
+                .map((ext) => ext.split("/")[1]?.toUpperCase())
                 .join(", ")}
               <br />
               Максимальный размер {max}MB
@@ -47,7 +56,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             type={type}
             className={cn(
               "flex h-10 w-full rounded-md border border-input bg-secondary px-3 py-2 text-sm ring-offset-secondary file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-              className
+              className,
             )}
             ref={ref}
             {...props}
@@ -55,7 +64,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         )}
       </>
     );
-  }
+  },
 );
 Input.displayName = "Input";
 

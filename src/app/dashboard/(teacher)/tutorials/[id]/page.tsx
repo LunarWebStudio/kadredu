@@ -1,13 +1,13 @@
 import CreateUpdateTutorial from "~/app/dashboard/(teacher)/tutorials/[id]/create_update";
-import { type OneTutorial } from "~/lib/shared/types";
+import type { OneTutorial } from "~/lib/shared/types";
 import { api } from "~/trpc/server";
 
 export default async function CreateUpdateTutorialPage({
-  params
+  params,
 }: {
   params: {
-    id?: string
-  }
+    id?: string;
+  };
 }) {
   let tutorial: OneTutorial | undefined = undefined;
   const subjects = await api.subject.getAll({});
@@ -15,7 +15,7 @@ export default async function CreateUpdateTutorialPage({
 
   if (params.id != "create") {
     tutorial = await api.tutorial.getOne({
-      id: params.id ?? ""
+      id: params.id ?? "",
     });
   }
 
@@ -27,4 +27,3 @@ export default async function CreateUpdateTutorialPage({
     />
   );
 }
-

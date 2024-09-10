@@ -8,23 +8,51 @@ import { useForm } from "react-hook-form";
 import type { z } from "zod";
 import EmojiPicker from "~/components/emoji_picker";
 import { Button } from "~/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "~/components/ui/command";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "~/components/ui/command";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerTrigger } from "~/components/ui/drawer";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
-import { Form, FormControl, FormDescription, FormField, FormItem } from "~/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+} from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import { Textarea } from "~/components/ui/textarea";
 import { useToast } from "~/components/ui/use-toast";
 import { OnError } from "~/lib/shared/onError";
-import { PortfolioProjectInputSchema, type GithubRepository, type PortfolioProject } from "~/lib/shared/types";
+import {
+  type GithubRepository,
+  type PortfolioProject,
+  PortfolioProjectInputSchema,
+} from "~/lib/shared/types";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 
 export default function CreateUpdatePortfolioProject({
   repos,
-  project
+  project,
 }: {
   repos: GithubRepository[];
   project?: PortfolioProject;
@@ -36,9 +64,9 @@ export default function CreateUpdatePortfolioProject({
       emoji: project?.emoji ?? "",
       description: project?.description ?? "",
       repoName: project?.repoName ?? "",
-      repoOwner: project?.repoOwner ?? ""
-    }
-  })
+      repoOwner: project?.repoOwner ?? "",
+    },
+  });
 
   const router = useRouter();
   const { toast } = useToast();
@@ -49,7 +77,7 @@ export default function CreateUpdatePortfolioProject({
       toast({
         title: "Проект создан",
       });
-      router.push(`/project/${proj.id}`)
+      router.push(`/project/${proj.id}`);
     },
     onError(err) {
       toast({
@@ -57,7 +85,7 @@ export default function CreateUpdatePortfolioProject({
         description: err.message,
         variant: "destructive",
       });
-    }
+    },
   });
 
   const updatePortfolioProjectMutation = api.portfolio.update.useMutation({
@@ -73,22 +101,25 @@ export default function CreateUpdatePortfolioProject({
         description: err.message,
         variant: "destructive",
       });
-    }
+    },
   });
 
   const onSubmit = (data: z.infer<typeof PortfolioProjectInputSchema>) => {
     if (project) {
-      updatePortfolioProjectMutation.mutate({ id: project.id, ...data })
+      updatePortfolioProjectMutation.mutate({ id: project.id, ...data });
     } else {
-      createPortfolioProjectMutation.mutate(data)
+      createPortfolioProjectMutation.mutate(data);
     }
-  }
+  };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={setOpen}
+    >
       <DialogTrigger asChild>
         {project ? (
-          <DropdownMenuItem onSelect={e => e.preventDefault()}>
+          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
             Редактировать
           </DropdownMenuItem>
         ) : (
@@ -100,7 +131,10 @@ export default function CreateUpdatePortfolioProject({
           <DialogTitle>Добавить проект</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit, OnError(toast))} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(onSubmit, OnError(toast))}
+            className="space-y-6"
+          >
             <FormField
               control={form.control}
               name="name"
@@ -108,7 +142,10 @@ export default function CreateUpdatePortfolioProject({
                 <FormItem>
                   <FormDescription>Название проекта</FormDescription>
                   <FormControl>
-                    <Input placeholder="Название проекта" {...field} />
+                    <Input
+                      placeholder="Название проекта"
+                      {...field}
+                    />
                   </FormControl>
                 </FormItem>
               )}
@@ -125,7 +162,10 @@ export default function CreateUpdatePortfolioProject({
                     }}
                   >
                     <PopoverTrigger asChild>
-                      <Button className="w-full justify-start" variant="outline">
+                      <Button
+                        className="w-full justify-start"
+                        variant="outline"
+                      >
                         {field.value}
                       </Button>
                     </PopoverTrigger>
@@ -139,11 +179,15 @@ export default function CreateUpdatePortfolioProject({
               render={({ field }) => (
                 <FormItem>
                   <FormDescription>Название репозитория</FormDescription>
-                  <RepoSelect repos={repos} repo={repos.find(r => r.name === field.value)} setRepo={(repo) => {
-                    field.onChange(repo.name);
-                    form.setValue("description", repo.description ?? "");
-                    form.setValue("name", repo.name ?? "");
-                  }} />
+                  <RepoSelect
+                    repos={repos}
+                    repo={repos.find((r) => r.name === field.value)}
+                    setRepo={(repo) => {
+                      field.onChange(repo.name);
+                      form.setValue("description", repo.description ?? "");
+                      form.setValue("name", repo.name ?? "");
+                    }}
+                  />
                 </FormItem>
               )}
             />
@@ -153,26 +197,34 @@ export default function CreateUpdatePortfolioProject({
               render={({ field }) => (
                 <FormItem>
                   <FormDescription>Описание</FormDescription>
-                  <Textarea placeholder="Описание" {...field} />
+                  <Textarea
+                    placeholder="Описание"
+                    {...field}
+                  />
                 </FormItem>
               )}
             />
             <DialogFooter>
               <Button
-                disabled={updatePortfolioProjectMutation.isPending || createPortfolioProjectMutation.isPending}
-              >Сохранить</Button>
+                disabled={
+                  updatePortfolioProjectMutation.isPending ||
+                  createPortfolioProjectMutation.isPending
+                }
+              >
+                Сохранить
+              </Button>
             </DialogFooter>
           </form>
         </Form>
       </DialogContent>
-    </Dialog >
+    </Dialog>
   );
 }
 
 function RepoSelect({
   repos,
   repo,
-  setRepo
+  setRepo,
 }: {
   repos: GithubRepository[];
   repo?: GithubRepository;
@@ -186,30 +238,56 @@ function RepoSelect({
       setDrawerOpen(false);
       setPopoverOpen(false);
     }
-  }, [repo])
+  }, [repo]);
 
   return (
     <>
-      <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-        <PopoverTrigger className="hidden lg:flex" asChild>
-          <Button variant="outline" className="w-full justify-start">
+      <Popover
+        open={popoverOpen}
+        onOpenChange={setPopoverOpen}
+      >
+        <PopoverTrigger
+          className="hidden lg:flex"
+          asChild
+        >
+          <Button
+            variant="outline"
+            className="w-full justify-start"
+          >
             {repo?.name ?? "Репозиторий"}
           </Button>
         </PopoverTrigger>
         <PopoverContent>
-          <RepoList repos={repos} repo={repo} setRepo={setRepo} />
+          <RepoList
+            repos={repos}
+            repo={repo}
+            setRepo={setRepo}
+          />
         </PopoverContent>
       </Popover>
 
-      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <DrawerTrigger className="flex lg:hidden" asChild>
-          <Button variant="outline" className="w-full justify-start">
+      <Drawer
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+      >
+        <DrawerTrigger
+          className="flex lg:hidden"
+          asChild
+        >
+          <Button
+            variant="outline"
+            className="w-full justify-start"
+          >
             {repo?.name ?? "Репозиторий"}
           </Button>
         </DrawerTrigger>
         <DrawerContent>
           <div className="mt-4 border-t">
-            <RepoList repos={repos} repo={repo} setRepo={setRepo} />
+            <RepoList
+              repos={repos}
+              repo={repo}
+              setRepo={setRepo}
+            />
           </div>
         </DrawerContent>
       </Drawer>
@@ -220,7 +298,7 @@ function RepoSelect({
 function RepoList({
   repos,
   repo,
-  setRepo
+  setRepo,
 }: {
   repos: GithubRepository[];
   repo?: GithubRepository;
@@ -232,25 +310,24 @@ function RepoList({
       <CommandList>
         <CommandEmpty>Репозиториев не найдено.</CommandEmpty>
         <CommandGroup>
-          {repos
-            .map((r) => (
-              <CommandItem
-                key={r.name}
-                value={r.name}
-                onSelect={(val) => {
-                  const repo = repos.find(rl => rl.name === val)!
-                  setRepo(repo);
-                }}
-              >
-                <Check className={
-                  cn(
-                    "size-4 mr-2",
-                    r.name === repo?.name ? "opacity-100" : "opacity-0"
-                  )
-                } />
-                {r.name}
-              </CommandItem>
-            ))}
+          {repos.map((r) => (
+            <CommandItem
+              key={r.name}
+              value={r.name}
+              onSelect={(val) => {
+                const repo = repos.find((rl) => rl.name === val)!;
+                setRepo(repo);
+              }}
+            >
+              <Check
+                className={cn(
+                  "size-4 mr-2",
+                  r.name === repo?.name ? "opacity-100" : "opacity-0",
+                )}
+              />
+              {r.name}
+            </CommandItem>
+          ))}
         </CommandGroup>
       </CommandList>
     </Command>

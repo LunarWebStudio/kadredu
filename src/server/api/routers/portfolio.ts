@@ -5,12 +5,12 @@ import { Github } from "~/lib/server/github";
 import {
   IdInputSchema,
   PortfolioProjectInputSchema,
-  UsernameInputSchema
+  UsernameInputSchema,
 } from "~/lib/shared/types";
 import {
   createTRPCRouter,
   githubProcedure,
-  protectedProcedure
+  protectedProcedure,
 } from "~/server/api/trpc";
 import { portfolioProjects, projectLike, users } from "~/server/db/schema";
 
@@ -23,18 +23,21 @@ export const portfolioRouter = createTRPCRouter({
       if (!repo) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Репозиторий не найден"
+          message: "Репозиторий не найден",
         });
       }
 
-      return (await ctx.db
-        .insert(portfolioProjects)
-        .values({
-          ...input,
-          userId: ctx.session.user.id,
-          repoOwner: repo.owner,
-          repoName: repo.name
-        }).returning())[0]!;
+      return (
+        await ctx.db
+          .insert(portfolioProjects)
+          .values({
+            ...input,
+            userId: ctx.session.user.id,
+            repoOwner: repo.owner,
+            repoName: repo.name,
+          })
+          .returning()
+      )[0]!;
     }),
   update: protectedProcedure
     .input(z.intersection(IdInputSchema, PortfolioProjectInputSchema))
@@ -55,34 +58,36 @@ export const portfolioRouter = createTRPCRouter({
       const repos = await ctx.db.query.portfolioProjects.findMany({
         where: and(
           eq(portfolioProjects.userId, ctx.session.user.id),
-          ilike(portfolioProjects.repoOwner, `%${input.username}%`)
+          ilike(portfolioProjects.repoOwner, `%${input.username}%`),
         ),
         with: {
           likes: true,
-          user: true
-        }
-      })
+          user: true,
+        },
+      });
 
       const token = await ctx.db.query.users.findFirst({
         where: eq(users.username, input.username),
         columns: {
           githubToken: true,
-          githubUsername: true
-        }
-      })
+          githubUsername: true,
+        },
+      });
 
       const github = new Github({
         username: token?.githubUsername ?? "",
-        token: token?.githubToken ?? ""
-      })
+        token: token?.githubToken ?? "",
+      });
 
-      return await Promise.all(repos.map(async repo => {
-        const languages = await github.GetLanguages(repo.repoName);
-        return {
-          ...repo,
-          languages
-        }
-      }))
+      return await Promise.all(
+        repos.map(async (repo) => {
+          const languages = await github.GetLanguages(repo.repoName);
+          return {
+            ...repo,
+            languages,
+          };
+        }),
+      );
     }),
   getOne: protectedProcedure
     .input(IdInputSchema)
@@ -91,14 +96,14 @@ export const portfolioRouter = createTRPCRouter({
         where: eq(portfolioProjects.id, input.id),
         with: {
           likes: true,
-          user: true
-        }
-      })
+          user: true,
+        },
+      });
 
       if (!repo) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Проект не найден"
+          message: "Проект не найден",
         });
       }
 
@@ -106,14 +111,14 @@ export const portfolioRouter = createTRPCRouter({
         where: eq(users.id, repo?.userId),
         columns: {
           githubToken: true,
-          githubUsername: true
-        }
-      })
+          githubUsername: true,
+        },
+      });
 
       const github = new Github({
         username: token?.githubUsername ?? "",
-        token: token?.githubToken ?? ""
-      })
+        token: token?.githubToken ?? "",
+      });
 
       const githubRepo = await github.GetRepo(repo.repoName);
 
@@ -122,29 +127,29 @@ export const portfolioRouter = createTRPCRouter({
         url: githubRepo.url,
         languages: await github.GetLanguages(repo.repoName),
         tree: await github.GetTree(repo.repoName),
-        readme: await github.GetReadme(repo.repoName)
-      }
+        readme: await github.GetReadme(repo.repoName),
+      };
     }),
   toggleLike: protectedProcedure
     .input(IdInputSchema)
     .mutation(async ({ ctx, input }) => {
       const condition = and(
         eq(projectLike.projectId, input.id),
-        eq(projectLike.userId, ctx.session.user.id)
-      )
+        eq(projectLike.userId, ctx.session.user.id),
+      );
 
       const like = await ctx.db.query.projectLike.findFirst({
-        where: condition
-      })
+        where: condition,
+      });
 
       if (like) {
-        await ctx.db.delete(projectLike).where(condition)
+        await ctx.db.delete(projectLike).where(condition);
         return;
       }
 
       await ctx.db.insert(projectLike).values({
         projectId: input.id,
-        userId: ctx.session.user.id
-      })
-    })
+        userId: ctx.session.user.id,
+      });
+    }),
 });

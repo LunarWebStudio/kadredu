@@ -2,19 +2,24 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Button } from "~/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~/components/ui/tooltip";
 
 export function MobileSidebarItem({
   title,
   href,
-  icon
+  icon,
 }: {
-  title: string
-  href: string
-  icon: ReactNode
+  title: string;
+  href: string;
+  icon: ReactNode;
 }) {
   const pathName = usePathname();
 
@@ -23,16 +28,22 @@ export function MobileSidebarItem({
       <Tooltip>
         <TooltipTrigger asChild>
           <Link href={href}>
-            <Button variant="ghost" className={cn(
-              "gap-2 w-full justify-start",
-              pathName.startsWith(href) ? "bg-muted" : ""
-            )}>
+            <Button
+              variant="ghost"
+              className={cn(
+                "gap-2 w-full justify-start",
+                pathName.startsWith(href) ? "bg-muted" : "",
+              )}
+            >
               {icon}
               <span className="hidden xl:block">{title}</span>
             </Button>
           </Link>
         </TooltipTrigger>
-        <TooltipContent className="xl:hidden" side="right">
+        <TooltipContent
+          className="xl:hidden"
+          side="right"
+        >
           {title}
         </TooltipContent>
       </Tooltip>
@@ -40,24 +51,26 @@ export function MobileSidebarItem({
   );
 }
 
-
 export default function SidebarItem({
   title,
   href,
-  icon
+  icon,
 }: {
-  title: string
-  href: string
-  icon: ReactNode
+  title: string;
+  href: string;
+  icon: ReactNode;
 }) {
   const pathName = usePathname();
 
   return (
     <Link href={href}>
-      <Button variant="ghost" className={cn(
-        "gap-2 w-full justify-start",
-        pathName.startsWith(href) ? "bg-muted" : ""
-      )}>
+      <Button
+        variant="ghost"
+        className={cn(
+          "gap-2 w-full justify-start",
+          pathName.startsWith(href) ? "bg-muted" : "",
+        )}
+      >
         {icon}
         {title}
       </Button>

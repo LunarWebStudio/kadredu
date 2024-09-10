@@ -1,5 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -7,40 +8,33 @@ import {
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogHeader,
-  AlertDialogTrigger
+  AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
 import { DialogFooter } from "~/components/ui/dialog";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
-import { toast } from "~/components/ui/use-toast";
 import { api } from "~/trpc/react";
 
-export default function DeleteDialog({
-  role
+export default function DeleteRole({
+  role,
 }: {
-  role: { id: string, name: string }
+  role: { id: string; name: string };
 }) {
   const router = useRouter();
-  const DeleteRoleMutation = api.teamRoles.delete.useMutation({
+  const deleteRoleMutation = api.teamRoles.delete.useMutation({
     onSuccess: () => {
-      toast({
-        title: "Роль удалена"
-      });
       router.refresh();
     },
-    onError: err => {
-      toast({
-        title: "Ошибка удаления роли",
+    onError: (err) => {
+      toast.error("Ошибка", {
         description: err.message,
-        variant: "destructive"
       });
-      router.refresh();
-    }
+    },
   });
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <DropdownMenuItem
-          onSelect={e => {
+          onSelect={(e) => {
             e.preventDefault();
           }}
         >
@@ -57,7 +51,7 @@ export default function DeleteDialog({
           <AlertDialogAction
             disabled={false}
             onClick={() => {
-              DeleteRoleMutation.mutate({ id: role.id });
+              deleteRoleMutation.mutate({ id: role.id });
             }}
           >
             Удалить

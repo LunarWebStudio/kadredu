@@ -1,13 +1,13 @@
 import { Folder, Heart } from "lucide-react";
 import Link from "next/link";
 import LanguageToColor from "~/lib/shared/languages";
-import { type PortfolioProject } from "~/lib/shared/types";
+import type { PortfolioProject } from "~/lib/shared/types";
 import { cn } from "~/lib/utils";
 
 export default function ProjectCard({
-  project
+  project,
 }: {
-  project: PortfolioProject
+  project: PortfolioProject;
 }) {
   return (
     <Link
@@ -27,7 +27,7 @@ export default function ProjectCard({
             <p
               className={cn(
                 LanguageToColor(project.languages[0].name),
-                "font-bold"
+                "font-bold",
               )}
             >
               {project.languages[0].name}

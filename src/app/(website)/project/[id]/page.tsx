@@ -1,34 +1,34 @@
 import { File, Folder } from "lucide-react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import LikeProject from "~/app/(website)/project/[id]/like";
-import NotFoundPage from "~/app/not-found";
 import { Button } from "~/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger
+  TooltipTrigger,
 } from "~/components/ui/tooltip";
 import LanguageToColor from "~/lib/shared/languages";
-import { type OnePortfolioProject } from "~/lib/shared/types";
+import type { OnePortfolioProject } from "~/lib/shared/types";
 import { cn } from "~/lib/utils";
 import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
 export default async function Project({
-  params
+  params,
 }: {
   params: {
-    id?: string
-  }
+    id?: string;
+  };
 }) {
   let project: OnePortfolioProject | null = null;
 
   try {
     project = await api.portfolio.getOne({
-      id: params.id ?? ""
+      id: params.id ?? "",
     });
-  } catch (error) {
-    return <NotFoundPage />;
+  } catch (_error) {
+    notFound();
   }
 
   const session = await getServerAuthSession();
@@ -49,7 +49,7 @@ export default async function Project({
           </Link>
           <LikeProject
             projectId={project.id}
-            isLiked={project.likes.some(l => l.userId === session?.user.id)}
+            isLiked={project.likes.some((l) => l.userId === session?.user.id)}
           />
         </div>
       </div>
@@ -59,7 +59,7 @@ export default async function Project({
             Файлы
           </p>
           <div className="p-6">
-            {project.tree.map(file => (
+            {project.tree.map((file) => (
               // TODO: Сделать ссылки на файлы
               <Link
                 href={file.url ?? "#"}
@@ -87,16 +87,16 @@ export default async function Project({
           <div className="space-y-4 p-6">
             <div className="flex h-1 w-full flex-row">
               <TooltipProvider>
-                {project.languages.map(l => (
+                {project.languages.map((l) => (
                   <Tooltip key={l.name}>
                     <TooltipTrigger asChild>
                       <div
                         className={cn(
                           "h-1 w-fit",
-                          LanguageToColor(l.name).background
+                          LanguageToColor(l.name).background,
                         )}
                         style={{
-                          width: `${l.percent}%`
+                          width: `${l.percent}%`,
                         }}
                       ></div>
                     </TooltipTrigger>
@@ -110,7 +110,7 @@ export default async function Project({
                 <div
                   className={cn(
                     LanguageToColor(l.name).text,
-                    "flex justify-between"
+                    "flex justify-between",
                   )}
                   key={index + l.name}
                 >

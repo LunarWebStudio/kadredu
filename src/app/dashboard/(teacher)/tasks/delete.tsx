@@ -1,21 +1,21 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { type Task } from "~/lib/shared/types";
-import { api } from "~/trpc/react";
-import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import {
   AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogCancel,
-  AlertDialogFooter,
-  AlertDialogDescription,
-  AlertDialogAction,
-  AlertDialogTrigger
+  AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
+import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import { useToast } from "~/components/ui/use-toast";
+import type { Task } from "~/lib/shared/types";
+import { api } from "~/trpc/react";
 
 export default function DeleteTask({ task }: { task: Task }) {
   const router = useRouter();
@@ -24,23 +24,23 @@ export default function DeleteTask({ task }: { task: Task }) {
   const deleteTaskMutation = api.task.delete.useMutation({
     onSuccess: () => {
       toast({
-        title: "Задание удалено"
+        title: "Задание удалено",
       });
       router.refresh();
     },
-    onError: err => {
+    onError: (err) => {
       toast({
         title: "Ошибка удаления задания",
         description: err.message,
-        variant: "destructive"
+        variant: "destructive",
       });
-    }
+    },
   });
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <DropdownMenuItem onSelect={e => e.preventDefault()}>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
           Удалить
         </DropdownMenuItem>
       </AlertDialogTrigger>

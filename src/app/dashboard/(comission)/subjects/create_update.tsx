@@ -3,16 +3,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CommandList } from "cmdk";
 import { Check, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { type z } from "zod";
+import { toast } from "sonner";
+import type { z } from "zod";
 import { Button } from "~/components/ui/button";
+import Combobox from "~/components/ui/combobox";
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
-  CommandItem
+  CommandItem,
 } from "~/components/ui/command";
 import {
   Dialog,
@@ -20,7 +22,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from "~/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerTrigger } from "~/components/ui/drawer";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
@@ -29,98 +31,86 @@ import {
   FormControl,
   FormDescription,
   FormField,
-  FormItem
+  FormItem,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
+  PopoverTrigger,
 } from "~/components/ui/popover";
-import { toast } from "~/components/ui/use-toast";
 import { OnError } from "~/lib/shared/onError";
-import {
-  type User,
-  type Subject,
-  SubjectInputSchema
-} from "~/lib/shared/types";
+import { type Subject, SubjectSchema } from "~/lib/shared/types/subject";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 
 export default function CreateUpdateSubject({
   subject,
-  teachers
 }: {
-  subject?: Subject,
-  teachers: User[]
+  subject?: Subject;
 }) {
+  const [teachers] = api.user.getAll.useSuspenseQuery({
+    role: "TEACHER",
+  });
+  const [buildings] = api.building.getAll.useSuspenseQuery();
+
   const router = useRouter();
   const form = useForm({
-    resolver: zodResolver(SubjectInputSchema),
-    defaultValues: {
-      teacherId: subject ? subject.teacherId : "",
-      name: subject ? subject.name : ""
-    }
+    resolver: zodResolver(SubjectSchema),
+    defaultValues: subject as z.infer<typeof SubjectSchema>,
   });
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [popoverOpen, setPopoverOpen] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const selectedBuilding = useMemo(() => {
+    return buildings.find((b) => b.id === form.watch("buildingId")) ?? null;
+  }, [buildings, form.watch("buildingId")]);
+
+  const selectedTeacher = useMemo(() => {
+    return teachers.find((t) => t.id === form.watch("teacherId")) ?? null;
+  }, [teachers, form.watch("teacherId")]);
 
   const createSubjectMutation = api.subject.create.useMutation({
     onSuccess: () => {
-      toast({
-        title: "Предмет создан"
-      });
       form.reset();
       router.refresh();
-      setDialogOpen(false)
+      setDialogOpen(false);
     },
-    onError: err => {
-      toast({
-        title: "Ошибка создания предмета",
+    onError: (err) => {
+      toast.error("Ошибка", {
         description: err.message,
-        variant: "destructive"
       });
-    }
+    },
   });
   const updateSubjectMutation = api.subject.update.useMutation({
     onSuccess: () => {
-      toast({
-        title: "Предмет обновлен"
-      });
       router.refresh();
-      setDialogOpen(false)
+      setDialogOpen(false);
     },
-    onError: err => {
-      toast({
-        title: "Ошибка обновления предмета",
+    onError: (err) => {
+      toast.error("Ошибка", {
         description: err.message,
-        variant: "destructive"
       });
-    }
+    },
   });
 
-  const onSubmit = (data: z.infer<typeof SubjectInputSchema>) => {
+  const onSubmit = (data: z.infer<typeof SubjectSchema>) => {
     if (subject) {
       updateSubjectMutation.mutate({
+        ...data,
         id: subject.id,
-        name: data.name,
-        teacherId: data.teacherId
-      })
+      });
+      return;
     }
-    else {
-      createSubjectMutation.mutate({
-        name: data.name,
-        teacherId: data.teacherId
-      })
-    }
-
-  }
+    createSubjectMutation.mutate(data);
+  };
   return (
-    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+    <Dialog
+      open={dialogOpen}
+      onOpenChange={setDialogOpen}
+    >
       <DialogTrigger asChild>
         {subject ? (
-          <DropdownMenuItem onSelect={e => e.preventDefault()}>
+          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
             Редактировать
           </DropdownMenuItem>
         ) : (
@@ -134,7 +124,10 @@ export default function CreateUpdateSubject({
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form className=" space-y-6" onSubmit={form.handleSubmit(onSubmit, OnError(toast))}>
+          <form
+            className=" space-y-6"
+            onSubmit={form.handleSubmit(onSubmit, OnError)}
+          >
             <FormField
               control={form.control}
               name="name"
@@ -157,105 +150,72 @@ export default function CreateUpdateSubject({
               render={({ field }) => (
                 <FormItem>
                   <FormDescription>Преподаватель</FormDescription>
-                  <Popover
-                    open={popoverOpen}
-                    onOpenChange={setPopoverOpen}
+                  <Combobox
+                    values={teachers
+                      .filter((t) => t.name !== null)
+                      .map((t) => ({
+                        id: t.id,
+                        name: t.name!,
+                      }))}
+                    // @ts-ignore
+                    value={selectedTeacher}
+                    onChange={(v) => field.onChange(v?.id)}
+                    placeholder={{
+                      default: "Выберите преподавателя",
+                      empty: "Преподавателей не найдено",
+                    }}
                   >
-                    <PopoverTrigger className="hidden w-full lg:flex ">
-                      <Button
-                        className="w-full justify-between"
-                        variant="outline"
-                        type="button"
-                      >
-                        {
-                          teachers.find(teacher => teacher.id === field.value)
-                            ?.name ?? "Преподаватель"
-                        }
-
-                        <ChevronDown />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className=" lg:w-[460px]">
-                      <TeacherList
-                        teachers={teachers}
-                        setCurrentTeacher={field.onChange}
-                        currentTeacherId={field.value}
-                      />
-                    </PopoverContent>
-                  </Popover>
-
-                  <Drawer
-                    open={drawerOpen}
-                    onOpenChange={setDrawerOpen}
-                  >
-                    <DrawerTrigger className="flex lg:hidden w-full">
-                      <Button
-                        className="w-full justify-between"
-                        variant="outline"
-                        type="button"
-                      >
-                        {teachers.find(teacher => teacher.id === field.value)
-                          ?.name ?? "Преподаватель"}
-                        <ChevronDown />
-                      </Button>
-                    </DrawerTrigger>
-                    <DrawerContent className="w-full">
-                      <div className="mt-4 border-t">
-                        <TeacherList
-                          teachers={teachers}
-                          setCurrentTeacher={field.onChange}
-                          currentTeacherId={field.value}
-                        />
-                      </div>
-                    </DrawerContent>
-                  </Drawer>
+                    <Button
+                      variant="ghost"
+                      type="button"
+                    >
+                      {selectedTeacher?.name ?? "Преподаватель"}
+                    </Button>
+                  </Combobox>
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="buildingId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormDescription>СП</FormDescription>
+                  <Combobox
+                    values={buildings}
+                    value={selectedBuilding}
+                    onChange={(v) => field.onChange(v?.id)}
+                    placeholder={{
+                      default: "Выберите СП",
+                      empty: "СП не найдено",
+                    }}
+                  >
+                    <Button
+                      variant="ghost"
+                      type="button"
+                    >
+                      {selectedBuilding?.name ?? "СП"}
+                    </Button>
+                  </Combobox>
+                </FormItem>
+              )}
+            />
+
             <DialogFooter>
-              <Button type="submit" className=" ml-auto" disabled={updateSubjectMutation.isPending || createSubjectMutation.isPending}>Сохранить</Button>
+              <Button
+                type="submit"
+                className=" ml-auto"
+                disabled={
+                  updateSubjectMutation.isPending ||
+                  createSubjectMutation.isPending
+                }
+              >
+                Сохранить
+              </Button>
             </DialogFooter>
           </form>
         </Form>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function TeacherList({
-  teachers,
-  currentTeacherId,
-  setCurrentTeacher
-}: {
-  teachers: User[],
-  currentTeacherId: string,
-  setCurrentTeacher: (id: string) => void
-}) {
-  return (
-    <Command>
-      <CommandInput placeholder="Преподаватель..." />
-      <CommandList>
-        <CommandEmpty>Преподавателей не найдено.</CommandEmpty>
-        <CommandGroup>
-          {teachers.map(teacher => (
-            <CommandItem
-              key={teacher.id}
-              value={teacher.name ?? `${undefined}`}
-              onSelect={() => {
-                setCurrentTeacher(teacher.id);
-              }}
-            >
-              <Check
-                className={cn(
-                  "mr-2 size-4",
-                  currentTeacherId === teacher.id ? "opacity-100" : "opacity-0"
-                )}
-              />
-              {teacher.name}
-            </CommandItem>
-          ))}
-        </CommandGroup>
-      </CommandList>
-    </Command>
   );
 }

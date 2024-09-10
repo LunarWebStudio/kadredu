@@ -1,6 +1,7 @@
 import { createId } from "@paralleldrive/cuid2";
-import { relations, sql } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 import {
+  type AnyPgColumn,
   boolean,
   index,
   integer,
@@ -10,56 +11,23 @@ import {
   text,
   timestamp,
   varchar,
-  type AnyPgColumn,
 } from "drizzle-orm/pg-core";
-import { type AdapterAccount } from "next-auth/adapters";
+import type { AdapterAccount } from "next-auth/adapters";
 import { z } from "zod";
 
+export const createTable = pgTableCreator((name) => `kadredu_${name}`);
 
-export const createTable = pgTableCreator(name => `kadredu_${name}`);
-
-export const statusEnum = pgEnum("role", [
-  "SEARCH",
-  "WORK",
-  "OPEN_TO_OFFERS"
-]);
-
-export const statusSchema = z.enum(statusEnum.enumValues, {
-  message: "Недопустимый статус"
-});
-
-export type Status = z.infer<typeof statusSchema>;
-
-export const resume = createTable("resumes", {
-  id: text("id")
-    .$defaultFn(() => createId())
+export const files = createTable("files", {
+  id: varchar("id", { length: 255 })
     .notNull()
-    .primaryKey(),
-  userId: text("userId")
-    .notNull()
-    .unique()
-    .references(() => users.id),
-  roleId: text("roleId")
-    .references(() => teamRoles.id)
-    .notNull(),
-  status: statusEnum("status")
-    .default("SEARCH")
-    .notNull(),
-  experience: text("experience")
-});
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  fileName: varchar("file_name", { length: 255 }).notNull(),
+  fileSize: integer("file_size").notNull(),
+  contentType: varchar("content_type", { length: 255 }).notNull(),
 
-export const resumeRelations = relations(resume, ({ one }) => ({
-  role: one(teamRoles, { fields: [resume.roleId], references: [teamRoles.id] }),
-  user: one(users, { fields: [resume.userId], references: [users.id] })
-}))
-
-export const images = createTable("images", {
-  id: text("id")
-    .$defaultFn(() => createId())
-    .notNull()
-    .primaryKey(),
-  storageId: varchar("storageId", { length: 255 }).notNull(),
-  blurPreview: text("blurPreview").notNull(),
+  objectId: varchar("object_id", { length: 255 }).notNull().unique(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const buildings = createTable("buildings", {
@@ -67,7 +35,7 @@ export const buildings = createTable("buildings", {
     .$defaultFn(() => createId())
     .notNull()
     .primaryKey(),
-  title: varchar("name", { length: 255 }).notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
   address: varchar("address", { length: 255 }).notNull(),
 
   createdById: text("createdById").references(() => users.id),
@@ -79,24 +47,34 @@ export const buildings = createTable("buildings", {
 
 export const buildingsRelations = relations(buildings, ({ many, one }) => ({
   groups: many(groups),
-  createdBy: one(users, { fields: [buildings.createdById], references: [users.id] }),
-}))
+  createdBy: one(users, {
+    fields: [buildings.createdById],
+    references: [users.id],
+  }),
+}));
 
 export const groups = createTable("groups", {
   id: text("id")
     .$defaultFn(() => createId())
     .notNull()
     .primaryKey(),
-  title: varchar("title", { length: 255 }).notNull(),
+  name: varchar("title", { length: 255 }).notNull(),
 
-  buildingId: text("buildingId").references(() => buildings.id, { onDelete: "cascade" }).notNull(),
-  imageId: text("imageId").references(() => images.id, { onDelete: "cascade" }).notNull(),
+  buildingId: text("buildingId")
+    .references(() => buildings.id, { onDelete: "cascade" })
+    .notNull(),
+  imageId: text("imageId")
+    .references(() => files.id, { onDelete: "cascade" })
+    .notNull(),
 });
 
 export const groupsRelations = relations(groups, ({ many, one }) => ({
   users: many(users),
-  image: one(images, { fields: [groups.imageId], references: [images.id] }),
-  building: one(buildings, { fields: [groups.buildingId], references: [buildings.id] }),
+  image: one(files, { fields: [groups.imageId], references: [files.id] }),
+  building: one(buildings, {
+    fields: [groups.buildingId],
+    references: [buildings.id],
+  }),
 }));
 
 export const teamRoles = createTable("rolesTeam", {
@@ -104,9 +82,7 @@ export const teamRoles = createTable("rolesTeam", {
     .$defaultFn(() => createId())
     .notNull()
     .primaryKey(),
-  name: text("name")
-    .notNull()
-    .unique(),
+  name: text("name").notNull().unique(),
 });
 
 export const topics = createTable("topics", {
@@ -114,86 +90,85 @@ export const topics = createTable("topics", {
     .$defaultFn(() => createId())
     .notNull()
     .primaryKey(),
-  name: varchar("name", { length: 255 }).notNull().unique()
+  name: varchar("name", { length: 255 }).notNull().unique(),
 });
 
-export const purshases = createTable("purshases", {
-  id: text("id")
-    .$defaultFn(() => createId())
-    .notNull()
-    .primaryKey(),
-  productId: text("productId")
-    .notNull(),
-  userId: text("userId")
-    .notNull()
-    .references(() => users.id),
-  price: integer("price")
-    .notNull(),
-  purshasedAt: timestamp("purshasedAt", {
-    mode: "string",
-    withTimezone: true,
-  }).defaultNow()
-})
+// export const tutorials = createTable("tutorials", {
+//   id: text("id")
+//     .$defaultFn(() => createId())
+//     .notNull()
+//     .primaryKey(),
+//   name: varchar("name", { length: 255 }).notNull(),
+//   imageId: text("imageId")
+//     .references(() => images.id, { onDelete: "cascade" })
+//     .notNull(),
+//   text: varchar("text", { length: 255 }).notNull(),
+//   authorId: text("authorId")
+//     .references(() => users.id)
+//     .notNull(),
+//   createdAt: timestamp("createdAt", {
+//     mode: "date",
+//     withTimezone: true,
+//   }).defaultNow(),
+//   price: integer("price").notNull().default(0),
+//   timeRead: integer("timeRead").notNull().default(0),
+//   topicId: text("topicId")
+//     .references(() => topics.id)
+//     .notNull(),
+//   subjectId: text("subjectId").references(() => subjects.id),
+// });
+//
+// export const tutorialsRelations = relations(tutorials, ({ one }) => ({
+//   author: one(users, { fields: [tutorials.authorId], references: [users.id] }),
+//   topic: one(topics, { fields: [tutorials.topicId], references: [topics.id] }),
+//   subject: one(subjects, {
+//     fields: [tutorials.subjectId],
+//     references: [subjects.id],
+//   }),
+//   image: one(images, { fields: [tutorials.imageId], references: [images.id] }),
+// }));
 
-export const purshasesRelation = relations(purshases, ({ one }) => ({
-  user: one(users, { fields: [purshases.userId], references: [users.id] })
-}))
-
-export const tutorials = createTable("tutorials", {
-  id: text("id")
-    .$defaultFn(() => createId())
-    .notNull()
-    .primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
-  imageId: text("imageId").references(() => images.id, { onDelete: "cascade" }).notNull(),
-  text: varchar("text", { length: 255 }).notNull(),
-  authorId: text("authorId").references(() => users.id).notNull(),
-  createdAt: timestamp("createdAt", {
-    mode: "date",
-    withTimezone: true,
-  }).defaultNow(),
-  price: integer("price").notNull().default(0),
-  timeRead: integer("timeRead").notNull().default(0),
-  topicId: text("topicId").references(() => topics.id).notNull(),
-  subjectId: text("subjectId").references(() => subjects.id),
-})
-
-export const tutorialsRelations = relations(tutorials, ({ one }) => ({
-  author: one(users, { fields: [tutorials.authorId], references: [users.id] }),
-  topic: one(topics, { fields: [tutorials.topicId], references: [topics.id] }),
-  subject: one(subjects, { fields: [tutorials.subjectId], references: [subjects.id] }),
-  image: one(images, { fields: [tutorials.imageId], references: [images.id] }),
-}))
-
-export const tasks = createTable("tasks", {
-  id: text("id")
-    .$defaultFn(() => createId())
-    .notNull()
-    .primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
-  description: text("description").notNull(),
-  deadline: timestamp("deadline", {
-    mode: "date",
-    withTimezone: true,
-  }),
-  experience: integer("experience").notNull().default(0),
-  coin: integer("coin").notNull().default(0),
-  tutorialId: text("tutorialId").references(() => tutorials.id),
-  subjectId: text("subjectId").notNull().references(() => subjects.id),
-  groupId: text("groupId").notNull().references(() => groups.id),
-  authorId: text("authorId").references(() => users.id).notNull(),
-  createdAt: timestamp("createdAt", {
-    mode: "date",
-    withTimezone: true,
-  }).defaultNow(),
-})
-
-export const tasksRelations = relations(tasks, ({ one }) => ({
-  author: one(users, { fields: [tasks.authorId], references: [users.id] }),
-  subject: one(subjects, { fields: [tasks.subjectId], references: [subjects.id] }),
-  group: one(groups, { fields: [tasks.groupId], references: [groups.id] }),
-  tutorial: one(tutorials, { fields: [tasks.tutorialId], references: [tutorials.id] }),
-}))
+// export const tasks = createTable("tasks", {
+//   id: text("id")
+//     .$defaultFn(() => createId())
+//     .notNull()
+//     .primaryKey(),
+//   name: varchar("name", { length: 255 }).notNull(),
+//   description: text("description").notNull(),
+//   deadline: timestamp("deadline", {
+//     mode: "date",
+//     withTimezone: true,
+//   }),
+//   experience: integer("experience").notNull().default(0),
+//   coin: integer("coin").notNull().default(0),
+//   tutorialId: text("tutorialId").references(() => tutorials.id),
+//   subjectId: text("subjectId")
+//     .notNull()
+//     .references(() => subjects.id),
+//   groupId: text("groupId")
+//     .notNull()
+//     .references(() => groups.id),
+//   authorId: text("authorId")
+//     .references(() => users.id)
+//     .notNull(),
+//   createdAt: timestamp("createdAt", {
+//     mode: "date",
+//     withTimezone: true,
+//   }).defaultNow(),
+// });
+//
+// export const tasksRelations = relations(tasks, ({ one }) => ({
+//   author: one(users, { fields: [tasks.authorId], references: [users.id] }),
+//   subject: one(subjects, {
+//     fields: [tasks.subjectId],
+//     references: [subjects.id],
+//   }),
+//   group: one(groups, { fields: [tasks.groupId], references: [groups.id] }),
+//   tutorial: one(tutorials, {
+//     fields: [tasks.tutorialId],
+//     references: [tutorials.id],
+//   }),
+// }));
 
 export const rolesEnum = pgEnum("role", [
   "ADMIN",
@@ -205,7 +180,7 @@ export const rolesEnum = pgEnum("role", [
 ]);
 
 export const roleSchema = z.enum(rolesEnum.enumValues, {
-  message: "Недопустимая роль"
+  message: "Недопустимая роль",
 });
 export type Role = z.infer<typeof roleSchema>;
 
@@ -217,16 +192,15 @@ export const users = createTable("user", {
   email: varchar("email", { length: 255 }).notNull().unique(),
 
   name: varchar("name", { length: 255 }),
-  username: varchar("username", { length: 255 }),
+  username: varchar("username", { length: 255 }).unique(),
 
-  image: varchar("image", { length: 255 }),
-  profilePictureId: text("profilePictureId").references(() => images.id, { onDelete: "set null" }),
+  imageId: varchar("image", { length: 255 }),
   description: text("description"),
 
   experiencePoints: integer("experiencePoints").notNull().default(0),
   coins: integer("coins").notNull().default(0),
 
-  role: rolesEnum("role").default("UNKNOWN").array().notNull().default(sql`ARRAY[]::role[]`),
+  roles: rolesEnum("role").array().notNull().default(["UNKNOWN"]),
   emailVerified: timestamp("emailVerified", {
     mode: "date",
     withTimezone: true,
@@ -240,65 +214,47 @@ export const users = createTable("user", {
     withTimezone: true,
   }).defaultNow(),
   groupId: text("groupId").references((): AnyPgColumn => groups.id),
-  resumeId: text("resumeId").references((): AnyPgColumn => resume.id),
   githubUsername: varchar("githubUsername", { length: 255 }),
   githubToken: text("githubToken"),
 });
 
-
-export const portfolioProjects = createTable("portfolioProjects", {
-  id: text("id")
-    .$defaultFn(() => createId())
-    .notNull()
-    .primaryKey(),
-
-  name: varchar("name", { length: 255 }).notNull(),
-  emoji: varchar("emoji", { length: 15 }).notNull(),
-  description: varchar("description", { length: 255 }).notNull(),
-
-  userId: text("userId")
-    .notNull()
-    .unique()
-    .references(() => users.id),
-
-  repoName: varchar("repoName", { length: 255 }).notNull(),
-  repoOwner: varchar("repoOwner", { length: 255 }).notNull(),
-});
-
-export const portfolioProjectsRelations = relations(portfolioProjects, ({ one, many }) => ({
-  user: one(users, { fields: [portfolioProjects.userId], references: [users.id] }),
-  likes: many(projectLike),
-}))
-
-export const projectLike = createTable("projectLike", {
-  userId: text("userId")
-    .notNull()
-    .unique()
-    .references(() => users.id),
-
-  projectId: text("projectId")
-    .notNull()
-    .unique()
-    .references(() => portfolioProjects.id),
-}, (t) => ({
-  compoundKey: primaryKey({
-    columns: [t.projectId, t.userId],
-  }),
-}));
-
-export const projectLikeRelations = relations(projectLike, ({ one }) => ({
-  user: one(users, { fields: [projectLike.userId], references: [users.id] }),
-  project: one(portfolioProjects, { fields: [projectLike.projectId], references: [portfolioProjects.id] })
-}))
-
-
 export const usersRelations = relations(users, ({ many, one }) => ({
   accounts: many(accounts),
   group: one(groups, { fields: [users.groupId], references: [groups.id] }),
-  profilePicture: one(images, { fields: [users.profilePictureId], references: [images.id] }),
-  resume: one(resume, { fields: [users.resumeId], references: [resume.userId] }),
-  projects: many(portfolioProjects)
+  image: one(files, { fields: [users.imageId], references: [files.id] }),
+  subjects: many(subjects),
+  // projects: many(portfolioProjects),
 }));
+
+// export const portfolioProjects = createTable("portfolioProjects", {
+//   id: text("id")
+//     .$defaultFn(() => createId())
+//     .notNull()
+//     .primaryKey(),
+//
+//   name: varchar("name", { length: 255 }).notNull(),
+//   emoji: varchar("emoji", { length: 15 }).notNull(),
+//   description: varchar("description", { length: 255 }).notNull(),
+//
+//   userId: text("userId")
+//     .notNull()
+//     .unique()
+//     .references(() => users.id),
+//
+//   repoName: varchar("repoName", { length: 255 }).notNull(),
+//   repoOwner: varchar("repoOwner", { length: 255 }).notNull(),
+// });
+//
+// export const portfolioProjectsRelations = relations(
+//   portfolioProjects,
+//   ({ one, many }) => ({
+//     user: one(users, {
+//       fields: [portfolioProjects.userId],
+//       references: [users.id],
+//     }),
+//     likes: many(projectLike),
+//   }),
+// );
 
 export const accounts = createTable(
   "account",
@@ -319,7 +275,7 @@ export const accounts = createTable(
     id_token: text("id_token"),
     session_state: varchar("session_state", { length: 255 }),
   },
-  account => ({
+  (account) => ({
     compoundKey: primaryKey({
       columns: [account.provider, account.providerAccountId],
     }),
@@ -345,7 +301,7 @@ export const sessions = createTable(
       withTimezone: true,
     }).notNull(),
   },
-  session => ({
+  (session) => ({
     userIdIdx: index("session_userId_idx").on(session.userId),
   }),
 );
@@ -364,7 +320,7 @@ export const verificationTokens = createTable(
       withTimezone: true,
     }).notNull(),
   },
-  vt => ({
+  (vt) => ({
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
   }),
 );
@@ -375,15 +331,80 @@ export const subjects = createTable("subjects", {
     .notNull()
     .primaryKey(),
 
-  name: text("name")
-    .notNull(),
+  name: text("name").notNull(),
 
+  buildingId: text("buildingId")
+    .references(() => buildings.id)
+    .notNull(),
   teacherId: text("teacherId")
     .references(() => users.id)
-    .notNull()
-})
+    .notNull(),
+});
 
 export const subjectsRelations = relations(subjects, ({ one }) => ({
-  teacherInfo: one(users, { fields: [subjects.teacherId], references: [users.id] })
-}))
-
+  building: one(buildings, {
+    fields: [subjects.buildingId],
+    references: [buildings.id],
+  }),
+  teacher: one(users, {
+    fields: [subjects.teacherId],
+    references: [users.id],
+  }),
+}));
+//
+// export const projectLike = createTable(
+//   "projectLike",
+//   {
+//     userId: text("userId")
+//       .notNull()
+//       .unique()
+//       .references(() => users.id),
+//
+//     projectId: text("projectId")
+//       .notNull()
+//       .unique()
+//       .references(() => portfolioProjects.id),
+//   },
+//   (t) => ({
+//     compoundKey: primaryKey({
+//       columns: [t.projectId, t.userId],
+//     }),
+//   }),
+// );
+//
+// export const projectLikeRelations = relations(projectLike, ({ one }) => ({
+//   user: one(users, { fields: [projectLike.userId], references: [users.id] }),
+//   project: one(portfolioProjects, {
+//     fields: [projectLike.projectId],
+//     references: [portfolioProjects.id],
+//   }),
+// }));
+//
+// // export const statusEnum = pgEnum("role", ["SEARCH", "WORK", "OPEN_TO_OFFERS"]);
+//
+// export const statusSchema = z.enum(statusEnum.enumValues, {
+//   message: "Недопустимый статус",
+// });
+//
+// export type Status = z.infer<typeof statusSchema>;
+//
+// export const resume = createTable("resumes", {
+//   id: text("id")
+//     .$defaultFn(() => createId())
+//     .notNull()
+//     .primaryKey(),
+//   userId: text("userId")
+//     .notNull()
+//     .unique()
+//     .references(() => users.id),
+//   roleId: text("roleId")
+//     .references(() => teamRoles.id)
+//     .notNull(),
+//   status: statusEnum("status").default("SEARCH").notNull(),
+//   experience: text("experience"),
+// });
+//
+// export const resumeRelations = relations(resume, ({ one }) => ({
+//   role: one(teamRoles, { fields: [resume.roleId], references: [teamRoles.id] }),
+//   user: one(users, { fields: [resume.userId], references: [users.id] }),
+// }));

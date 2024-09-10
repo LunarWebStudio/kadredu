@@ -21,7 +21,7 @@ export const env = createEnv({
     S3_REGION: z
       .string()
       .default(
-        process.env.NODE_ENV === "production" ? "ru-central1" : "us-east-1"
+        process.env.NODE_ENV === "production" ? "ru-central1" : "us-east-1",
       ),
     S3_ENDPOINT: z
       .string()
@@ -29,7 +29,7 @@ export const env = createEnv({
       .default(
         process.env.NODE_ENV === "production"
           ? "https://storage.yandexcloud.net"
-          : "http://localhost:9000"
+          : "http://localhost:9000",
       ),
     S3_BUCKET: z.string(),
     S3_ACCESS_KEY: z.string(),
@@ -63,5 +63,5 @@ export const env = createEnv({
   },
 
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
-  emptyStringAsUndefined: true
+  emptyStringAsUndefined: true,
 });

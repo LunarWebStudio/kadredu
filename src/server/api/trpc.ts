@@ -1,10 +1,11 @@
-import { initTRPC, TRPCError } from "@trpc/server";
+import { TRPCError, initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 import GetLevel from "~/lib/shared/level";
 
 import { eq } from "drizzle-orm";
 import { Github } from "~/lib/server/github";
+import { s3 } from "~/lib/server/s3";
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
 import { users } from "~/server/db/schema";
@@ -14,8 +15,9 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
 
   return {
     db,
+    s3,
     session,
-    ...opts
+    ...opts,
   };
 };
 
@@ -26,10 +28,11 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
       ...shape,
       data: {
         ...shape.data,
-        zodError: error.cause instanceof ZodError ? error.cause.flatten() : null
-      }
+        zodError:
+          error.cause instanceof ZodError ? error.cause.flatten() : null,
+      },
     };
-  }
+  },
 });
 
 export const createCallerFactory = t.createCallerFactory;
@@ -41,24 +44,24 @@ export const verificationProcedure = t.procedure.use(({ ctx, next }) => {
   if (!ctx.session || !ctx.session.user) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
-      message: "Для выполнения данного действия необходимо авторизоваться"
+      message: "Для выполнения данного действия необходимо авторизоваться",
     });
   }
   return next({
     ctx: {
-      session: { ...ctx.session, user: ctx.session.user }
-    }
+      session: { ...ctx.session, user: ctx.session.user },
+    },
   });
 });
 
 export const protectedProcedure = verificationProcedure.use(({ ctx, next }) => {
-  if (ctx.session.user.role.length === 0) {
+  if (ctx.session.user.roles.length === 0) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
     ctx: {
-      session: { ...ctx.session, user: ctx.session.user }
-    }
+      session: { ...ctx.session, user: ctx.session.user },
+    },
   });
 });
 
@@ -70,14 +73,14 @@ export const githubProcedure = protectedProcedure.use(async ({ ctx, next }) => {
     where: eq(users.id, ctx.session.user.id),
     columns: {
       githubUsername: true,
-      githubToken: true
-    }
+      githubToken: true,
+    },
   });
 
   if (!data?.githubToken || !data?.githubUsername) {
     throw new TRPCError({
       code: "FORBIDDEN",
-      message: FORBIDDEN_MESSAGE
+      message: FORBIDDEN_MESSAGE,
     });
   }
 
@@ -88,26 +91,26 @@ export const githubProcedure = protectedProcedure.use(async ({ ctx, next }) => {
         user: {
           ...ctx.session.user,
           githubUsername: data.githubUsername,
-          githubToken: data.githubToken
-        }
+          githubToken: data.githubToken,
+        },
       },
       github: new Github({
         username: data.githubUsername,
-        token: data.githubToken
-      })
-    }
+        token: data.githubToken,
+      }),
+    },
   });
 });
 
 export const highLevelProcedure = protectedProcedure.use(({ ctx, next }) => {
   if (
-    ctx.session?.user.role.includes("ADMIN") ||
-    ctx.session.user.role.includes("TEACHER")
+    ctx.session?.user.roles.includes("ADMIN") ||
+    ctx.session.user.roles.includes("TEACHER")
   ) {
     return next({
       ctx: {
-        session: { ...ctx.session, user: ctx.session.user }
-      }
+        session: { ...ctx.session, user: ctx.session.user },
+      },
     });
   }
 
@@ -119,61 +122,61 @@ export const highLevelProcedure = protectedProcedure.use(({ ctx, next }) => {
 
   return next({
     ctx: {
-      session: { ...ctx.session, user: ctx.session.user }
-    }
+      session: { ...ctx.session, user: ctx.session.user },
+    },
   });
 });
 
 export const teacherProcedure = protectedProcedure.use(({ ctx, next }) => {
-  if (ctx.session?.user.role.includes("ADMIN")) {
+  if (ctx.session?.user.roles.includes("ADMIN")) {
     return next({
       ctx: {
-        session: { ...ctx.session, user: ctx.session.user }
-      }
+        session: { ...ctx.session, user: ctx.session.user },
+      },
     });
   }
 
-  if (!ctx.session.user.role.includes("TEACHER")) {
+  if (!ctx.session.user.roles.includes("TEACHER")) {
     throw new TRPCError({ code: "FORBIDDEN", message: FORBIDDEN_MESSAGE });
   }
 
   return next({
     ctx: {
-      session: { ...ctx.session, user: ctx.session.user }
-    }
+      session: { ...ctx.session, user: ctx.session.user },
+    },
   });
 });
 
 export const leadCycleComissionProcedure = protectedProcedure.use(
   ({ ctx, next }) => {
-    if (ctx.session?.user.role.includes("ADMIN")) {
+    if (ctx.session?.user.roles.includes("ADMIN")) {
       return next({
         ctx: {
-          session: { ...ctx.session, user: ctx.session.user }
-        }
+          session: { ...ctx.session, user: ctx.session.user },
+        },
       });
     }
 
-    if (!ctx.session.user.role.includes("LEAD_CYCLE_COMISSION")) {
+    if (!ctx.session.user.roles.includes("LEAD_CYCLE_COMISSION")) {
       throw new TRPCError({ code: "FORBIDDEN", message: FORBIDDEN_MESSAGE });
     }
 
     return next({
       ctx: {
-        session: { ...ctx.session, user: ctx.session.user }
-      }
+        session: { ...ctx.session, user: ctx.session.user },
+      },
     });
-  }
+  },
 );
 
 export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
-  if (!ctx.session.user.role.includes("ADMIN")) {
+  if (!ctx.session.user.roles.includes("ADMIN")) {
     throw new TRPCError({ code: "FORBIDDEN", message: FORBIDDEN_MESSAGE });
   }
 
   return next({
     ctx: {
-      session: { ...ctx.session, user: ctx.session.user }
-    }
+      session: { ...ctx.session, user: ctx.session.user },
+    },
   });
 });

@@ -30,8 +30,8 @@ function LevelBarWithoutProvider() {
     setPercent(
       Math.round(
         ((session?.data?.user.experiencePoints ?? 0) / lvl.xp_to_next_level) *
-          100
-      )
+          100,
+      ),
     );
   }, [experience]);
 
@@ -54,7 +54,7 @@ function LevelBarWithoutProvider() {
         <div
           className="absolute inset-y-0 left-0 h-[5px] rounded-full bg-gradient-to-r from-[#CE5BEB] to-primary transition-all duration-300 ease-in-out"
           style={{
-            width: `${percent}%`
+            width: `${percent}%`,
           }}
         ></div>
       </div>

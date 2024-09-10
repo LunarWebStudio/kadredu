@@ -1,110 +1,26 @@
-import DashboardTemplate from "~/app/dashboard/templ";
-import CreateUpdateGroup from "~/app/dashboard/(admin)/groups/create_update";
-import DeleteGroup from "~/app/dashboard/(admin)/groups/delete";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from "~/components/ui/table";
-import { MoreHorizontal } from "lucide-react";
+  DashboardContent,
+  DashboardHeader,
+  DashboardTitle,
+} from "~/components/ui/dashboard";
+import { DataTable } from "~/components/ui/data-table";
 import { api } from "~/trpc/server";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuTrigger
-} from "~/components/ui/dropdown-menu";
-import { Button } from "~/components/ui/button";
-import S3Image from "~/components/s3Image";
-import Link from "next/link";
+import { columns } from "./columns";
+import CreateUpdateGroup from "./create_update";
 
-export default async function Groups({
-  searchParams
-}: {
-  searchParams: {
-    building?: string,
-    search?: string
-  }
-}) {
-  const groups = await api.group.getAll({
-    buildingId: searchParams.building,
-    search: searchParams.search
-  });
-  const buildings = await api.building.getAll();
+export default async function Groups() {
+  const groups = await api.group.getAll();
 
   return (
-    <DashboardTemplate
-      navbar={<CreateUpdateGroup buildings={buildings} />}
-      title="Группы"
-    >
-      <div className="max-h-full grow overflow-y-scroll">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Фото</TableHead>
-              <TableHead>Название</TableHead>
-              <TableHead>СП</TableHead>
-              <TableHead>Люди</TableHead>
-              <TableHead></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {groups.map(group => (
-              <TableRow key={group.id}>
-                <TableCell>
-                  <S3Image
-                    src={group.image.storageId}
-                    alt={group.title}
-                    width={500}
-                    height={500}
-                    blurDataURL={group.image.blurPreview}
-                    placeholder="blur"
-                    className="size-14 object-contain"
-                  />
-                </TableCell>
-                <TableCell>{group.title}</TableCell>
-                <TableCell>{group.building.title}</TableCell>
-                <TableCell>
-                  <Link href={`/dashboard/users?groupId=${group.id}`}>
-                    <Button
-                      size="link"
-                      variant="link"
-                    >
-                      {group.users.length}
-                    </Button>
-                  </Link>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center justify-end">
-                    <DropdownMenu modal={false}>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          aria-haspopup="true"
-                          size="icon"
-                          variant="ghost"
-                        >
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Действия</DropdownMenuLabel>
-                        <CreateUpdateGroup
-                          group={group}
-                          buildings={buildings}
-                        />
-                        <DeleteGroup group={group} />
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </DashboardTemplate>
+    <DashboardContent>
+      <DashboardHeader>
+        <DashboardTitle>Группы</DashboardTitle>
+        <CreateUpdateGroup />
+      </DashboardHeader>
+      <DataTable
+        columns={columns}
+        data={groups}
+      />
+    </DashboardContent>
   );
 }

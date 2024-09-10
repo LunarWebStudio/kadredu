@@ -3,13 +3,13 @@ import {
   BriefcaseBusiness,
   GraduationCap,
   Settings,
-  SquareUserRound
+  SquareUserRound,
 } from "lucide-react";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import SidebarItem from "~/app/(website)/profile/sidebar_item";
 import UserAvatar from "~/components/avatar";
 import LevelBar from "~/components/level_bar";
-import S3Image from "~/components/s3Image";
+import Image from "~/components/s3Image";
 import GetLevel from "~/lib/shared/level";
 import { HIGH_LEVEL_THRESHOLD } from "~/server/api/trpc";
 import { getServerAuthSession } from "~/server/auth";
@@ -17,9 +17,9 @@ import { getServerAuthSession } from "~/server/auth";
 const iconClassName = "size-6";
 
 export default async function ProfileLayout({
-  children
+  children,
 }: {
-  children: ReactNode
+  children: ReactNode;
 }) {
   const session = await getServerAuthSession();
 
@@ -46,7 +46,7 @@ export default async function ProfileLayout({
               color={{
                 bg: "bg-violet-500",
                 text: "text-violet-500",
-                text_hover: "hover:text-violet-500"
+                text_hover: "hover:text-violet-500",
               }}
               href={`/profile/${session?.user.username}`}
               icon={<SquareUserRound className={iconClassName} />}
@@ -56,7 +56,7 @@ export default async function ProfileLayout({
               color={{
                 bg: "bg-red-400",
                 text: "text-red-400",
-                text_hover: "hover:text-red-400"
+                text_hover: "hover:text-red-400",
               }}
               href={`/profile/${session?.user.username}/portfolio`}
               icon={<BriefcaseBusiness className={iconClassName} />}
@@ -66,7 +66,7 @@ export default async function ProfileLayout({
               color={{
                 bg: "bg-amber-400",
                 text: "text-amber-400",
-                text_hover: "hover:text-amber-400"
+                text_hover: "hover:text-amber-400",
               }}
               href={`/profile/${session?.user.username}/portfolio`}
               icon={<BookHeart className={iconClassName} />}
@@ -76,7 +76,7 @@ export default async function ProfileLayout({
               color={{
                 bg: "bg-green-400",
                 text: "text-green-400",
-                text_hover: "hover:text-green-400"
+                text_hover: "hover:text-green-400",
               }}
               href={`/tutorials/${session?.user.username}`}
               icon={<GraduationCap className={iconClassName} />}
@@ -90,7 +90,7 @@ export default async function ProfileLayout({
               color={{
                 bg: "bg-slate-400",
                 text: "text-slate-400",
-                text_hover: "hover:text-slate-400"
+                text_hover: "hover:text-slate-400",
               }}
               href="/profile/settings"
               icon={<Settings className={iconClassName} />}
@@ -101,7 +101,7 @@ export default async function ProfileLayout({
           <p className="text-muted-foreground/70">Группа</p>
           <div className="flex flex-row items-center gap-4">
             <div className="size-16">
-              <S3Image
+              <Image
                 className="size-full object-contain"
                 width={1000}
                 height={1000}

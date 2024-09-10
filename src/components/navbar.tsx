@@ -1,32 +1,32 @@
-import Logo from "~/components/logo";
 import UserAvatar from "~/components/avatar";
-import { getServerAuthSession } from "~/server/auth";
+import Logo from "~/components/logo";
 import NavbarItem from "~/components/navbar_item";
+import { getServerAuthSession } from "~/server/auth";
 
 export const navbarItems = [
   {
     title: "Главная",
-    href: "/"
+    href: "/",
   },
   {
     title: "Профиль",
-    href: "/profile"
+    href: "/profile",
   },
   {
     title: "Профиль",
-    href: "/profile"
+    href: "/profile",
   },
   {
     title: "Профиль",
-    href: "/profile"
+    href: "/profile",
   },
   {
     title: "Профиль",
-    href: "/profile"
+    href: "/profile",
   },
   {
     title: "Профиль",
-    href: "/profile"
+    href: "/profile",
   },
 ];
 
@@ -38,7 +38,10 @@ export default async function Navbar() {
         <Logo />
         <div className="flex gap-10 w-2/5 flex-row items-center justify-end">
           {navbarItems.map((item) => (
-            <NavbarItem key={item.title} href={item.href}>
+            <NavbarItem
+              key={item.title}
+              href={item.href}
+            >
               {item.title}
             </NavbarItem>
           ))}

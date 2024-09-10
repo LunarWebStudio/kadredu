@@ -4,83 +4,87 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "~/components/ui/dialog";
-import { Form, FormField, FormItem, FormControl, FormDescription } from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
+import { toast } from "sonner";
+import type { z } from "zod";
 import { Button } from "~/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
-import { useToast } from "~/components/ui/use-toast";
-import { type Topic, TopicsInputShema } from "~/lib/shared/types";
-import { api } from "~/trpc/react";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+} from "~/components/ui/form";
+import { Input } from "~/components/ui/input";
 import { OnError } from "~/lib/shared/onError";
-import { type z } from "zod";
+import { type Topic, TopicSchema } from "~/lib/shared/types/topic";
+import { api } from "~/trpc/react";
 
-
-export default function CreateUpdateTopics({
-  topics,
+export default function CreateUpdateTopic({
+  topic,
 }: {
-  topics?: Topic;
+  topic?: Topic;
 }) {
   const [open, setOpen] = useState(false);
 
   const form = useForm({
-    resolver: zodResolver(TopicsInputShema),
-    defaultValues: {
-      name: topics?.name ?? "",
-    }
+    resolver: zodResolver(TopicSchema),
+    defaultValues: topic as z.infer<typeof TopicSchema>,
   });
 
   const router = useRouter();
-  const { toast } = useToast();
 
   const createTopicMutation = api.topic.create.useMutation({
     onSuccess: () => {
-      toast({
-        title: "Тема создана",
-      });
       router.refresh();
       setOpen(false);
       form.reset();
     },
     onError: (err) => {
-      toast({
-        title: "Ошибка создания темы",
+      toast.error("Ошибка", {
         description: err.message,
-        variant: "destructive",
       });
     },
-  })
+  });
 
   const updateTopicMutation = api.topic.update.useMutation({
     onSuccess: () => {
-      toast({
-        title: "Тема обновлена",
-      });
       router.refresh();
       setOpen(false);
     },
     onError: (err) => {
-      toast({
-        title: "Ошибка обновления темы",
+      toast.error("Ошибка", {
         description: err.message,
-        variant: "destructive",
       });
     },
-  })
+  });
 
-  const onSubmit = (data: z.infer<typeof TopicsInputShema>) => {
-    if (topics) {
-      updateTopicMutation.mutate({ id: topics.id, ...data })
-    } else {
-      createTopicMutation.mutate(data)
+  const onSubmit = (data: z.infer<typeof TopicSchema>) => {
+    if (topic) {
+      updateTopicMutation.mutate({ id: topic.id, ...data });
+      return;
     }
-  }
+    createTopicMutation.mutate(data);
+  };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={setOpen}
+    >
       <DialogTrigger asChild>
-        {topics ? (
-          <DropdownMenuItem onSelect={e => e.preventDefault()}>Редактировать</DropdownMenuItem>
+        {topic ? (
+          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+            Редактировать
+          </DropdownMenuItem>
         ) : (
           <Button>Создать</Button>
         )}
@@ -88,30 +92,37 @@ export default function CreateUpdateTopics({
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            {topics ? "Редактировать" : "Создать"} Тему
-          </DialogTitle>
+          <DialogTitle>{topic ? "Редактировать" : "Создать"} Тему</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit, OnError(toast))} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(onSubmit, OnError)}
+            className="space-y-6"
+          >
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormDescription>
-                    Название темы
-                  </FormDescription>
+                  <FormDescription>Название темы</FormDescription>
                   <FormControl>
-                    <Input placeholder="Добавить тему" {...field} />
+                    <Input
+                      placeholder="Добавить тему"
+                      {...field}
+                    />
                   </FormControl>
                 </FormItem>
               )}
             />
 
             <DialogFooter>
-              <Button disabled={updateTopicMutation.isPending || createTopicMutation.isPending} type="submit">
+              <Button
+                disabled={
+                  updateTopicMutation.isPending || createTopicMutation.isPending
+                }
+                type="submit"
+              >
                 Сохранить
               </Button>
             </DialogFooter>
@@ -119,5 +130,5 @@ export default function CreateUpdateTopics({
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

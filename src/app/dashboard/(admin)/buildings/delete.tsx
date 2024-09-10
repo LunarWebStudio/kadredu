@@ -1,47 +1,40 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogCancel,
-  AlertDialogFooter,
-  AlertDialogDescription,
-  AlertDialogAction,
-  AlertDialogTrigger
+  AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
-import { useToast } from "~/components/ui/use-toast";
-import type { Building } from "~/lib/shared/types";
-import { api } from "~/trpc/react";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
+import type { Building } from "~/lib/shared/types/building";
+import { api } from "~/trpc/react";
 
 export default function DeleteBuilding({ building }: { building: Building }) {
   const router = useRouter();
-  const { toast } = useToast();
 
   const deleteBuildingMutation = api.building.delete.useMutation({
     onSuccess: () => {
       router.refresh();
-      toast({
-        title: "Успешно",
-        description: "СП было удалено"
+    },
+    onError: (err) => {
+      toast.error("Ошибка", {
+        description: err.message,
       });
     },
-    onError: err => {
-      toast({
-        title: "Ошибка",
-        description: err.message,
-        variant: "destructive"
-      });
-    }
   });
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <DropdownMenuItem onSelect={e => e.preventDefault()}>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
           Удалить
         </DropdownMenuItem>
       </AlertDialogTrigger>

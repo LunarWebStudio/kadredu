@@ -1,45 +1,51 @@
-'use client'
+"use client";
 
-import { formatDistance } from "date-fns"
-import { ru } from "date-fns/locale"
-import { BookHeart, Clock, CoinsIcon, Heart } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { Button } from "~/components/ui/button"
-import { useToast } from "~/components/ui/use-toast"
-import { type Tutorial } from "~/lib/shared/types"
-import { api } from "~/trpc/react"
+import { formatDistance } from "date-fns";
+import { ru } from "date-fns/locale";
+import { BookHeart, Clock, CoinsIcon, Heart } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Button } from "~/components/ui/button";
+import { useToast } from "~/components/ui/use-toast";
+import type { Tutorial } from "~/lib/shared/types";
+import { api } from "~/trpc/react";
 
-export default function TutorialCard({ tutorial }:
-  {
-    tutorial: Tutorial
-  }
-) {
-  const { toast } = useToast()
-  const router = useRouter()
+export default function TutorialCard({
+  tutorial,
+}: {
+  tutorial: Tutorial;
+}) {
+  const { toast } = useToast();
+  const router = useRouter();
   const buyMutation = api.tutorial.buyOne.useMutation({
     onSuccess: () => {
-      router.push(`/tutorial/${tutorial.id}`)
+      router.push(`/tutorial/${tutorial.id}`);
     },
     onError: (err) => {
       toast({
         title: "Ошибка",
         description: err.message,
-        variant: "destructive"
-      })
-    }
-  })
+        variant: "destructive",
+      });
+    },
+  });
 
   const onSubmit = () => {
     buyMutation.mutate({
-      id: tutorial.id
-    })
-  }
+      id: tutorial.id,
+    });
+  };
 
   return (
     <div className="w-full space-y-4 p-6 rounded-2xl bg-secondary">
       <div className="w-full space-y-2">
         <h1 className="font-bold text-[24px]">{tutorial.name}</h1>
-        <p className="text-[16px]">Обновлено {formatDistance(tutorial.createdAt!, new Date(), { addSuffix: true, locale: ru })}</p>
+        <p className="text-[16px]">
+          Обновлено{" "}
+          {formatDistance(tutorial.createdAt!, new Date(), {
+            addSuffix: true,
+            locale: ru,
+          })}
+        </p>
       </div>
       <div className="flex justify-start gap-4 w-full">
         <div className="flex gap-2">
@@ -56,11 +62,15 @@ export default function TutorialCard({ tutorial }:
           {0}
         </div>
       </div>
-      <Button className="gap-3 min-w-32 text-lg"
+      <Button
+        className="gap-3 min-w-32 text-lg"
         onClick={() => {
-          onSubmit()
+          onSubmit();
         }}
-      ><CoinsIcon />{tutorial.price}</Button>
+      >
+        <CoinsIcon />
+        {tutorial.price}
+      </Button>
     </div>
-  )
+  );
 }

@@ -1,16 +1,16 @@
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { cn } from "~/lib/utils";
 
 export default function ProfileTemplate({
   title,
   className,
   navbar,
-  children
+  children,
 }: {
-  title: string,
-  className: string,
-  navbar?: ReactNode,
-  children: ReactNode
+  title: string;
+  className: string;
+  navbar?: ReactNode;
+  children: ReactNode;
 }) {
   return (
     <div className="grow space-y-5">

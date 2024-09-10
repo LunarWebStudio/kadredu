@@ -15,13 +15,13 @@ export default function GithubConnect() {
       setLoading(true);
       await signIn("github", {
         callbackUrl: "/profile/settings",
-        redirect: true
+        redirect: true,
       });
-    } catch (err) {
+    } catch (_err) {
       toast({
         title: "Ошибка",
         description: "Не удалось подключиться к GitHub",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -45,4 +45,3 @@ export default function GithubConnect() {
     </div>
   );
 }
-

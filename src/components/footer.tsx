@@ -13,7 +13,10 @@ export default function Footer() {
           </p>
         </div>
         {navbarItems.map((item) => (
-          <NavbarItem key={item.title} href={item.href}>
+          <NavbarItem
+            key={item.title}
+            href={item.href}
+          >
             {item.title}
           </NavbarItem>
         ))}

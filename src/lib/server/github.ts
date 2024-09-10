@@ -4,7 +4,10 @@ export class Github {
   private octokit: Octokit;
   private username: string;
 
-  constructor({ token, username }: {
+  constructor({
+    token,
+    username,
+  }: {
     token: string;
     username: string;
   }) {
@@ -14,10 +17,10 @@ export class Github {
 
   public async GetRepos() {
     const { data } = await this.octokit.rest.repos.listForUser({
-      username: this.username
-    })
+      username: this.username,
+    });
 
-    return data.map(r => ({
+    return data.map((r) => ({
       name: r.name,
       description: r.description,
       url: r.html_url,
@@ -29,8 +32,8 @@ export class Github {
   public async GetRepo(repo: string) {
     const repoData = await this.octokit.rest.repos.get({
       owner: this.username,
-      repo
-    })
+      repo,
+    });
 
     return {
       name: repoData.data.name,
@@ -44,8 +47,8 @@ export class Github {
   public async GetReadme(repo: string) {
     const { data } = await this.octokit.rest.repos.getReadme({
       owner: this.username,
-      repo
-    })
+      repo,
+    });
 
     const b64 = Buffer.from(data.content, "base64").toString("utf-8");
     return b64;
@@ -54,20 +57,20 @@ export class Github {
   public async GetLanguages(repo: string) {
     const { data } = await this.octokit.rest.repos.listLanguages({
       owner: this.username,
-      repo
-    })
+      repo,
+    });
 
     let total = 0;
-    Object.keys(data).forEach(key => {
+    Object.keys(data).forEach((key) => {
       total += data[key]!;
     });
 
-    const percentage = Object.keys(data).map(key => ({
+    const percentage = Object.keys(data).map((key) => ({
       name: key,
-      percent: data[key]! / total * 100
-    }))
+      percent: (data[key]! / total) * 100,
+    }));
 
-    percentage.sort((a, b) => b.percent - a.percent)
+    percentage.sort((a, b) => b.percent - a.percent);
 
     return percentage;
   }
@@ -76,12 +79,12 @@ export class Github {
     const files = await this.octokit.rest.git.getTree({
       owner: this.username,
       repo,
-      tree_sha: (await this.GetRepo(repo)).default_branch
-    })
+      tree_sha: (await this.GetRepo(repo)).default_branch,
+    });
 
     return files.data.tree
-      .sort((a, _) => a.type === "tree" ? -1 : 1)
-      .map(r => ({
+      .sort((a, _) => (a.type === "tree" ? -1 : 1))
+      .map((r) => ({
         path: r.path,
         url: r.url,
         type: r.type,

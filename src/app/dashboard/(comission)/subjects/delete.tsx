@@ -7,12 +7,12 @@ import {
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogHeader,
-  AlertDialogTrigger
+  AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
 import { DialogFooter } from "~/components/ui/dialog";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import { toast } from "~/components/ui/use-toast";
-import { type Subject } from "~/lib/shared/types";
+import type { Subject } from "~/lib/shared/types";
 import { api } from "~/trpc/react";
 
 export default function DeleteSubject({ subject }: { subject: Subject }) {
@@ -20,23 +20,23 @@ export default function DeleteSubject({ subject }: { subject: Subject }) {
   const DeleteSubjectMutation = api.subject.delete.useMutation({
     onSuccess: () => {
       toast({
-        title: "Предмет удалена"
+        title: "Предмет удалена",
       });
       router.refresh();
     },
-    onError: err => {
+    onError: (err) => {
       toast({
         title: "Ошибка удаления предмета",
         description: err.message,
-        variant: "destructive"
+        variant: "destructive",
       });
       router.refresh();
-    }
+    },
   });
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <DropdownMenuItem onSelect={e => e.preventDefault()}>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
           Удалить
         </DropdownMenuItem>
       </AlertDialogTrigger>

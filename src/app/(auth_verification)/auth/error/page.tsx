@@ -1,5 +1,5 @@
 export default function AuthError({
-  searchParams
+  searchParams,
 }: {
   searchParams: {
     error:
@@ -7,8 +7,8 @@ export default function AuthError({
       | "AccessDenied"
       | "Verification"
       | "Default"
-      | (string & Record<never, never>)
-  }
+      | (string & Record<never, never>);
+  };
 }) {
   return <div className="">{searchParams.error}</div>;
 }

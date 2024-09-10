@@ -4,14 +4,14 @@ import ProjectCard from "~/components/project_card";
 import { api } from "~/trpc/server";
 
 export default async function Portfolio({
-  params
+  params,
 }: {
   params: {
-    username?: string
-  }
+    username?: string;
+  };
 }) {
   const projects = await api.portfolio.getByUsername({
-    username: params.username ?? ""
+    username: params.username ?? "",
   });
 
   const repos = await api.github.getOwnedRepos();
@@ -23,7 +23,7 @@ export default async function Portfolio({
       className="bg-red-400"
     >
       <div className="space-y-4">
-        {projects.map(project => (
+        {projects.map((project) => (
           <ProjectCard
             project={project}
             key={project.id}

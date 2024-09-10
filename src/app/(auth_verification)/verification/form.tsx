@@ -7,7 +7,14 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, RequiredFormLabel } from "~/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  RequiredFormLabel,
+} from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { useToast } from "~/components/ui/use-toast";
@@ -18,14 +25,16 @@ import { api } from "~/trpc/react";
 export default function VerificationForm() {
   const formSchema = z.object({
     profilePictureImage: z.string().optional(),
-    name: z.string({
-      required_error: "Заполните имя",
-      invalid_type_error: "Имя должно быть строкой",
-    }).min(1, "Заполните имя"),
+    name: z
+      .string({
+        required_error: "Заполните имя",
+        invalid_type_error: "Имя должно быть строкой",
+      })
+      .min(1, "Заполните имя"),
     description: z.string().optional(),
     // TODO: fix
-    username: z.string()
-  })
+    username: z.string(),
+  });
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -33,9 +42,9 @@ export default function VerificationForm() {
       profilePictureImage: "",
       name: "",
       description: "",
-      username: ""
-    }
-  })
+      username: "",
+    },
+  });
 
   const router = useRouter();
   const { toast } = useToast();
@@ -48,13 +57,13 @@ export default function VerificationForm() {
         title: "Ошибка",
         description: err.message,
         variant: "destructive",
-      })
-    }
-  })
+      });
+    },
+  });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     updateSelfMutation.mutate(data);
-  }
+  };
 
   return (
     <div className="flex w-[400px] flex-col gap-6">
@@ -62,7 +71,10 @@ export default function VerificationForm() {
       <h3>Расскажите о себе</h3>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit, OnError(toast))} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit, OnError(toast))}
+          className="space-y-4"
+        >
           <FormField
             control={form.control}
             name="profilePictureImage"
@@ -86,8 +98,13 @@ export default function VerificationForm() {
                       value=""
                       onChange={async (e) => {
                         if (!e.target.files?.[0]) return;
-                        field.onChange((await ImagesToBase64([e.target.files[0]] as const))[0])
-                      }} />
+                        field.onChange(
+                          (
+                            await ImagesToBase64([e.target.files[0]] as const)
+                          )[0],
+                        );
+                      }}
+                    />
                   </label>
                 </div>
               </FormItem>
@@ -100,7 +117,11 @@ export default function VerificationForm() {
               <FormItem>
                 <RequiredFormLabel>ФИО</RequiredFormLabel>
                 <FormControl>
-                  <Input type="text" placeholder="Фамилия Имя Отчество" {...field} />
+                  <Input
+                    type="text"
+                    placeholder="Фамилия Имя Отчество"
+                    {...field}
+                  />
                 </FormControl>
               </FormItem>
             )}
@@ -112,17 +133,23 @@ export default function VerificationForm() {
               <FormItem>
                 <FormLabel>О себе</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Расскажите нам о себе" {...field} />
+                  <Textarea
+                    placeholder="Расскажите нам о себе"
+                    {...field}
+                  />
                 </FormControl>
               </FormItem>
             )}
           />
-          <Button type="submit"
+          <Button
+            type="submit"
             className="w-full"
             disabled={updateSelfMutation.isPending}
-          >Продолжить</Button>
+          >
+            Продолжить
+          </Button>
         </form>
       </Form>
     </div>
-  )
+  );
 }

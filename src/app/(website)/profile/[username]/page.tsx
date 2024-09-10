@@ -1,24 +1,20 @@
-import NotFoundPage from "~/app/not-found";
+import { notFound } from "next/navigation";
 import { api } from "~/trpc/server";
 
 export default async function ProfilePage({
-  params
+  params,
 }: {
   params: {
     username?: string;
-  }
+  };
 }) {
   const user = await api.user.getOne({
-    username: params.username ?? ""
-  })
+    username: params.username ?? "",
+  });
 
   if (!user) {
-    return <NotFoundPage />;
+    return notFound();
   }
 
-  return (
-    <p>
-      {user.name}
-    </p>
-  );
+  return <p>{user.name}</p>;
 }

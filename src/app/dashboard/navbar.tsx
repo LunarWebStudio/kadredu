@@ -1,20 +1,20 @@
-import Logo from "~/components/logo";
+import { Menu, X } from "lucide-react";
+import Link from "next/link";
+import React from "react";
+import SidebarItem from "~/app/dashboard/item";
 import Search from "~/app/dashboard/search";
-import UserAvatar from "~/components/avatar";
-import { getServerAuthSession } from "~/server/auth";
 import { sidebarItems } from "~/app/dashboard/sidebar";
+import UserAvatar from "~/components/avatar";
+import Logo from "~/components/logo";
+import { Button } from "~/components/ui/button";
 import {
   Sheet,
   SheetClose,
   SheetContent,
   SheetHeader,
-  SheetTrigger
+  SheetTrigger,
 } from "~/components/ui/sheet";
-import { Button } from "~/components/ui/button";
-import { Menu, X } from "lucide-react";
-import React from "react";
-import SidebarItem from "~/app/dashboard/item";
-import Link from "next/link";
+import { getServerAuthSession } from "~/server/auth";
 
 export default async function DashboardNavbar() {
   const session = await getServerAuthSession();
@@ -54,23 +54,23 @@ export default async function DashboardNavbar() {
             <aside className="h-screen-nav-dashboard min-w-[19rem] overflow-y-scroll bg-secondary px-6 py-4">
               {sidebarItems.map((section, index) => (
                 <React.Fragment key={index}>
-                  {((session?.user.role.includes("ADMIN") ?? false) ||
-                    (session?.user.role.some(role =>
-                      section.roles.includes(role)
+                  {((session?.user.roles.includes("ADMIN") ?? false) ||
+                    (session?.user.roles.some((role) =>
+                      section.roles.includes(role),
                     ) ??
                       false)) && (
-                      <div className="mb-4 space-y-2 px-2">
-                        <p className="text-foreground/60">{section.title}</p>
-                        <div className="flex flex-col gap-2">
-                          {section.items.map((item, index) => (
-                            <SidebarItem
-                              {...item}
-                              key={section.title + index}
-                            />
-                          ))}
-                        </div>
+                    <div className="mb-4 space-y-2 px-2">
+                      <p className="text-foreground/60">{section.title}</p>
+                      <div className="flex flex-col gap-2">
+                        {section.items.map((item, index) => (
+                          <SidebarItem
+                            {...item}
+                            key={section.title + index}
+                          />
+                        ))}
                       </div>
-                    )}
+                    </div>
+                  )}
                 </React.Fragment>
               ))}
             </aside>
@@ -81,7 +81,7 @@ export default async function DashboardNavbar() {
         <Search />
         <span className="hidden sm:block">
           <UserAvatar
-            image={session?.user.profilePicture ?? undefined}
+            image={session?.user.image?.id ?? undefined}
             name={session?.user.name ?? "Неизвестно"}
           />
         </span>

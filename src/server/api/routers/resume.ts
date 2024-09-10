@@ -9,12 +9,12 @@ export const resumeRouter = createTRPCRouter({
     .input(ResumeInputSchema)
     .mutation(async ({ ctx, input }) => {
       const existRole = await ctx.db.query.teamRoles.findFirst({
-        where: eq(resume.id, input.roleId)
+        where: eq(resume.id, input.roleId),
       });
       if (!existRole) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Роль не найденна"
+          message: "Роль не найденна",
         });
       }
       await ctx.db
@@ -22,22 +22,21 @@ export const resumeRouter = createTRPCRouter({
         .values({
           userId: ctx.session.user.id,
           roleId: existRole.id,
-          status: input.status
+          status: input.status,
         })
         .onConflictDoUpdate({
           target: resume.userId,
           set: {
             roleId: existRole.id,
             status: input.status,
-            experience: input.experience
-          }
+            experience: input.experience,
+          },
         });
     }),
 
   getSelf: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.query.resume.findFirst({
-      where: eq(resume.userId, ctx.session.user.id)
+      where: eq(resume.userId, ctx.session.user.id),
     });
-  })
+  }),
 });
-

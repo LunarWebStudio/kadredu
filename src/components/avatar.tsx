@@ -1,30 +1,26 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
-import S3Image from "~/components/s3Image";
+import Image from "./ui/image";
 
 export default function UserAvatar({
   image,
   className,
-  name
+  name,
 }: {
-  image?: {
-    storageId: string,
-    blurPreview: string
-  },
-  className?: string,
-  name: string
+  image?: string;
+  className?: string;
+  name: string;
 }) {
   return (
     <Avatar className={className}>
       <AvatarImage
         asChild
-        src={`/api/images/${image?.storageId}`}
+        src={`/api/file/${image}`}
       >
-        <S3Image
-          src={image?.storageId ?? ""}
+        <Image
+          src={image ?? ""}
           alt="ProfilePicture"
-          blurDataURL={image?.blurPreview}
           placeholder="blur"
           width={40}
           height={40}
@@ -33,7 +29,7 @@ export default function UserAvatar({
       <AvatarFallback>
         {name
           .split(" ")
-          .map(n => n[0])
+          .map((n) => n[0])
           .join("")}
       </AvatarFallback>
     </Avatar>

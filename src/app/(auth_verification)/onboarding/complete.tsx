@@ -17,9 +17,9 @@ export default function CompleteOnboarding() {
       toast({
         title: "Ошибка",
         description: err.message,
-        variant: "destructive"
+        variant: "destructive",
       });
-    }
+    },
   });
 
   return (

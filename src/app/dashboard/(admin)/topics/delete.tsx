@@ -1,46 +1,40 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { type Topic } from "~/lib/shared/types";
-import { api } from "~/trpc/react";
-import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
+import { toast } from "sonner";
 import {
   AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogCancel,
-  AlertDialogFooter,
-  AlertDialogDescription,
-  AlertDialogAction,
-  AlertDialogTrigger
+  AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
-import { useToast } from "~/components/ui/use-toast";
+import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
+import type { Topic } from "~/lib/shared/types/topic";
+import { api } from "~/trpc/react";
 
-export default function DeleteTopics({ topic }: { topic: Topic }) {
+export default function DeleteTopic({ topic }: { topic: Topic }) {
   const router = useRouter();
-  const { toast } = useToast();
 
   const deleteTopicMutation = api.topic.delete.useMutation({
     onSuccess: () => {
-      toast({
-        title: "Тема удалена"
-      });
       router.refresh();
     },
-    onError: err => {
-      toast({
-        title: "Ошибка удаления темы",
+    onError: (err) => {
+      toast.error("Ошибка", {
         description: err.message,
-        variant: "destructive"
       });
-    }
+    },
   });
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <DropdownMenuItem onSelect={e => e.preventDefault()}>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
           Удалить
         </DropdownMenuItem>
       </AlertDialogTrigger>

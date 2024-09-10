@@ -2,7 +2,7 @@
 import { LockKeyhole } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { cn } from "~/lib/utils";
 
 export default function SidebarItem({
@@ -10,17 +10,17 @@ export default function SidebarItem({
   icon,
   href,
   color,
-  locked
+  locked,
 }: {
-  title: string,
-  icon: ReactNode,
-  href: string,
+  title: string;
+  icon: ReactNode;
+  href: string;
   color: {
-    bg: string,
-    text: string,
-    text_hover: string
-  },
-  locked?: boolean
+    bg: string;
+    text: string;
+    text_hover: string;
+  };
+  locked?: boolean;
 }) {
   const pathname = usePathname();
   const active = pathname === href;
@@ -36,16 +36,16 @@ export default function SidebarItem({
           !locked &&
             cn(
               color.text_hover,
-              `z-10 hover:scale-[1.02] hover:font-bold hover:shadow-xl`
+              `z-10 hover:scale-[1.02] hover:font-bold hover:shadow-xl`,
             ),
           active && cn("scale-[1.02] font-bold shadow-lg", color.text),
-          locked && "cursor-not-allowed opacity-80"
+          locked && "cursor-not-allowed opacity-80",
         )}
       >
         <div
           className={cn(
             "flex size-10 items-center justify-center rounded-lg text-white",
-            color.bg
+            color.bg,
           )}
         >
           {icon}

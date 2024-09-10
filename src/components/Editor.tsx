@@ -1,5 +1,12 @@
 "use client";
-import { EditorContent, NodeViewContent, NodeViewWrapper, ReactNodeViewRenderer, useEditor, type Editor } from "@tiptap/react";
+import {
+  type Editor,
+  EditorContent,
+  NodeViewContent,
+  NodeViewWrapper,
+  ReactNodeViewRenderer,
+  useEditor,
+} from "@tiptap/react";
 import {
   Bold,
   Code2,
@@ -9,7 +16,7 @@ import {
   ListOrdered,
   Quote,
   Strikethrough,
-  UnderlineIcon
+  UnderlineIcon,
 } from "lucide-react";
 import { Button } from "~/components/ui/button";
 
@@ -18,7 +25,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "~/components/ui/select";
 
 import { ImagesToBase64 } from "~/lib/shared/images";
@@ -27,51 +34,51 @@ import StarterKit from "@tiptap/starter-kit";
 import { useEffect, useState } from "react";
 import { Toggle } from "~/components/ui/toggle";
 
-import Blockquote from '@tiptap/extension-blockquote';
+import Blockquote from "@tiptap/extension-blockquote";
 import CodeBlock from "@tiptap/extension-code-block";
-import { type Level } from '@tiptap/extension-heading';
-import Image from '@tiptap/extension-image';
-import Link from '@tiptap/extension-link';
-import Paragraph from '@tiptap/extension-paragraph';
-import Underline from '@tiptap/extension-underline';
+import type { Level } from "@tiptap/extension-heading";
+import Image from "@tiptap/extension-image";
+import Link from "@tiptap/extension-link";
+import Paragraph from "@tiptap/extension-paragraph";
+import Underline from "@tiptap/extension-underline";
 import { useToast } from "~/components/ui/use-toast";
 import { api } from "~/trpc/react";
 
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
-import bash from 'highlight.js/lib/languages/bash';
-import c from 'highlight.js/lib/languages/c';
-import cpp from 'highlight.js/lib/languages/cpp';
-import csharp from 'highlight.js/lib/languages/csharp';
-import css from 'highlight.js/lib/languages/css';
-import go from 'highlight.js/lib/languages/go';
-import java from 'highlight.js/lib/languages/java';
-import js from 'highlight.js/lib/languages/javascript';
-import json from 'highlight.js/lib/languages/json';
-import php from 'highlight.js/lib/languages/php';
-import python from 'highlight.js/lib/languages/python';
-import rust from 'highlight.js/lib/languages/rust';
-import ts from 'highlight.js/lib/languages/typescript';
-import html from 'highlight.js/lib/languages/xml';
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import bash from "highlight.js/lib/languages/bash";
+import c from "highlight.js/lib/languages/c";
+import cpp from "highlight.js/lib/languages/cpp";
+import csharp from "highlight.js/lib/languages/csharp";
+import css from "highlight.js/lib/languages/css";
+import go from "highlight.js/lib/languages/go";
+import java from "highlight.js/lib/languages/java";
+import js from "highlight.js/lib/languages/javascript";
+import json from "highlight.js/lib/languages/json";
+import php from "highlight.js/lib/languages/php";
+import python from "highlight.js/lib/languages/python";
+import rust from "highlight.js/lib/languages/rust";
+import ts from "highlight.js/lib/languages/typescript";
+import html from "highlight.js/lib/languages/xml";
 
-import { lowlight } from 'lowlight';
+import { lowlight } from "lowlight";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Skeleton } from "~/components/ui/skeleton";
 
-lowlight.registerLanguage('html', html)
-lowlight.registerLanguage('css', css)
-lowlight.registerLanguage('js', js)
-lowlight.registerLanguage('ts', ts)
-lowlight.registerLanguage('bash', bash)
-lowlight.registerLanguage('php', php)
-lowlight.registerLanguage('json', json)
-lowlight.registerLanguage('python', python)
-lowlight.registerLanguage('csharp', csharp)
-lowlight.registerLanguage('c', c)
-lowlight.registerLanguage('cpp', cpp)
-lowlight.registerLanguage('java', java)
-lowlight.registerLanguage('go', go)
-lowlight.registerLanguage('rust', rust)
+lowlight.registerLanguage("html", html);
+lowlight.registerLanguage("css", css);
+lowlight.registerLanguage("js", js);
+lowlight.registerLanguage("ts", ts);
+lowlight.registerLanguage("bash", bash);
+lowlight.registerLanguage("php", php);
+lowlight.registerLanguage("json", json);
+lowlight.registerLanguage("python", python);
+lowlight.registerLanguage("csharp", csharp);
+lowlight.registerLanguage("c", c);
+lowlight.registerLanguage("cpp", cpp);
+lowlight.registerLanguage("java", java);
+lowlight.registerLanguage("go", go);
+lowlight.registerLanguage("rust", rust);
 
 const HeadingsSheet = [
   {
@@ -79,47 +86,46 @@ const HeadingsSheet = [
     type: "paragraph",
     tag: "<p>",
     level: 0,
-    style: "text-sm"
+    style: "text-sm",
   },
   {
     name: "Заголовок 1",
     type: "h1",
     tag: "<h1>",
     level: 1,
-    style: "text-2xl font-bold"
+    style: "text-2xl font-bold",
   },
   {
     name: "Заголовок 2",
     type: "h2",
     tag: "<h2>",
     level: 2,
-    style: "text-lg font-bold"
+    style: "text-lg font-bold",
   },
   {
     name: "Заголовок 3",
     type: "h3",
     tag: "<h3>",
     level: 3,
-    style: "text-base font-bold"
-  }
+    style: "text-base font-bold",
+  },
 ];
-const IconClassName = "size-4"
+const IconClassName = "size-4";
 StarterKit.configure({
   heading: {
-    levels: [1, 2, 3]
-  }
-})
-
+    levels: [1, 2, 3],
+  },
+});
 
 type Options = {
-  links?: boolean,
-  images?: boolean,
-  code?: boolean,
-  quotes?: boolean
+  links?: boolean;
+  images?: boolean;
+  code?: boolean;
+  quotes?: boolean;
 };
 
 Link.configure({
-  autolink: true
+  autolink: true,
 });
 
 export default function EditorText({
@@ -128,10 +134,10 @@ export default function EditorText({
   options,
   disabled,
 }: {
-  text: string,
-  setText?: (text: string) => void
-  options?: Options,
-  disabled?: boolean
+  text: string;
+  setText?: (text: string) => void;
+  options?: Options;
+  disabled?: boolean;
 }) {
   const editor = useEditor({
     extensions: [
@@ -142,25 +148,20 @@ export default function EditorText({
       Blockquote,
       Link,
       CodeBlock,
-      CodeBlockLowlight
-        .extend({
-          addNodeView() {
-            return ReactNodeViewRenderer(CodeBlockComponent)
-          }
-        })
-        .configure({ lowlight, defaultLanguage: "python" })
-
+      CodeBlockLowlight.extend({
+        addNodeView() {
+          return ReactNodeViewRenderer(CodeBlockComponent);
+        },
+      }).configure({ lowlight, defaultLanguage: "python" }),
     ],
     onUpdate: ({ editor }) => {
-      setText ? setText(editor.getHTML()) : ""
+      setText ? setText(editor.getHTML()) : "";
     },
-    content: text
+    content: text,
   });
   if (disabled) {
-    editor?.setEditable(false)
+    editor?.setEditable(false);
   }
-
-
 
   if (!editor) {
     return (
@@ -180,15 +181,12 @@ export default function EditorText({
   }
   return (
     <div className="flex flex-col h-full gap-4 rounded-xl focus:outline-none">
-      {
-        disabled ?? (
-          <EditorControllers
-            editor={editor}
-            options={options}
-          />
-
-        )
-      }
+      {disabled ?? (
+        <EditorControllers
+          editor={editor}
+          options={options}
+        />
+      )}
       <EditorContent
         editor={editor}
         className="p-4 border border-input rounded-xl tiptap dark:bg-neutral-800 bg-white tiptap"
@@ -197,21 +195,24 @@ export default function EditorText({
   );
 }
 
-
 function EditorControllers({
   editor,
-  options
+  options,
 }: {
-  editor: Editor,
-  options?: Options
+  editor: Editor;
+  options?: Options;
 }) {
   const [currentHeading, setCurrentHeading] = useState(HeadingsSheet[0]!);
 
   useEffect(() => {
     if (currentHeading.level === 0) {
-      editor.chain().focus().setParagraph().run()
+      editor.chain().focus().setParagraph().run();
     } else {
-      editor.chain().focus().setHeading({ level: currentHeading.level as Level }).run()
+      editor
+        .chain()
+        .focus()
+        .setHeading({ level: currentHeading.level as Level })
+        .run();
     }
   }, [currentHeading, editor]);
 
@@ -220,21 +221,26 @@ function EditorControllers({
       <div className="flex flex-row gap-4 dark:bg-inherit bg-white">
         <Select
           onValueChange={(value) => {
-            setCurrentHeading(HeadingsSheet.find((e) => e.type === value) ?? HeadingsSheet[0]!)
-          }}>
+            setCurrentHeading(
+              HeadingsSheet.find((e) => e.type === value) ?? HeadingsSheet[0]!,
+            );
+          }}
+        >
           <SelectTrigger className="w-fit px-6 gap-4 dark:bg-neutral-800 bg-white hover:bg-gray-300 transition-all">
             <SelectValue placeholder="Форматирование" />
           </SelectTrigger>
           <SelectContent>
-            {
-              HeadingsSheet.map((heading) => {
-                return (
-                  <SelectItem key={heading.type} value={heading.type} className={heading.style}>
-                    {heading.name}
-                  </SelectItem>
-                )
-              })
-            }
+            {HeadingsSheet.map((heading) => {
+              return (
+                <SelectItem
+                  key={heading.type}
+                  value={heading.type}
+                  className={heading.style}
+                >
+                  {heading.name}
+                </SelectItem>
+              );
+            })}
           </SelectContent>
         </Select>
         <div className="flex gap-0.5">
@@ -263,7 +269,7 @@ function EditorControllers({
             <Strikethrough className={IconClassName} />
           </Toggle>
         </div>
-        <div className="flex gap-0.5" >
+        <div className="flex gap-0.5">
           <Toggle
             pressed={editor.isActive("bulletList")}
             onClick={() => editor.commands.toggleBulletList()}
@@ -294,28 +300,33 @@ function EditorControllers({
   );
 }
 
-function PasteImage({ editor }: {
-  editor: Editor
+function PasteImage({
+  editor,
+}: {
+  editor: Editor;
 }) {
   const { toast } = useToast();
-  const [openDialog, setOpenDialog] = useState(false)
+  const [openDialog, setOpenDialog] = useState(false);
 
   const uploadImageMutation = api.image.upload.useMutation({
     onSuccess: (res) => {
       setOpenDialog(false);
-      editor.commands.setImage({ src: `/api/images/${res.storageId}` })
+      editor.commands.setImage({ src: `/api/images/${res.storageId}` });
     },
     onError: (err) => {
       toast({
         title: "Ошибка загрузки изображения",
         description: err.message,
         variant: "destructive",
-      })
-    }
-  })
+      });
+    },
+  });
 
   return (
-    <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+    <Dialog
+      open={openDialog}
+      onOpenChange={setOpenDialog}
+    >
       <DialogTrigger asChild>
         <Button
           variant="ghost"
@@ -325,21 +336,24 @@ function PasteImage({ editor }: {
         </Button>
       </DialogTrigger>
       <DialogContent>
-        <Input type="file"
+        <Input
+          type="file"
           disabled={uploadImageMutation.isPending}
           onChange={async (e) => {
             if (!e.target.files?.[0]) return;
             uploadImageMutation.mutate({
-              image: (await ImagesToBase64([e.target.files[0]] as const))[0]
-            })
+              image: (await ImagesToBase64([e.target.files[0]] as const))[0],
+            });
           }}
         />
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-function PasteCodeBlock({ editor }: {
-  editor: Editor
+function PasteCodeBlock({
+  editor,
+}: {
+  editor: Editor;
 }) {
   return (
     <Toggle
@@ -348,14 +362,14 @@ function PasteCodeBlock({ editor }: {
     >
       <Code2 className={IconClassName} />
     </Toggle>
-  )
+  );
 }
 
 function CodeBlockComponent({
-  updateAttributes
+  updateAttributes,
 }: {
   updateAttributes: (val: {
-    language: string
+    language: string;
   }) => void;
 }) {
   return (
@@ -363,18 +377,19 @@ function CodeBlockComponent({
       <Select
         onValueChange={(value) => {
           updateAttributes({
-            language: value
-          })
+            language: value,
+          });
         }}
       >
-        <SelectTrigger
-          className="w-fit bg-transparent border-0 h-fit gap-4 mb-2 rounded-none p-1"
-        >
+        <SelectTrigger className="w-fit bg-transparent border-0 h-fit gap-4 mb-2 rounded-none p-1">
           <SelectValue placeholder="Язык" />
         </SelectTrigger>
         <SelectContent>
           {lowlight.listLanguages().map((lang, index) => (
-            <SelectItem key={index} value={lang}>
+            <SelectItem
+              key={index}
+              value={lang}
+            >
               {lang}
             </SelectItem>
           ))}
@@ -384,5 +399,5 @@ function CodeBlockComponent({
         <NodeViewContent as="code" />
       </pre>
     </NodeViewWrapper>
-  )
+  );
 }

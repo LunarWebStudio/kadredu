@@ -1,15 +1,18 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import type { z } from "zod";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
 import {
-  DialogHeader,
-  DialogTrigger,
-  DialogTitle,
-  DialogContent,
   Dialog,
-  DialogFooter
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "~/components/ui/dialog";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import {
@@ -17,95 +20,91 @@ import {
   FormControl,
   FormDescription,
   FormField,
-  FormItem
+  FormItem,
 } from "~/components/ui/form";
-import { RoleInputSchema } from "~/lib/shared/types";
-import { api } from "~/trpc/react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useToast } from "~/components/ui/use-toast";
-import { type z } from "zod";
+import { Input } from "~/components/ui/input";
 import { OnError } from "~/lib/shared/onError";
+import { RoleSchema } from "~/lib/shared/types/role";
+import { api } from "~/trpc/react";
 
 export default function CreateUpdateRole({
-  role
+  role,
 }: {
-  role?: { id: string, name: string }
+  role?: { id: string; name: string };
 }) {
   const router = useRouter();
-  const { toast } = useToast();
-  const [dialogState, setDialogState] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const form = useForm({
-    resolver: zodResolver(RoleInputSchema),
-    defaultValues: {
-      name: role ? role.name : ""
-    }
+    resolver: zodResolver(RoleSchema),
+    defaultValues: role as z.infer<typeof RoleSchema>,
   });
 
-
-  const CreateRoleMutation = api.teamRoles.create.useMutation({
+  const createRoleMutation = api.teamRoles.create.useMutation({
     onSuccess: () => {
-      toast({
-        title: "Роль создана"
-      });
-      setDialogState(false);
+      setOpen(false);
       router.refresh();
       form.reset();
     },
-    onError: err => {
-      toast({
-        title: "Ошибка создания роли",
+    onError: (err) => {
+      toast.error("Ошибка", {
         description: err.message,
-        variant: "destructive"
       });
-    }
-  });
-
-  const UpdateRoleMutation = api.teamRoles.update.useMutation({
-    onSuccess: () => {
-      toast({
-        title: "Роль обновлена"
-      });
-      setDialogState(false);
-      router.refresh();
-      form.reset();
     },
-    onError: err => {
-      toast({
-        title: "Ошибка обновления роли",
-        description: err.message,
-        variant: "destructive"
-      });
-    }
   });
 
-  const onSubmit = (data: z.infer<typeof RoleInputSchema>) => {
+  const updateRoleMutation = api.teamRoles.update.useMutation({
+    onSuccess: () => {
+      setOpen(false);
+      router.refresh();
+    },
+    onError: (err) => {
+      toast.error("Ошибка", {
+        description: err.message,
+      });
+    },
+  });
+
+  const onSubmit = (data: z.infer<typeof RoleSchema>) => {
     if (role) {
-      UpdateRoleMutation.mutate({ id: role.id, name: data.name })
-    } else {
-      CreateRoleMutation.mutate({ name: data.name })
+      updateRoleMutation.mutate({
+        ...data,
+        id: role.id,
+      });
+      return;
     }
-  }
+    createRoleMutation.mutate(data);
+  };
 
   return (
     <Dialog
-      open={dialogState}
-      onOpenChange={setDialogState}
+      open={open}
+      onOpenChange={setOpen}
     >
       <DialogTrigger asChild>
         {role ? (
-          <DropdownMenuItem onSelect={(e) => { e.preventDefault() }}>Редактировать</DropdownMenuItem>
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.preventDefault();
+            }}
+          >
+            Редактировать
+          </DropdownMenuItem>
         ) : (
           <Button>Создать</Button>
         )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{role ? "Редактировать роль" : "Создать роль"}</DialogTitle>
+          <DialogTitle>
+            {role ? "Редактировать роль" : "Создать роль"}
+          </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit, OnError(toast))} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(onSubmit, OnError)}
+            className="space-y-6"
+          >
             <FormField
               control={form.control}
               name="name"
@@ -123,7 +122,14 @@ export default function CreateUpdateRole({
               )}
             />
             <DialogFooter>
-              <Button type="submit" disabled={UpdateRoleMutation.isPending || CreateRoleMutation.isPending}>Сохранить</Button>
+              <Button
+                type="submit"
+                disabled={
+                  updateRoleMutation.isPending || createRoleMutation.isPending
+                }
+              >
+                Сохранить
+              </Button>
             </DialogFooter>
           </form>
         </Form>

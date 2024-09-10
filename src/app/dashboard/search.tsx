@@ -1,9 +1,9 @@
 "use client";
 
-import { Input } from "~/components/ui/input";
 import { Search as SearchIcon } from "lucide-react";
-import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Input } from "~/components/ui/input";
 
 export default function Search() {
   const searchParams = useSearchParams();
@@ -25,7 +25,7 @@ export default function Search() {
         newSearchParams.delete("search");
       }
       router.push(`${pathname}?${newSearchParams.toString()}`);
-    }, 1000)
+    }, 1000);
     return () => clearTimeout(timeout);
   }, [query, pathname, searchParams, router]);
 
@@ -36,7 +36,7 @@ export default function Search() {
       </div>
       <Input
         value={query}
-        onChange={e => setQuery(e.target.value)}
+        onChange={(e) => setQuery(e.target.value)}
         placeholder="Поиск"
         className="w-full pl-8"
       />
