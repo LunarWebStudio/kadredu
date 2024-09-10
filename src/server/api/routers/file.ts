@@ -1,9 +1,9 @@
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
+import { z } from "zod";
 import { FileSchema } from "~/lib/shared/types/file";
 import { IdSchema } from "~/lib/shared/types/utils";
 import {
-  adminProcedure,
   createTRPCRouter,
   protectedProcedure,
   teacherProcedure,

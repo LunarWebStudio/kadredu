@@ -95,6 +95,11 @@ export const sidebarItems: SidebarItem[] = [
         href: "/dashboard/tasks",
         title: "Задания",
       },
+      {
+        icon: <BookUser className={iconClassName} />,
+        href: "/dashboard/my-subjects",
+        title: "Мои предметы",
+      },
     ],
   },
 ];

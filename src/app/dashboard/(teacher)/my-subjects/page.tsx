@@ -13,7 +13,7 @@ export default async function SubjectsPage() {
   return (
     <DashboardContent>
       <DashboardHeader>
-        <DashboardTitle>Задания</DashboardTitle>
+        <DashboardTitle>Мои предметы</DashboardTitle>
       </DashboardHeader>
       <DataTable
         columns={columns}

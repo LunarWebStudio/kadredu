@@ -69,7 +69,7 @@ export const groups = createTable("groups", {
 });
 
 export const groupsRelations = relations(groups, ({ many, one }) => ({
-  users: many(users),
+  students: many(users),
   image: one(files, { fields: [groups.imageId], references: [files.id] }),
   building: one(buildings, {
     fields: [groups.buildingId],
@@ -131,47 +131,71 @@ export const tutorialsRelations = relations(tutorials, ({ one }) => ({
   image: one(files, { fields: [tutorials.imageId], references: [files.id] }),
 }));
 
-// export const tasks = createTable("tasks", {
-//   id: text("id")
-//     .$defaultFn(() => createId())
-//     .notNull()
-//     .primaryKey(),
-//   name: varchar("name", { length: 255 }).notNull(),
-//   description: text("description").notNull(),
-//   deadline: timestamp("deadline", {
-//     mode: "date",
-//     withTimezone: true,
-//   }),
-//   experience: integer("experience").notNull().default(0),
-//   coin: integer("coin").notNull().default(0),
-//   tutorialId: text("tutorialId").references(() => tutorials.id),
-//   subjectId: text("subjectId")
-//     .notNull()
-//     .references(() => subjects.id),
-//   groupId: text("groupId")
-//     .notNull()
-//     .references(() => groups.id),
-//   authorId: text("authorId")
-//     .references(() => users.id)
-//     .notNull(),
-//   createdAt: timestamp("createdAt", {
-//     mode: "date",
-//     withTimezone: true,
-//   }).defaultNow(),
-// });
-//
-// export const tasksRelations = relations(tasks, ({ one }) => ({
-//   author: one(users, { fields: [tasks.authorId], references: [users.id] }),
-//   subject: one(subjects, {
-//     fields: [tasks.subjectId],
-//     references: [subjects.id],
-//   }),
-//   group: one(groups, { fields: [tasks.groupId], references: [groups.id] }),
-//   tutorial: one(tutorials, {
-//     fields: [tasks.tutorialId],
-//     references: [tutorials.id],
-//   }),
-// }));
+export const tasks = createTable("tasks", {
+  id: text("id")
+    .$defaultFn(() => createId())
+    .notNull()
+    .primaryKey(),
+
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description").notNull(),
+  deadline: timestamp("deadline", {
+    mode: "date",
+    withTimezone: true,
+  }),
+
+  experience: integer("experience").notNull().default(0),
+  coins: integer("coins").notNull().default(0),
+
+  tutorialId: text("tutorialId").references(() => tutorials.id),
+
+  subjectId: text("subjectId")
+    .notNull()
+    .references(() => subjects.id),
+
+  authorId: text("authorId")
+    .references(() => users.id)
+    .notNull(),
+  createdAt: timestamp("createdAt", {
+    mode: "date",
+    withTimezone: true,
+  }).defaultNow(),
+});
+
+export const tasksRelations = relations(tasks, ({ one, many }) => ({
+  author: one(users, { fields: [tasks.authorId], references: [users.id] }),
+  subject: one(subjects, {
+    fields: [tasks.subjectId],
+    references: [subjects.id],
+  }),
+  tutorial: one(tutorials, {
+    fields: [tasks.tutorialId],
+    references: [tutorials.id],
+  }),
+  groups: many(taskToGroups),
+}));
+
+export const taskToGroups = createTable("taskToGroups", {
+  id: text("id")
+    .$defaultFn(() => createId())
+    .notNull()
+    .primaryKey(),
+
+  taskId: text("taskId")
+    .notNull()
+    .references(() => tasks.id),
+  groupId: text("groupId")
+    .notNull()
+    .references(() => groups.id),
+});
+
+export const taskToGroupsRelations = relations(taskToGroups, ({ one }) => ({
+  task: one(tasks, { fields: [taskToGroups.taskId], references: [tasks.id] }),
+  group: one(groups, {
+    fields: [taskToGroups.groupId],
+    references: [groups.id],
+  }),
+}));
 
 export const rolesEnum = pgEnum("role", [
   "ADMIN",

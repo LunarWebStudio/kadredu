@@ -1,12 +1,12 @@
 import { eq } from "drizzle-orm";
 import { GroupSchema } from "~/lib/shared/types/group";
 
-import { TRPCError } from "@trpc/server";
 import { IdSchema } from "~/lib/shared/types/utils";
 import {
   adminProcedure,
   createTRPCRouter,
   protectedProcedure,
+  teacherProcedure,
 } from "~/server/api/trpc";
 import { groups } from "~/server/db/schema";
 import { createCaller } from "../root";
@@ -46,12 +46,12 @@ export const groupRouter = createTRPCRouter({
   delete: adminProcedure.input(IdSchema).mutation(async ({ ctx, input }) => {
     await ctx.db.delete(groups).where(eq(groups.id, input.id));
   }),
-  getAll: protectedProcedure.query(async ({ ctx }) => {
+  getAll: teacherProcedure.query(async ({ ctx }) => {
     return await ctx.db.query.groups.findMany({
       with: {
         building: true,
         image: true,
-        users: {
+        students: {
           columns: {
             id: true,
           },

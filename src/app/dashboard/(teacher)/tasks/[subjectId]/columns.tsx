@@ -1,6 +1,7 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import {
@@ -9,48 +10,40 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import Image from "~/components/ui/image";
-import type { Group } from "~/lib/shared/types/group";
-import CreateUpdateGroup from "./create_update";
-import DeleteGroup from "./delete";
+import { OneTask, Task } from "~/lib/shared/types/task";
+import CreateUpdateTask from "./create_update";
+import DeleteTask from "./delete";
 
-export const columns: ColumnDef<Group>[] = [
+export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: "name",
     header: "Название",
-    cell({ cell, row }) {
-      const name = cell.getValue() as Group["name"];
-      return (
-        <div className="flex items-center gap-2">
-          <Image
-            src={row.original.image.id}
-            alt={row.original.name}
-            width={500}
-            height={500}
-            className="size-12 rounded-xl"
-          />
-          <p>{name}</p>
-        </div>
-      );
-    },
   },
   {
-    accessorKey: "building.name",
-    header: "СП",
-  },
-  {
-    accessorKey: "users",
-    header: "Люди",
+    accessorKey: "deadline",
+    header: "Срок сдачи",
     cell({ cell }) {
-      const users = cell.getValue() as Group["students"];
-      return users.length.toString();
+      const deadline = cell.getValue() as Task["deadline"];
+      if (!deadline) {
+        return "Без ограничений";
+      }
+
+      return format(deadline, "dd.MM");
     },
+  },
+  {
+    accessorKey: "coins",
+    header: "Монеты",
+  },
+  {
+    accessorKey: "experience",
+    header: "Опыт",
   },
   {
     id: "actions",
     header: "",
     cell({ row }) {
-      const topic = row.original;
+      const task = row.original;
 
       return (
         <div className="flex items-center justify-end">
@@ -66,8 +59,8 @@ export const columns: ColumnDef<Group>[] = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Действия</DropdownMenuLabel>
-              <CreateUpdateGroup group={topic} />
-              <DeleteGroup group={topic} />
+              <CreateUpdateTask task_id={task.id} />
+              <DeleteTask task={task} />
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

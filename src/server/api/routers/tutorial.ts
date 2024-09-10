@@ -73,6 +73,14 @@ export const tutorialsRouter = createTRPCRouter({
 
       await ctx.db.delete(tutorials).where(eq(tutorials.id, input.id));
     }),
+  getAllNames: highLevelProcedure.query(async ({ ctx }) => {
+    return await ctx.db.query.tutorials.findMany({
+      columns: {
+        id: true,
+        name: true,
+      },
+    });
+  }),
   getAll: highLevelProcedure.query(async ({ ctx }) => {
     return await ctx.db.query.tutorials.findMany({
       with: {

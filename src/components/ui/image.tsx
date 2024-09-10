@@ -1,6 +1,8 @@
 "use client";
 
-import NextImage, { type ImageProps } from "next/image";
+import NextImage, { type ImageProps as NextImageProps } from "next/image";
+
+export interface ImageProps extends NextImageProps {}
 
 export default function Image({ ...props }: ImageProps) {
   return (

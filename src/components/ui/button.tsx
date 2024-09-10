@@ -1,9 +1,10 @@
 import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps, cva } from "class-variance-authority";
-import { ChevronDown, Loader } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "~/lib/utils";
+import Loader from "./loader";
 
 const buttonVariants = cva(
   "select-none inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed",
@@ -70,7 +71,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
         disabled={disabled || loading}
       >
-        {loading && <Loader />}
+        {loading && <Loader size="sm" />}
         {props.children}
         {chevron && !loading && <ChevronDown className="mr-2 size-4" />}
       </Comp>

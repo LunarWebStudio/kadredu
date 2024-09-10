@@ -6,18 +6,29 @@ import {
 import { DataTable } from "~/components/ui/data-table";
 import { api } from "~/trpc/server";
 import { columns } from "./columns";
+import { notFound } from "next/navigation";
 
-export default async function SubjectsPage() {
-  const subjects = await api.subject.getAssigned();
+export default async function SubjectsPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const subject = await api.subject.getGroups({
+    id: params.id,
+  });
+
+  if (!subject) {
+    notFound();
+  }
 
   return (
     <DashboardContent>
       <DashboardHeader>
-        <DashboardTitle>Задания</DashboardTitle>
+        <DashboardTitle>Мои предметы/{subject.name}</DashboardTitle>
       </DashboardHeader>
       <DataTable
         columns={columns}
-        data={subjects}
+        data={subject.building.groups}
       />
     </DashboardContent>
   );
