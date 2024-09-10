@@ -8,14 +8,6 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "~/components/ui/button";
 import Combobox from "~/components/ui/combobox";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import {
   Form,
@@ -26,6 +18,14 @@ import {
 } from "~/components/ui/form";
 import Image from "~/components/ui/image";
 import { Input } from "~/components/ui/input";
+import {
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "~/components/ui/sheet";
 import { Skeleton } from "~/components/ui/skeleton";
 import { OnError } from "~/lib/shared/onError";
 import type { Building } from "~/lib/shared/types/building";
@@ -100,11 +100,11 @@ export default function CreateUpdateGroup({
   }, [form.watch("buildingId")]);
 
   return (
-    <Dialog
+    <Sheet
       open={open}
       onOpenChange={setOpen}
     >
-      <DialogTrigger asChild>
+      <SheetTrigger asChild>
         {group ? (
           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
             Редактировать
@@ -112,13 +112,11 @@ export default function CreateUpdateGroup({
         ) : (
           <Button>Создать</Button>
         )}
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>
-            {group ? "Редактировать" : "Создать"} Группу
-          </DialogTitle>
-        </DialogHeader>
+      </SheetTrigger>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>{group ? "Редактировать" : "Создать"} Группу</SheetTitle>
+        </SheetHeader>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit, OnError)}
@@ -126,7 +124,7 @@ export default function CreateUpdateGroup({
           >
             <div className="border rounded-xl p-6 space-y-6">
               <p className="text-muted-foreground">Группа</p>
-              <div className="flex flex-row gap-4 items-center">
+              <div className="flex flex-row gap-4 items-center text-base lg:text-lg text-nowrap">
                 {form.watch("image.b64") ? (
                   <img
                     src={form.watch("image.b64")}
@@ -150,7 +148,7 @@ export default function CreateUpdateGroup({
                     )}
                   </>
                 )}
-                <div className="text-lg font-bold gap-1 flex flex-row">
+                <div className="font-bold gap-1 flex flex-row">
                   <p>
                     {buildings.find(
                       (building) => building.id === form.watch("buildingId"),
@@ -197,7 +195,11 @@ export default function CreateUpdateGroup({
                       empty: "СП не найдено",
                     }}
                   >
-                    <Button variant="secondary">
+                    <Button
+                      variant="secondary"
+                      className="w-full"
+                      chevron
+                    >
                       {selectedBuilding?.name ?? "Выберите СП"}
                     </Button>
                   </Combobox>
@@ -220,8 +222,9 @@ export default function CreateUpdateGroup({
               )}
             />
 
-            <DialogFooter>
+            <SheetFooter>
               <Button
+                className="w-full"
                 disabled={
                   updateGroupMutation.isPending || createGroupMutation.isPending
                 }
@@ -229,10 +232,10 @@ export default function CreateUpdateGroup({
               >
                 Сохранить
               </Button>
-            </DialogFooter>
+            </SheetFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 }

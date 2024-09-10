@@ -9,48 +9,44 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import { Tutorial } from "~/lib/shared/types/tutorial";
+import CreateUpdateTutorial from "./create_update";
 import Image from "~/components/ui/image";
-import type { Group } from "~/lib/shared/types/group";
-import CreateUpdateGroup from "./create_update";
-import DeleteGroup from "./delete";
+import DeleteTutorial from "./delete";
+import { api } from "~/trpc/react";
 
-export const columns: ColumnDef<Group>[] = [
+export const columns: ColumnDef<Tutorial>[] = [
   {
     accessorKey: "name",
     header: "Название",
-    cell({ cell, row }) {
-      const name = cell.getValue() as Group["name"];
+    cell({ row }) {
+      const tutorial = row.original;
+
       return (
         <div className="flex items-center gap-2">
           <Image
-            src={row.original.image.id}
-            alt={row.original.name}
+            src={tutorial.image.id}
+            alt={tutorial.name}
             width={500}
             height={500}
-            className="size-12 rounded-xl"
+            className="aspect-[2/1] object-cover w-36 rounded-md"
           />
-          <p>{name}</p>
+          <p>{tutorial.name}</p>
         </div>
       );
     },
   },
   {
-    accessorKey: "building.name",
-    header: "СП",
-  },
-  {
-    accessorKey: "users",
-    header: "Люди",
-    cell({ cell }) {
-      const users = cell.getValue() as Group["users"];
-      return users.length.toString();
-    },
+    accessorKey: "author.name",
+    header: "Автор",
   },
   {
     id: "actions",
     header: "",
     cell({ row }) {
-      const topic = row.original;
+      const [{ session }] = api.user.session.useSuspenseQuery();
+
+      const tutorial = row.original;
 
       return (
         <div className="flex items-center justify-end">
@@ -60,14 +56,15 @@ export const columns: ColumnDef<Group>[] = [
                 size="icon"
                 variant="ghost"
                 aria-haspopup="true"
+                disabled={tutorial.author.id !== session.user.id}
               >
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Действия</DropdownMenuLabel>
-              <CreateUpdateGroup group={topic} />
-              <DeleteGroup group={topic} />
+              <CreateUpdateTutorial tutorial={tutorial} />
+              <DeleteTutorial tutorial={tutorial} />
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

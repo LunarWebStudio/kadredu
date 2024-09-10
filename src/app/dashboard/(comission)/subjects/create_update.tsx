@@ -1,7 +1,5 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CommandList } from "cmdk";
-import { Check, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -10,21 +8,13 @@ import type { z } from "zod";
 import { Button } from "~/components/ui/button";
 import Combobox from "~/components/ui/combobox";
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "~/components/ui/command";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog";
-import { Drawer, DrawerContent, DrawerTrigger } from "~/components/ui/drawer";
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "~/components/ui/sheet";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import {
   Form,
@@ -34,14 +24,8 @@ import {
   FormItem,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
 import { OnError } from "~/lib/shared/onError";
 import { type Subject, SubjectSchema } from "~/lib/shared/types/subject";
-import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 
 export default function CreateUpdateSubject({
@@ -59,7 +43,7 @@ export default function CreateUpdateSubject({
     resolver: zodResolver(SubjectSchema),
     defaultValues: subject as z.infer<typeof SubjectSchema>,
   });
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogOpen, setSheetOpen] = useState(false);
 
   const selectedBuilding = useMemo(() => {
     return buildings.find((b) => b.id === form.watch("buildingId")) ?? null;
@@ -73,7 +57,7 @@ export default function CreateUpdateSubject({
     onSuccess: () => {
       form.reset();
       router.refresh();
-      setDialogOpen(false);
+      setSheetOpen(false);
     },
     onError: (err) => {
       toast.error("Ошибка", {
@@ -84,7 +68,7 @@ export default function CreateUpdateSubject({
   const updateSubjectMutation = api.subject.update.useMutation({
     onSuccess: () => {
       router.refresh();
-      setDialogOpen(false);
+      setSheetOpen(false);
     },
     onError: (err) => {
       toast.error("Ошибка", {
@@ -104,11 +88,11 @@ export default function CreateUpdateSubject({
     createSubjectMutation.mutate(data);
   };
   return (
-    <Dialog
+    <Sheet
       open={dialogOpen}
-      onOpenChange={setDialogOpen}
+      onOpenChange={setSheetOpen}
     >
-      <DialogTrigger asChild>
+      <SheetTrigger asChild>
         {subject ? (
           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
             Редактировать
@@ -116,13 +100,13 @@ export default function CreateUpdateSubject({
         ) : (
           <Button>Создать</Button>
         )}
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>
+      </SheetTrigger>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>
             {subject ? "Редактировать предмет" : "Создать предмет"}
-          </DialogTitle>
-        </DialogHeader>
+          </SheetTitle>
+        </SheetHeader>
         <Form {...form}>
           <form
             className=" space-y-6"
@@ -166,8 +150,10 @@ export default function CreateUpdateSubject({
                     }}
                   >
                     <Button
-                      variant="ghost"
+                      variant="secondary"
                       type="button"
+                      className="w-full"
+                      chevron
                     >
                       {selectedTeacher?.name ?? "Преподаватель"}
                     </Button>
@@ -191,8 +177,10 @@ export default function CreateUpdateSubject({
                     }}
                   >
                     <Button
-                      variant="ghost"
+                      variant="secondary"
                       type="button"
+                      className="w-full"
+                      chevron
                     >
                       {selectedBuilding?.name ?? "СП"}
                     </Button>
@@ -201,10 +189,10 @@ export default function CreateUpdateSubject({
               )}
             />
 
-            <DialogFooter>
+            <SheetFooter>
               <Button
                 type="submit"
-                className=" ml-auto"
+                className="w-full"
                 disabled={
                   updateSubjectMutation.isPending ||
                   createSubjectMutation.isPending
@@ -212,10 +200,10 @@ export default function CreateUpdateSubject({
               >
                 Сохранить
               </Button>
-            </DialogFooter>
+            </SheetFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 }

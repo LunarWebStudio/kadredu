@@ -15,6 +15,7 @@ function GetErrorMessage(error: FieldError | undefined) {
 }
 
 export function OnError(errors: FieldErrors) {
+  console.log(errors);
   const err = GetErrorMessage(
     errors[Object.keys(errors)[0] ?? "invalid"] as FieldError,
   );

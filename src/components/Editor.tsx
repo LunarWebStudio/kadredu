@@ -28,8 +28,6 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 
-import { ImagesToBase64 } from "~/lib/shared/images";
-
 import StarterKit from "@tiptap/starter-kit";
 import { useEffect, useState } from "react";
 import { Toggle } from "~/components/ui/toggle";
@@ -41,7 +39,6 @@ import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import Paragraph from "@tiptap/extension-paragraph";
 import Underline from "@tiptap/extension-underline";
-import { useToast } from "~/components/ui/use-toast";
 import { api } from "~/trpc/react";
 
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
@@ -64,6 +61,7 @@ import { lowlight } from "lowlight";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Skeleton } from "~/components/ui/skeleton";
+import { toast } from "sonner";
 
 lowlight.registerLanguage("html", html);
 lowlight.registerLanguage("css", css);
@@ -305,19 +303,16 @@ function PasteImage({
 }: {
   editor: Editor;
 }) {
-  const { toast } = useToast();
   const [openDialog, setOpenDialog] = useState(false);
 
-  const uploadImageMutation = api.image.upload.useMutation({
+  const uploadImageMutation = api.file.create.useMutation({
     onSuccess: (res) => {
       setOpenDialog(false);
-      editor.commands.setImage({ src: `/api/images/${res.storageId}` });
+      editor.commands.setImage({ src: `/api/file/${res.id}` });
     },
     onError: (err) => {
-      toast({
-        title: "Ошибка загрузки изображения",
+      toast.error("Ошибка", {
         description: err.message,
-        variant: "destructive",
       });
     },
   });
@@ -339,10 +334,10 @@ function PasteImage({
         <Input
           type="file"
           disabled={uploadImageMutation.isPending}
-          onChange={async (e) => {
-            if (!e.target.files?.[0]) return;
+          onUpload={(f) => {
+            if (!f[0]) return;
             uploadImageMutation.mutate({
-              image: (await ImagesToBase64([e.target.files[0]] as const))[0],
+              ...f[0],
             });
           }}
         />

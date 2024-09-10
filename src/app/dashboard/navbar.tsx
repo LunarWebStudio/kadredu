@@ -37,7 +37,10 @@ export default async function DashboardNavbar() {
               <Menu />
             </Button>
           </SheetTrigger>
-          <SheetContent className="max-h-screen w-screen px-0">
+          <SheetContent
+            className="max-h-screen w-screen px-0"
+            side="top"
+          >
             <SheetHeader className="mb-4 flex flex-row items-center justify-between px-6">
               <Link href="/">
                 <Logo />

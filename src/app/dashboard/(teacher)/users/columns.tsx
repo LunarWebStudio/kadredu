@@ -24,22 +24,21 @@ import UpdateRole from "./update_role";
 
 export const columns: ColumnDef<User>[] = [
   {
-    accessorKey: "image",
-    header: "Фото",
-    cell({ cell, row }) {
-      const image = cell.getValue() as User["image"];
-      return (
-        <Avatar
-          className="size-10"
-          image={image?.id}
-          name={row.original.name ?? "?"}
-        />
-      );
-    },
-  },
-  {
     accessorKey: "name",
     header: "ФИО",
+    cell({ cell, row }) {
+      const name = cell.getValue() as User["name"];
+      return (
+        <div className="flex items-center gap-2">
+          <Avatar
+            className="size-10"
+            image={row.original.image?.id}
+            name={row.original.name ?? "?"}
+          />
+          <p>{name}</p>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "group.name",

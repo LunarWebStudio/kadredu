@@ -6,33 +6,36 @@ import {
   adminProcedure,
   createTRPCRouter,
   protectedProcedure,
+  teacherProcedure,
 } from "~/server/api/trpc";
 import { files } from "~/server/db/schema";
 
 export const fileRouter = createTRPCRouter({
-  create: adminProcedure.input(FileSchema).mutation(async ({ ctx, input }) => {
-    try {
-      const { id } = (
-        await ctx.db
-          .insert(files)
-          .values({
-            ...input,
-            objectId: await ctx.s3.upload(input),
-          })
-          .returning()
-      )[0]!;
+  create: teacherProcedure
+    .input(FileSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const { id } = (
+          await ctx.db
+            .insert(files)
+            .values({
+              ...input,
+              objectId: await ctx.s3.upload(input),
+            })
+            .returning()
+        )[0]!;
 
-      return {
-        id,
-      };
-    } catch (e) {
-      console.error(e);
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Ошибка загрузки файла",
-      });
-    }
-  }),
+        return {
+          id,
+        };
+      } catch (e) {
+        console.error(e);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Ошибка загрузки файла",
+        });
+      }
+    }),
   get: protectedProcedure.input(IdSchema).query(async ({ ctx, input }) => {
     const file = await ctx.db.query.files.findFirst({
       where: eq(files.id, input.id),

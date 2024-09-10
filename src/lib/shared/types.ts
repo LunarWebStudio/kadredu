@@ -15,57 +15,6 @@ export const IdInputSchema = z.object({
     .max(255, "ID слишком длинный"),
 });
 
-export type Tutorial = inferProcedureOutput<
-  AppRouter["tutorial"]["getAll"]
->[number];
-
-export type OneTutorial = NonNullable<
-  inferProcedureOutput<AppRouter["tutorial"]["getOne"]>
->;
-
-export const TutorialInputShema = z.object({
-  name: z
-    .string({
-      required_error: "Название не указано",
-      invalid_type_error: "Название не является строкой",
-    })
-    .min(1, "Название темы не указано")
-    .max(255, "Название темы слишком длинное"),
-  imageId: z.string({
-    required_error: "Фото не задано",
-    invalid_type_error: "Фото не является строкой",
-  }),
-  text: z
-    .string({
-      required_error: "Текст не указан",
-      invalid_type_error: "Текст не является строкой",
-    })
-    .min(1, "Текст не указан"),
-  authorId: z.string({
-    required_error: "Автор не указан",
-    invalid_type_error: "Текст не является строкой",
-  }),
-  price: z.coerce.number({
-    invalid_type_error: "Цена не является числом",
-  }),
-  topicId: z
-    .string({
-      required_error: "Тема не указана",
-      invalid_type_error: "Тема не является строкой",
-    })
-    .min(1, "Тема не указана")
-    .max(255, "Тема слишком длинная"),
-  timeRead: z.coerce
-    .number({
-      required_error: "Время не указано",
-      invalid_type_error: "Время не является числом",
-    })
-    .min(1, "Время не указано"),
-  subjectId: z.string({
-    invalid_type_error: "Предмет не является строкой",
-  }),
-});
-
 // tasks
 export type Task = inferProcedureOutput<AppRouter["task"]["getAll"]>[number];
 

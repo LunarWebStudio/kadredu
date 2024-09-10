@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,26 +14,19 @@ import {
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
-import { useToast } from "~/components/ui/use-toast";
-import type { Tutorial } from "~/lib/shared/types";
+import { Tutorial } from "~/lib/shared/types/tutorial";
 import { api } from "~/trpc/react";
 
 export default function DeleteTutorial({ tutorial }: { tutorial: Tutorial }) {
   const router = useRouter();
-  const { toast } = useToast();
 
   const deleteTutorialMutation = api.tutorial.delete.useMutation({
     onSuccess: () => {
-      toast({
-        title: "Туториал удален",
-      });
       router.refresh();
     },
     onError: (err) => {
-      toast({
-        title: "Ошибка удаления туториала",
+      toast.error("Ошибка", {
         description: err.message,
-        variant: "destructive",
       });
     },
   });

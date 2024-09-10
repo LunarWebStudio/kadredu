@@ -8,13 +8,13 @@ import { toast } from "sonner";
 import type { z } from "zod";
 import { Button } from "~/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog";
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "~/components/ui/sheet";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import {
   Form,
@@ -73,11 +73,11 @@ export default function CreateUpdateBuilding({
   };
 
   return (
-    <Dialog
+    <Sheet
       open={open}
       onOpenChange={setOpen}
     >
-      <DialogTrigger asChild>
+      <SheetTrigger asChild>
         {building ? (
           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
             Редактировать
@@ -85,11 +85,11 @@ export default function CreateUpdateBuilding({
         ) : (
           <Button>Создать</Button>
         )}
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{building ? "Редактировать" : "Создать"} СП</DialogTitle>
-        </DialogHeader>
+      </SheetTrigger>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>{building ? "Редактировать" : "Создать"} СП</SheetTitle>
+        </SheetHeader>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit, OnError)}
@@ -125,20 +125,21 @@ export default function CreateUpdateBuilding({
                 </FormItem>
               )}
             />
-            <DialogFooter>
+            <SheetFooter>
               <Button
                 disabled={
                   createBuildingMutation.isPending ||
                   updateBuildingMutation.isPending
                 }
                 type="submit"
+                className="w-full"
               >
                 Сохранить
               </Button>
-            </DialogFooter>
+            </SheetFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 }

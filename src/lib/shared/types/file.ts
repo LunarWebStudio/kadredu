@@ -30,3 +30,8 @@ export const FileSchema = z.object({
 
 export type ProcessedFile = z.infer<typeof FileSchema>;
 export type S3File = inferProcedureOutput<AppRouter["file"]["get"]>;
+
+export const EditFileSchema = FileSchema.extend({
+  id: z.string().optional(),
+  b64: z.string({}).optional(),
+});

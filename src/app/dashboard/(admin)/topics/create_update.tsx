@@ -8,13 +8,13 @@ import { toast } from "sonner";
 import type { z } from "zod";
 import { Button } from "~/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog";
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "~/components/ui/sheet";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import {
   Form,
@@ -76,11 +76,11 @@ export default function CreateUpdateTopic({
   };
 
   return (
-    <Dialog
+    <Sheet
       open={open}
       onOpenChange={setOpen}
     >
-      <DialogTrigger asChild>
+      <SheetTrigger asChild>
         {topic ? (
           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
             Редактировать
@@ -88,12 +88,12 @@ export default function CreateUpdateTopic({
         ) : (
           <Button>Создать</Button>
         )}
-      </DialogTrigger>
+      </SheetTrigger>
 
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{topic ? "Редактировать" : "Создать"} Тему</DialogTitle>
-        </DialogHeader>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>{topic ? "Редактировать" : "Создать"} Тему</SheetTitle>
+        </SheetHeader>
 
         <Form {...form}>
           <form
@@ -116,19 +116,20 @@ export default function CreateUpdateTopic({
               )}
             />
 
-            <DialogFooter>
+            <SheetFooter>
               <Button
                 disabled={
                   updateTopicMutation.isPending || createTopicMutation.isPending
                 }
                 type="submit"
+                className="w-full"
               >
                 Сохранить
               </Button>
-            </DialogFooter>
+            </SheetFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 }

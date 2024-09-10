@@ -2,9 +2,11 @@
 
 import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { type VariantProps, cva } from "class-variance-authority";
+import { X } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "~/lib/utils";
+import { Button } from "./button";
 
 const Sheet = SheetPrimitive.Root;
 
@@ -30,16 +32,16 @@ const SheetOverlay = React.forwardRef<
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
 const sheetVariants = cva(
-  "fixed z-50 gap-4 bg-secondary p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
+  "fixed z-50 gap-4 bg-secondary p-6 overflow-y-scroll shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
   {
     variants: {
       side: {
         top: "inset-x-0 top-0 border-b data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
         bottom:
           "inset-x-0 bottom-0 border-t data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
-        left: "inset-y-0 left-0 h-full w-3/4 border-r data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:max-w-sm",
+        left: "inset-y-0 left-0 h-full w-screen md:w-3/4 border-r data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left max-w-screen md:max-w-lg",
         right:
-          "inset-y-0 right-0 h-full w-3/4  border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm",
+          "inset-y-0 right-0 h-full w-screen md:w-3/4  border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right max-w-screen md:max-w-lg",
       },
     },
     defaultVariants: {
@@ -74,12 +76,19 @@ const SheetHeader = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn(
-      "flex flex-col space-y-2 text-center sm:text-left",
-      className,
-    )}
+    className={cn("flex flex-row justify-between items-center pb-4", className)}
     {...props}
-  />
+  >
+    {props.children}
+    <SheetClose asChild>
+      <Button
+        variant="ghost"
+        className="h-10 aspect-square p-2 my-auto"
+      >
+        <X />
+      </Button>
+    </SheetClose>
+  </div>
 );
 SheetHeader.displayName = "SheetHeader";
 
@@ -103,7 +112,7 @@ const SheetTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SheetPrimitive.Title
     ref={ref}
-    className={cn("text-lg font-semibold text-foreground", className)}
+    className={cn("text-xl font-semibold text-foreground", className)}
     {...props}
   />
 ));

@@ -10,7 +10,7 @@ import {
 import { subjects, users } from "~/server/db/schema";
 
 export const subjectsRouter = {
-  getAll: protectedProcedure.mutation(async ({ ctx }) => {
+  getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.query.subjects.findMany({
       with: {
         building: {

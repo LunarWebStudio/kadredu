@@ -1,7 +1,7 @@
 import type { inferProcedureOutput } from "@trpc/server";
 import { z } from "zod";
 import type { AppRouter } from "~/server/api/root";
-import { FileSchema } from "./file";
+import { EditFileSchema } from "./file";
 
 export type Group = inferProcedureOutput<AppRouter["group"]["getAll"]>[number];
 
@@ -13,10 +13,7 @@ export const GroupSchema = z.object({
     })
     .min(1, "Название не заполнено")
     .max(255, "Название слишком длинное"),
-  image: FileSchema.extend({
-    id: z.string().optional(),
-    b64: z.string({}).optional(),
-  }),
+  image: EditFileSchema,
   buildingId: z
     .string({
       required_error: "Не указан ID СП",

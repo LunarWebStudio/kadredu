@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-
   ul {
     @apply list-disc pl-4;
   }
@@ -14,7 +13,7 @@
 
   .tiptap {
     pre {
-      @apply bg-muted font-mono font-semibold p-4 rounded-lg text-foreground/80;
+      @apply bg-secondary font-mono font-semibold p-4 rounded-lg text-foreground/80;
     }
 
     .hljs-comment,
@@ -65,15 +64,28 @@
       @apply font-bold;
     }
 
-    @apply focus-visible:outline-none focus-visible:outline-transparent
-  }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      @apply pt-4;
+    }
 
-  blockquote {
-    @apply text-primary underline-offset-4 hover:underline;
-  }
+    p {
+      @apply pt-2;
+    }
 
-  .tiptap a {
-    @apply text-blue-600 underline cursor-pointer
+    a {
+      @apply text-blue-600 underline cursor-pointer;
+    }
+
+    blockquote {
+      @apply border-l-2 border-primary p-2;
+    }
+
+    @apply focus-visible:outline-none focus-visible:outline-transparent;
   }
 
   :root {
