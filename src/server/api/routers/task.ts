@@ -27,6 +27,7 @@ export const tasksRouter = createTRPCRouter({
         input.groupIds.map((groupId) => ({
           taskId,
           groupId,
+          subjectId: input.subjectId,
         })),
       );
     }),
@@ -63,6 +64,7 @@ export const tasksRouter = createTRPCRouter({
           input.groupIds.map((groupId) => ({
             taskId: input.id,
             groupId,
+            subjectId: input.subjectId,
           })),
         );
       });
@@ -79,6 +81,21 @@ export const tasksRouter = createTRPCRouter({
       },
     });
   }),
+  getAssigned: protectedProcedure
+    .input(IdSchema)
+    .query(async ({ ctx, input }) => {
+      const tasks = await ctx.db.query.taskToGroups.findMany({
+        where: and(
+          eq(taskToGroups.subjectId, input.id),
+          eq(taskToGroups.groupId, ctx.session.user.group?.id ?? "INVALID"),
+        ),
+        with: {
+          task: true,
+        },
+      });
+
+      return tasks.map((t) => t.task);
+    }),
   getOne: protectedProcedure.input(IdSchema).query(async ({ ctx, input }) => {
     const task = await ctx.db.query.tasks.findFirst({
       where: eq(tasks.id, input.id),

@@ -8,7 +8,7 @@ import { api } from "~/trpc/server";
 import { columns } from "./columns";
 
 export default async function SubjectsPage() {
-  const subjects = await api.subject.getAssigned();
+  const subjects = await api.subject.getOwned();
 
   return (
     <DashboardContent>

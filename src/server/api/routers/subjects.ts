@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { IdInputSchema } from "~/lib/shared/types";
 import { SubjectSchema } from "~/lib/shared/types/subject";
@@ -8,7 +8,7 @@ import {
   protectedProcedure,
   teacherProcedure,
 } from "~/server/api/trpc";
-import { groups, subjects, users } from "~/server/db/schema";
+import { groups, subjects, taskToGroups, users } from "~/server/db/schema";
 
 export const subjectsRouter = {
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -29,7 +29,23 @@ export const subjectsRouter = {
       },
     });
   }),
-  getAssigned: teacherProcedure.query(async ({ ctx }) => {
+  getAssigned: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.db.query.subjects.findMany({
+      where: eq(subjects.buildingId, ctx.session.user.group?.buildingId ?? ""),
+      with: {
+        teacher: {
+          columns: {
+            id: true,
+            name: true,
+          },
+        },
+        tasks: {
+          columns: { id: true },
+        },
+      },
+    });
+  }),
+  getOwned: teacherProcedure.query(async ({ ctx }) => {
     return await ctx.db.query.subjects.findMany({
       where: eq(subjects.teacherId, ctx.session.user.id),
       with: {

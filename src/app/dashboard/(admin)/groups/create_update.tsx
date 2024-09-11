@@ -58,6 +58,7 @@ export default function CreateUpdateGroup({
   const router = useRouter();
   const createGroupMutation = api.group.create.useMutation({
     onSuccess: () => {
+      toast.success("Группа создана");
       router.refresh();
       setOpen(false);
       form.reset();
@@ -71,6 +72,7 @@ export default function CreateUpdateGroup({
 
   const updateGroupMutation = api.group.update.useMutation({
     onSuccess: () => {
+      toast.success("Группа обновлена");
       router.refresh();
       setOpen(false);
     },

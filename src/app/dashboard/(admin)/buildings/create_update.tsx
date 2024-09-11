@@ -41,6 +41,7 @@ export default function CreateUpdateBuilding({
 
   const createBuildingMutation = api.building.create.useMutation({
     onSuccess: () => {
+      toast.success("СП создано");
       form.reset();
       router.refresh();
       setOpen(false);
@@ -54,6 +55,7 @@ export default function CreateUpdateBuilding({
 
   const updateBuildingMutation = api.building.update.useMutation({
     onSuccess: () => {
+      toast.success("СП обновлено");
       router.refresh();
       setOpen(false);
     },

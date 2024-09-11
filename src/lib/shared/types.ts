@@ -18,13 +18,6 @@ export const IdInputSchema = z.object({
 // tasks
 
 // resume
-export const ResumeInputSchema = z.object({
-  roleId: z.string().min(1, "Выберите роль"),
-  status: statusSchema,
-  experience: z.string().optional(),
-});
-
-export type Resume = inferProcedureOutput<AppRouter["resume"]["getSelf"]>;
 
 // portfolio
 export const PortfolioProjectInputSchema = z.object({

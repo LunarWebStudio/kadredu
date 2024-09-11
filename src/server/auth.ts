@@ -43,6 +43,7 @@ const GetUser = async (id: string) => {
       email: true,
       roles: true,
       experiencePoints: true,
+      githubUsername: true,
       coins: true,
       verified: true,
       onboarding: true,

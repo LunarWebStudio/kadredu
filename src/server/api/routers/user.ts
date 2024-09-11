@@ -4,7 +4,11 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { env } from "~/env";
 import { IdInputSchema } from "~/lib/shared/types";
-import { CoinsInputSchema, UsernameInputSchema } from "~/lib/shared/types/user";
+import {
+  CoinsInputSchema,
+  UserUpdateSchema,
+  UsernameSchema,
+} from "~/lib/shared/types/user";
 import { ExperienceInputSchema } from "~/lib/shared/types/utils";
 import {
   adminProcedure,
@@ -13,6 +17,7 @@ import {
   teacherProcedure,
 } from "~/server/api/trpc";
 import { roleSchema, users } from "~/server/db/schema";
+import { createCaller } from "../root";
 
 export const userRouter = createTRPCRouter({
   session: protectedProcedure.query(async ({ ctx }) => ({
@@ -24,6 +29,26 @@ export const userRouter = createTRPCRouter({
       .set({ onboarding: true })
       .where(eq(users.id, ctx.session.user.id));
   }),
+  updateSelf: protectedProcedure
+    .input(UserUpdateSchema)
+    .mutation(async ({ ctx, input }) => {
+      let imageId: string | undefined = undefined;
+      if (input.image && !input.image.id && input.image.b64) {
+        const caller = createCaller(ctx);
+        ({ id: imageId } = await caller.file.create({
+          ...input.image,
+          b64: input.image.b64!,
+        }));
+      }
+
+      await ctx.db
+        .update(users)
+        .set({
+          ...input,
+          imageId,
+        })
+        .where(eq(users.id, ctx.session.user.id));
+    }),
   getAll: teacherProcedure
     .input(
       z
@@ -129,24 +154,19 @@ export const userRouter = createTRPCRouter({
 
       await ctx.db.delete(users).where(eq(users.id, input.id));
     }),
-  getOne: protectedProcedure
-    .input(UsernameInputSchema)
-    .query(({ ctx, input }) => {
-      return ctx.db.query.users.findFirst({
-        where: and(
-          eq(users.username, input.username),
-          eq(users.verified, true),
-        ),
-        with: {
-          group: true,
-        },
-        columns: {
-          id: true,
-          name: true,
-          username: true,
-        },
-      });
-    }),
+  getOne: protectedProcedure.input(UsernameSchema).query(({ ctx, input }) => {
+    return ctx.db.query.users.findFirst({
+      where: and(eq(users.username, input.username), eq(users.verified, true)),
+      with: {
+        group: true,
+      },
+      columns: {
+        id: true,
+        name: true,
+        username: true,
+      },
+    });
+  }),
   grantCoins: adminProcedure
     .input(z.intersection(IdInputSchema, CoinsInputSchema))
     .mutation(async ({ ctx, input }) => {

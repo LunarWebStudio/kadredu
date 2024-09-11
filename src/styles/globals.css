@@ -13,7 +13,7 @@
 
   .tiptap {
     pre {
-      @apply bg-secondary font-mono font-semibold p-4 rounded-lg text-foreground/80;
+      @apply dark:bg-secondary bg-background font-mono font-semibold p-4 rounded-lg text-foreground/80;
     }
 
     .hljs-comment,
@@ -83,6 +83,9 @@
 
     blockquote {
       @apply border-l-2 border-primary p-2;
+      p {
+        @apply !pt-0;
+      }
     }
 
     @apply focus-visible:outline-none focus-visible:outline-transparent;

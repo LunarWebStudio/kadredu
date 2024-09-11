@@ -52,25 +52,3 @@ export function GetRoleData(role: Role | undefined): RoleData {
       };
   }
 }
-
-export type StatusData = {
-  code: Status;
-  name: string;
-};
-export const Statuses: StatusData[] = [
-  {
-    code: "WORK",
-    name: "Работаю",
-  },
-  {
-    code: "SEARCH",
-    name: "В поиске",
-  },
-  {
-    code: "OPEN_TO_OFFERS",
-    name: "Открыт к предложениям",
-  },
-];
-export const GetStatusResume = (status?: Status): StatusData | undefined => {
-  return Statuses.find((el) => el.code === status);
-};

@@ -9,7 +9,7 @@ import type { ReactNode } from "react";
 import SidebarItem from "~/app/(website)/profile/sidebar_item";
 import UserAvatar from "~/components/avatar";
 import LevelBar from "~/components/level_bar";
-import Image from "~/components/s3Image";
+import Image from "~/components/ui/image";
 import GetLevel from "~/lib/shared/level";
 import { HIGH_LEVEL_THRESHOLD } from "~/server/api/trpc";
 import { getServerAuthSession } from "~/server/auth";
@@ -29,7 +29,7 @@ export default async function ProfileLayout({
         <div className="space-y-6 rounded-xl bg-secondary p-6">
           <div className="flex flex-col items-center justify-center gap-4">
             <UserAvatar
-              image={session?.user.profilePicture ?? undefined}
+              image={session?.user.image?.id}
               name={session?.user.name ?? ""}
               className="size-16"
             />
@@ -68,7 +68,7 @@ export default async function ProfileLayout({
                 text: "text-amber-400",
                 text_hover: "hover:text-amber-400",
               }}
-              href={`/profile/${session?.user.username}/portfolio`}
+              href={`/profile/tasks`}
               icon={<BookHeart className={iconClassName} />}
             />
             <SidebarItem
@@ -105,15 +105,12 @@ export default async function ProfileLayout({
                 className="size-full object-contain"
                 width={1000}
                 height={1000}
-                src={session?.user.group?.image?.storageId ?? ""}
-                blurDataURL={session?.user.group?.image?.blurPreview}
-                placeholder="blur"
-                alt={session?.user.group?.title ?? ""}
+                src={session?.user.group?.image?.id ?? ""}
+                alt={session?.user.group?.name ?? ""}
               />
             </div>
             <p className="font-bold tracking-tighter">
-              {session?.user.group?.building.title} /{" "}
-              {session?.user.group?.title}
+              {session?.user.group?.building.name} / {session?.user.group?.name}
             </p>
           </div>
         </div>

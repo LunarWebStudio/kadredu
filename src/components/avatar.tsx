@@ -21,7 +21,6 @@ export default function UserAvatar({
         <Image
           src={image ?? ""}
           alt="ProfilePicture"
-          placeholder="blur"
           width={40}
           height={40}
         />

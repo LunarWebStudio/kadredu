@@ -9,7 +9,6 @@ import Logo from "~/components/logo";
 import { Button } from "~/components/ui/button";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetHeader,
   SheetTrigger,
@@ -45,14 +44,6 @@ export default async function DashboardNavbar() {
               <Link href="/">
                 <Logo />
               </Link>
-              <SheetClose>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                >
-                  <X />
-                </Button>
-              </SheetClose>
             </SheetHeader>
             <aside className="h-screen-nav-dashboard min-w-[19rem] overflow-y-scroll bg-secondary px-6 py-4">
               {sidebarItems.map((section, index) => (

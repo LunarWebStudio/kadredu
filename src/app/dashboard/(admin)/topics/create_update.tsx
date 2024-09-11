@@ -44,6 +44,7 @@ export default function CreateUpdateTopic({
 
   const createTopicMutation = api.topic.create.useMutation({
     onSuccess: () => {
+      toast.success("Тема создана");
       router.refresh();
       setOpen(false);
       form.reset();
@@ -57,6 +58,7 @@ export default function CreateUpdateTopic({
 
   const updateTopicMutation = api.topic.update.useMutation({
     onSuccess: () => {
+      toast.success("Тема обновлена");
       router.refresh();
       setOpen(false);
     },

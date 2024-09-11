@@ -71,9 +71,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
         disabled={disabled || loading}
       >
-        {loading && <Loader size="sm" />}
-        {props.children}
-        {chevron && !loading && <ChevronDown className="mr-2 size-4" />}
+        {loading ? <Loader size="sm" /> : props.children}
+        {chevron && <ChevronDown className="mr-2 size-4" />}
       </Comp>
     );
   },

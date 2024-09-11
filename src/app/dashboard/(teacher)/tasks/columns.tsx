@@ -13,9 +13,7 @@ import {
 import Image from "~/components/ui/image";
 import { AppRouter } from "~/server/api/root";
 
-type Subject = inferProcedureOutput<
-  AppRouter["subject"]["getAssigned"]
->[number];
+type Subject = inferProcedureOutput<AppRouter["subject"]["getOwned"]>[number];
 
 export const columns: ColumnDef<Subject>[] = [
   {

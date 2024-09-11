@@ -1,35 +1,23 @@
-import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
-import { ResumeInputSchema } from "~/lib/shared/types";
+import { ResumeSchema } from "~/lib/shared/types/resume";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { resume } from "~/server/db/schema";
 
 export const resumeRouter = createTRPCRouter({
   updateSelf: protectedProcedure
-    .input(ResumeInputSchema)
+    .input(ResumeSchema)
     .mutation(async ({ ctx, input }) => {
-      const existRole = await ctx.db.query.teamRoles.findFirst({
-        where: eq(resume.id, input.roleId),
-      });
-      if (!existRole) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Роль не найденна",
-        });
-      }
       await ctx.db
         .insert(resume)
         .values({
+          ...input,
           userId: ctx.session.user.id,
-          roleId: existRole.id,
-          status: input.status,
         })
         .onConflictDoUpdate({
           target: resume.userId,
           set: {
-            roleId: existRole.id,
-            status: input.status,
-            experience: input.experience,
+            ...input,
+            userId: ctx.session.user.id,
           },
         });
     }),

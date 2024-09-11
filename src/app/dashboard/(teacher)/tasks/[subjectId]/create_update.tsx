@@ -48,7 +48,7 @@ export default function CreateUpdateTask({
   const { data: tutorials, isLoading: isTutorialsLoading } =
     api.tutorial.getAllNames.useQuery();
   const { data: subjects, isLoading: isSubjectsLoading } =
-    api.subject.getAssigned.useQuery();
+    api.subject.getOwned.useQuery();
 
   const [open, setOpen] = useState(false);
 
@@ -82,6 +82,7 @@ export default function CreateUpdateTask({
 
   const createTaskMutation = api.task.create.useMutation({
     onSuccess: () => {
+      toast.success("Задание создано");
       setOpen(false);
       form.reset();
       router.refresh();
@@ -95,6 +96,7 @@ export default function CreateUpdateTask({
 
   const updateTaskMutation = api.task.update.useMutation({
     onSuccess: () => {
+      toast.success("Задание обновлено");
       setOpen(false);
       router.refresh();
     },

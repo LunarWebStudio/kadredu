@@ -6,10 +6,11 @@ import {
   NAME_LIMIT,
 } from "~/lib/shared/const";
 import type { AppRouter } from "~/server/api/root";
+import { EditFileSchema } from "./file";
 
 export type User = inferProcedureOutput<AppRouter["user"]["getAll"]>[number];
 
-export const UsernameInputSchema = z.object({
+export const UsernameSchema = z.object({
   username: z
     .string({
       required_error: "Ник не заполнен",
@@ -32,30 +33,22 @@ export const CoinsInputSchema = z.object({
     .positive("Количество монет должно быть больше 0"),
 });
 
-export const UserUpdateInputSchema = z.intersection(
+export const UserUpdateSchema = z.intersection(
   z.object({
     name: z
       .string({
-        required_error: "ФИО не заполнено",
-        invalid_type_error: "ФИО не является строкой",
+        message: "ФИО не заполнено",
       })
       .min(1, "ФИО не заполнено")
       .max(NAME_LIMIT)
       .optional(),
     description: z
       .string({
-        required_error: "Описание не заполнено",
-        invalid_type_error: "Описание не является строкой",
+        message: "Описание не заполнено",
       })
       .max(DESCRIPTION_LIMIT)
       .optional(),
-    profilePictureImage: z
-      .string({
-        required_error: "Фото не выбрано",
-        invalid_type_error: "Фото не является строкой",
-      })
-      .max(MAX_PROFILE_PICTURE_SIZE, "Фото слишком большое")
-      .optional(),
+    image: EditFileSchema.optional(),
   }),
-  UsernameInputSchema,
+  UsernameSchema,
 );

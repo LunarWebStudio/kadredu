@@ -55,6 +55,7 @@ export default function CreateUpdateSubject({
 
   const createSubjectMutation = api.subject.create.useMutation({
     onSuccess: () => {
+      toast.success("Предмет создан");
       form.reset();
       router.refresh();
       setSheetOpen(false);
@@ -67,6 +68,7 @@ export default function CreateUpdateSubject({
   });
   const updateSubjectMutation = api.subject.update.useMutation({
     onSuccess: () => {
+      toast.success("Предмет обновлен");
       router.refresh();
       setSheetOpen(false);
     },

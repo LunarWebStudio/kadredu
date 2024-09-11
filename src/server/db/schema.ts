@@ -13,6 +13,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccount } from "next-auth/adapters";
+import { createTables } from "node_modules/@auth/drizzle-adapter/lib/pg";
 import { z } from "zod";
 
 export const createTable = pgTableCreator((name) => `kadredu_${name}`);
@@ -187,6 +188,9 @@ export const taskToGroups = createTable("taskToGroups", {
   groupId: text("groupId")
     .notNull()
     .references(() => groups.id),
+  subjectId: text("subjectId")
+    .notNull()
+    .references(() => subjects.id),
 });
 
 export const taskToGroupsRelations = relations(taskToGroups, ({ one }) => ({
@@ -194,6 +198,10 @@ export const taskToGroupsRelations = relations(taskToGroups, ({ one }) => ({
   group: one(groups, {
     fields: [taskToGroups.groupId],
     references: [groups.id],
+  }),
+  subject: one(subjects, {
+    fields: [taskToGroups.subjectId],
+    references: [subjects.id],
   }),
 }));
 
@@ -368,7 +376,7 @@ export const subjects = createTable("subjects", {
     .notNull(),
 });
 
-export const subjectsRelations = relations(subjects, ({ one }) => ({
+export const subjectsRelations = relations(subjects, ({ one, many }) => ({
   building: one(buildings, {
     fields: [subjects.buildingId],
     references: [buildings.id],
@@ -377,6 +385,7 @@ export const subjectsRelations = relations(subjects, ({ one }) => ({
     fields: [subjects.teacherId],
     references: [users.id],
   }),
+  tasks: many(tasks),
 }));
 //
 // export const projectLike = createTable(
@@ -407,31 +416,29 @@ export const subjectsRelations = relations(subjects, ({ one }) => ({
 //   }),
 // }));
 //
-// // export const statusEnum = pgEnum("role", ["SEARCH", "WORK", "OPEN_TO_OFFERS"]);
-//
-// export const statusSchema = z.enum(statusEnum.enumValues, {
-//   message: "Недопустимый статус",
-// });
-//
-// export type Status = z.infer<typeof statusSchema>;
-//
-// export const resume = createTable("resumes", {
-//   id: text("id")
-//     .$defaultFn(() => createId())
-//     .notNull()
-//     .primaryKey(),
-//   userId: text("userId")
-//     .notNull()
-//     .unique()
-//     .references(() => users.id),
-//   roleId: text("roleId")
-//     .references(() => teamRoles.id)
-//     .notNull(),
-//   status: statusEnum("status").default("SEARCH").notNull(),
-//   experience: text("experience"),
-// });
-//
-// export const resumeRelations = relations(resume, ({ one }) => ({
-//   role: one(teamRoles, { fields: [resume.roleId], references: [teamRoles.id] }),
-//   user: one(users, { fields: [resume.userId], references: [users.id] }),
-// }));
+export const resumeStatusEnum = pgEnum("role", [
+  "SEARCH",
+  "WORK",
+  "OPEN_TO_OFFERS",
+]);
+
+export const resume = createTable("resumes", {
+  id: text("id")
+    .$defaultFn(() => createId())
+    .notNull()
+    .primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .unique()
+    .references(() => users.id),
+  roleId: text("roleId")
+    .references(() => teamRoles.id)
+    .notNull(),
+  status: resumeStatusEnum("status").notNull(),
+  experience: text("experience"),
+});
+
+export const resumeRelations = relations(resume, ({ one }) => ({
+  role: one(teamRoles, { fields: [resume.roleId], references: [teamRoles.id] }),
+  user: one(users, { fields: [resume.userId], references: [users.id] }),
+}));

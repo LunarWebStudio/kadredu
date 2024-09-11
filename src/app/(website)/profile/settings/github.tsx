@@ -1,12 +1,20 @@
 "use client";
 
+import { Session } from "next-auth";
 import { GithubIcon } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { useToast } from "~/components/ui/use-toast";
 
-export default function GithubConnect() {
+const className =
+  "flex gap-3 items-center h-18 w-full bg-secondary p-6 rounded-xl border-background/50 border-2 font-bold transition-colors hover:bg-background" as const;
+
+export default function GithubConnect({
+  session,
+}: {
+  session: Session;
+}) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
@@ -32,15 +40,25 @@ export default function GithubConnect() {
         GitHub
       </div>
       <div className="w-full p-6">
-        <Button
-          disabled={loading}
-          onClick={onClick}
-          className="h-18 w-full gap-4 bg-secondary font-bold transition-colors duration-300 ease-in-out hover:bg-background"
-          variant="outline"
-        >
-          <GithubIcon className="size-10" />
-          Войти через GitHub
-        </Button>
+        {session?.user?.githubUsername ? (
+          <a
+            href={`https://github.com/${session.user.githubUsername}`}
+            className={className}
+          >
+            <GithubIcon className="size-10" />
+            Вошли как {session.user.githubUsername}
+          </a>
+        ) : (
+          <Button
+            disabled={loading}
+            onClick={onClick}
+            className={className}
+            variant="outline"
+          >
+            <GithubIcon className="size-10" />
+            Войти через GitHub
+          </Button>
+        )}
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import { Pen } from "lucide-react";
 import type { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import type { z } from "zod";
 import EditorText from "~/components/Editor";
 import UserAvatar from "~/components/avatar";
@@ -19,46 +20,35 @@ import {
   RequiredFormLabel,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { useToast } from "~/components/ui/use-toast";
-import { ImagesToBase64 } from "~/lib/shared/images";
+import { ConvertFiles } from "~/lib/client/file";
 import { OnError } from "~/lib/shared/onError";
-import { UserUpdateInputSchema } from "~/lib/shared/types";
+import { UserUpdateSchema } from "~/lib/shared/types/user";
 import { api } from "~/trpc/react";
 
-export default function AboutMeForm({
+export default function PersonalInformation({
   session,
 }: {
   session?: Session;
 }) {
   const form = useForm({
-    resolver: zodResolver(UserUpdateInputSchema),
-    defaultValues: {
-      profilePictureImage: "",
-      name: session?.user.name ?? "",
-      username: session?.user.username ?? "",
-      description: session?.user.description ?? "",
-    },
+    resolver: zodResolver(UserUpdateSchema),
+    defaultValues: session?.user as z.infer<typeof UserUpdateSchema>,
   });
 
   const router = useRouter();
-  const { toast } = useToast();
-  const updateSelfMutation = api.user.updadeSelf.useMutation({
+  const updateSelfMutation = api.user.updateSelf.useMutation({
     onSuccess() {
-      toast({
-        title: "Профиль сохранен",
-      });
+      toast.success("Профиль обновлен");
       router.refresh();
     },
     onError(err) {
-      toast({
-        title: "Ошибка",
+      toast.error("Ошибка", {
         description: err.message,
-        variant: "destructive",
       });
     },
   });
 
-  const onSubmit = (data: z.infer<typeof UserUpdateInputSchema>) => {
+  const onSubmit = (data: z.infer<typeof UserUpdateSchema>) => {
     updateSelfMutation.mutate(data);
   };
 
@@ -70,31 +60,31 @@ export default function AboutMeForm({
       <div className="w-full p-6">
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit, OnError(toast))}
+            onSubmit={form.handleSubmit(onSubmit, OnError)}
             className="space-y-4"
           >
             <FormField
               control={form.control}
-              name="profilePictureImage"
+              name="image"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>ФОТО</FormLabel>
                   <div className="flex items-center justify-center">
                     <label className="relative size-fit group cursor-pointer">
-                      {field.value ? (
+                      {field.value?.b64 ? (
                         <Avatar className="size-20">
-                          <AvatarImage src={field.value} />
+                          <AvatarImage src={field.value.b64} />
                           <AvatarFallback></AvatarFallback>
                         </Avatar>
                       ) : (
                         <UserAvatar
-                          image={session?.user.profilePicture ?? undefined}
+                          image={session?.user.image?.id ?? undefined}
                           name={session?.user.name ?? "Неизвестно"}
                           className="size-20"
                         />
                       )}
-                      <div className="transition-all ease-in-out duration-300 group-hover:scale-105 absolute translate-y-1/2 right-1/2 translate-x-1/2 bottom-0 size-8 bg-primary flex items-center justify-center rounded-full text-background">
-                        <Pen className="size-4" />
+                      <div className="group-hover:scale-105 transition absolute translate-y-1/2 right-1/2 translate-x-1/2 bottom-0 size-8 bg-primary flex items-center justify-center rounded-full text-background">
+                        <Pen className="size-4 text-primary-foreground" />
                       </div>
 
                       <input
@@ -106,9 +96,7 @@ export default function AboutMeForm({
                         onChange={async (e) => {
                           if (!e.target.files?.[0]) return;
                           field.onChange(
-                            (
-                              await ImagesToBase64([e.target.files[0]] as const)
-                            )[0],
+                            (await ConvertFiles([e.target.files[0]]))[0]!,
                           );
                         }}
                       />
@@ -157,7 +145,7 @@ export default function AboutMeForm({
                   <FormLabel>О себе</FormLabel>
                   <FormControl className="">
                     <EditorText
-                      text={field.value}
+                      text={field.value ?? ""}
                       setText={field.onChange}
                       options={{
                         code: true,
@@ -174,7 +162,7 @@ export default function AboutMeForm({
               className="w-full"
               disabled={updateSelfMutation.isPending}
             >
-              Продолжить
+              Сохранить
             </Button>
           </form>
         </Form>
