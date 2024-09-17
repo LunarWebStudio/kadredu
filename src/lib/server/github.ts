@@ -4,13 +4,7 @@ export class Github {
   private octokit: Octokit;
   private username: string;
 
-  constructor({
-    token,
-    username,
-  }: {
-    token: string;
-    username: string;
-  }) {
+  constructor({ token, username }: { token: string; username: string }) {
     this.octokit = new Octokit({ auth: token });
     this.username = username;
   }
@@ -44,14 +38,19 @@ export class Github {
     };
   }
 
+  // TODO-Fix: в репозиторях может не быть readme файла, выкидывает 404
   public async GetReadme(repo: string) {
-    const { data } = await this.octokit.rest.repos.getReadme({
-      owner: this.username,
-      repo,
-    });
+    try {
+      const { data } = await this.octokit.rest.repos.getReadme({
+        owner: this.username,
+        repo,
+      });
 
-    const b64 = Buffer.from(data.content, "base64").toString("utf-8");
-    return b64;
+      const b64 = Buffer.from(data.content, "base64").toString("utf-8");
+      return b64;
+    } catch (err) {
+      return undefined;
+    }
   }
 
   public async GetLanguages(repo: string) {

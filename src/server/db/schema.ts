@@ -1,7 +1,6 @@
 import { createId } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import {
-  type AnyPgColumn,
   boolean,
   index,
   integer,
@@ -11,9 +10,9 @@ import {
   text,
   timestamp,
   varchar,
+  type AnyPgColumn,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccount } from "next-auth/adapters";
-import { createTables } from "node_modules/@auth/drizzle-adapter/lib/pg";
 import { z } from "zod";
 
 export const createTable = pgTableCreator((name) => `kadredu_${name}`);
@@ -258,38 +257,34 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   group: one(groups, { fields: [users.groupId], references: [groups.id] }),
   image: one(files, { fields: [users.imageId], references: [files.id] }),
   subjects: many(subjects),
-  // projects: many(portfolioProjects),
+  projects: many(projects),
 }));
 
-// export const portfolioProjects = createTable("portfolioProjects", {
-//   id: text("id")
-//     .$defaultFn(() => createId())
-//     .notNull()
-//     .primaryKey(),
-//
-//   name: varchar("name", { length: 255 }).notNull(),
-//   emoji: varchar("emoji", { length: 15 }).notNull(),
-//   description: varchar("description", { length: 255 }).notNull(),
-//
-//   userId: text("userId")
-//     .notNull()
-//     .unique()
-//     .references(() => users.id),
-//
-//   repoName: varchar("repoName", { length: 255 }).notNull(),
-//   repoOwner: varchar("repoOwner", { length: 255 }).notNull(),
-// });
-//
-// export const portfolioProjectsRelations = relations(
-//   portfolioProjects,
-//   ({ one, many }) => ({
-//     user: one(users, {
-//       fields: [portfolioProjects.userId],
-//       references: [users.id],
-//     }),
-//     likes: many(projectLike),
-//   }),
-// );
+export const projects = createTable("projects", {
+  id: text("id")
+    .$defaultFn(() => createId())
+    .notNull()
+    .primaryKey(),
+
+  name: varchar("name", { length: 255 }).notNull(),
+  emoji: varchar("emoji", { length: 15 }).notNull(),
+  description: varchar("description", { length: 255 }).notNull(),
+
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id),
+  repoName: varchar("repoName", { length: 255 }).notNull(),
+  repoOwner: varchar("repoOwner", { length: 255 }).notNull(),
+  isDeleted: boolean("isDeleted").notNull().default(false)
+});
+
+export const projectsRelations = relations(projects, ({ one, many }) => ({
+  user: one(users, {
+    fields: [projects.userId],
+    references: [users.id],
+  }),
+  likes: many(projectLike),
+}));
 
 export const accounts = createTable(
   "account",
@@ -315,7 +310,7 @@ export const accounts = createTable(
       columns: [account.provider, account.providerAccountId],
     }),
     userIdIdx: index("account_userId_idx").on(account.userId),
-  }),
+  })
 );
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -338,7 +333,7 @@ export const sessions = createTable(
   },
   (session) => ({
     userIdIdx: index("session_userId_idx").on(session.userId),
-  }),
+  })
 );
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
@@ -357,7 +352,7 @@ export const verificationTokens = createTable(
   },
   (vt) => ({
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
-  }),
+  })
 );
 
 export const subjects = createTable("subjects", {
@@ -387,35 +382,35 @@ export const subjectsRelations = relations(subjects, ({ one, many }) => ({
   }),
   tasks: many(tasks),
 }));
-//
-// export const projectLike = createTable(
-//   "projectLike",
-//   {
-//     userId: text("userId")
-//       .notNull()
-//       .unique()
-//       .references(() => users.id),
-//
-//     projectId: text("projectId")
-//       .notNull()
-//       .unique()
-//       .references(() => portfolioProjects.id),
-//   },
-//   (t) => ({
-//     compoundKey: primaryKey({
-//       columns: [t.projectId, t.userId],
-//     }),
-//   }),
-// );
-//
-// export const projectLikeRelations = relations(projectLike, ({ one }) => ({
-//   user: one(users, { fields: [projectLike.userId], references: [users.id] }),
-//   project: one(portfolioProjects, {
-//     fields: [projectLike.projectId],
-//     references: [portfolioProjects.id],
-//   }),
-// }));
-//
+
+export const projectLike = createTable(
+  "projectLike",
+  {
+    userId: text("userId")
+      .notNull()
+      .unique()
+      .references(() => users.id),
+
+    projectId: text("projectId")
+      .notNull()
+      .unique()
+      .references(() => projects.id),
+  },
+  (t) => ({
+    compoundKey: primaryKey({
+      columns: [t.projectId, t.userId],
+    }),
+  })
+);
+
+export const projectLikeRelations = relations(projectLike, ({ one }) => ({
+  user: one(users, { fields: [projectLike.userId], references: [users.id] }),
+  project: one(projects, {
+    fields: [projectLike.projectId],
+    references: [projects.id],
+  }),
+}));
+
 export const resumeStatusEnum = pgEnum("role", [
   "SEARCH",
   "WORK",
