@@ -10,13 +10,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "~/components/ui/sheet";
-import { PortfolioProject } from "~/lib/shared/types/portfolio";
+import { OnePortfolioProject, PortfolioProject } from "~/lib/shared/types/portfolio";
 import { api } from "~/trpc/react";
 
 export default function DeleteProject({
   project,
 }: {
-  project: PortfolioProject;
+  project: OnePortfolioProject;
 }) {
   const router = useRouter();
   const deleteProjectMutation = api.portfolio.delete.useMutation({

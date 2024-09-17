@@ -1,9 +1,4 @@
-import type { inferProcedureOutput } from "@trpc/server";
 import { z } from "zod";
-import { day } from "~/lib/shared/time";
-import type { AppRouter } from "~/server/api/root";
-import { statusSchema } from "~/server/db/schema";
-import { ExperienceInputSchema } from "./types/utils";
 
 export const IdInputSchema = z.object({
   id: z

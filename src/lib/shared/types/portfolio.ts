@@ -2,7 +2,7 @@ import { inferProcedureOutput } from "@trpc/server";
 import { z } from "zod";
 import { AppRouter } from "~/server/api/root";
 
-export const PortfolioProjectInputSchema = z.object({
+export const PortfolioProjectSchema = z.object({
   name: z
     .string({
       required_error: "Название проекта не указано",

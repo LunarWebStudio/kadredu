@@ -1,7 +1,6 @@
 import { File, Folder } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import LikeProject from "~/app/(website)/project/[id]/like";
 import EditorText from "~/components/Editor";
 import { Button } from "~/components/ui/button";
 import {
@@ -16,6 +15,7 @@ import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
 import CreateUpdatePortfolioProject from "../create_update";
 import DeleteProject from "../delete";
+import LikeProject from "../like";
 export default async function Project({
   params,
 }: {
@@ -36,13 +36,15 @@ export default async function Project({
           {project.emoji} {project.name}
         </h3>
         <div className="flex gap-4">
-          <Link
-            href={project.url}
-            className="flex items-center gap-1 transition-all duration-300 ease-in-out hover:text-primary hover:underline"
-          >
-            <Folder className="size-4" />
-            Github
-          </Link>
+          <Button variant="ghost">
+            <Link
+              href={project.url}
+              className="flex items-center gap-1"
+            >
+              <Folder className="size-4" />
+              Github
+            </Link>
+          </Button>
           {session?.user.id === project.userId ? (
             <>
               <CreateUpdatePortfolioProject project={project} />

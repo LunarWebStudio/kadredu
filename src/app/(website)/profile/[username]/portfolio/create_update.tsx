@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Pen } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
@@ -31,25 +31,19 @@ import { Textarea } from "~/components/ui/textarea";
 import { OnError } from "~/lib/shared/onError";
 import { GithubRepository } from "~/lib/shared/types/github";
 import {
-  PortfolioProject,
-  PortfolioProjectInputSchema,
+  OnePortfolioProject,
+  PortfolioProjectSchema,
 } from "~/lib/shared/types/portfolio";
 import { api } from "~/trpc/react";
 
 export default function CreateUpdatePortfolioProject({
   project,
 }: {
-  project?: PortfolioProject;
+  project?: OnePortfolioProject;
 }) {
   const form = useForm({
-    resolver: zodResolver(PortfolioProjectInputSchema),
-    defaultValues: {
-      name: project?.name ?? "",
-      emoji: project?.emoji ?? "",
-      description: project?.description ?? "",
-      repoName: project?.repoName ?? "",
-      repoOwner: project?.repoOwner ?? "",
-    },
+    resolver: zodResolver(PortfolioProjectSchema),
+    defaultValues: project as z.infer<typeof PortfolioProjectSchema>,
   });
 
   const [repos] = api.github.getOwnedRepos.useSuspenseQuery();
@@ -58,10 +52,10 @@ export default function CreateUpdatePortfolioProject({
 
   const [open, setOpen] = useState(false);
 
-  const [selectedRepository, setRepository] = useState<GithubRepository | null>(
-    null
+  const selectedRepository = useMemo(
+    () => repos?.find((r) => r.name === form.watch("repoName")),
+    [repos, form.watch("repoName")],
   );
-  console.log(selectedRepository);
 
   const createPortfolioProjectMutation = api.portfolio.create.useMutation({
     onSuccess() {
@@ -88,7 +82,7 @@ export default function CreateUpdatePortfolioProject({
     },
   });
 
-  const onSubmit = (data: z.infer<typeof PortfolioProjectInputSchema>) => {
+  const onSubmit = (data: z.infer<typeof PortfolioProjectSchema>) => {
     if (project) {
       return updatePortfolioProjectMutation.mutate({ id: project.id, ...data });
     }
@@ -123,7 +117,7 @@ export default function CreateUpdatePortfolioProject({
                 <FormItem>
                   <FormDescription>Название проекта</FormDescription>
                   <FormControl>
-                    <Input placeholder="Название проекта" {...field} />
+                    <Input placeholder="Название проекта" className="border border-input bg-secondary hover:bg-background hover:text-accent-foreground"  {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -159,28 +153,24 @@ export default function CreateUpdatePortfolioProject({
                   <FormDescription>Название репозитория</FormDescription>
                   <Combobox
                     values={repos.map((repo) => ({
-                      id: repo.url,
+                      id: repo.name,
                       name: repo.name,
                     }))}
                     value={
                       selectedRepository
                         ? {
-                            id: selectedRepository?.url,
+                            id: selectedRepository?.name,
                             name: selectedRepository?.name,
                           }
                         : null
                     }
-                    onChange={(t) => {
-                      field.onChange(t?.name);
-                      form.setValue("name", t?.name ?? "");
-                      setRepository(repos.find((el) => el.url === t?.id)!);
-                    }}
+                    onChange={(t) =>  field.onChange(t?.id)}
                     placeholder={{
                       empty: "Выберите репозиторий",
                       default: "Репозиторий...",
                     }}
                   >
-                    <Button className="w-full" variant="secondary" chevron>
+                    <Button className="w-full" variant="outline" chevron>
                       {selectedRepository?.name ?? "Выберите репозиторий"}
                     </Button>
                   </Combobox>
@@ -193,7 +183,7 @@ export default function CreateUpdatePortfolioProject({
               render={({ field }) => (
                 <FormItem>
                   <FormDescription>Описание</FormDescription>
-                  <Textarea placeholder="Описание" {...field} />
+                  <Textarea placeholder="Описание" className="border border-input bg-secondary hover:bg-background hover:text-accent-foreground" {...field} />
                 </FormItem>
               )}
             />

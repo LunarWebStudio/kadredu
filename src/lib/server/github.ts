@@ -38,7 +38,6 @@ export class Github {
     };
   }
 
-  // TODO-Fix: в репозиторях может не быть readme файла, выкидывает 404
   public async GetReadme(repo: string) {
     try {
       const { data } = await this.octokit.rest.repos.getReadme({
@@ -49,7 +48,7 @@ export class Github {
       const b64 = Buffer.from(data.content, "base64").toString("utf-8");
       return b64;
     } catch (err) {
-      return undefined;
+      return "";
     }
   }
 

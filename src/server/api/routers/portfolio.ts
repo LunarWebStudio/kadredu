@@ -1,8 +1,9 @@
+import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { Github } from "~/lib/server/github";
 import { IdInputSchema } from "~/lib/shared/types";
-import { PortfolioProjectInputSchema } from "~/lib/shared/types/portfolio";
+import { PortfolioProjectSchema } from "~/lib/shared/types/portfolio";
 import { UsernameSchema } from "~/lib/shared/types/user";
 import {
   createTRPCRouter,
@@ -13,8 +14,9 @@ import { projectLike, projects, users } from "~/server/db/schema";
 
 export const portfolioRouter = createTRPCRouter({
   create: githubProcedure
-    .input(PortfolioProjectInputSchema)
+    .input(PortfolioProjectSchema)
     .mutation(async ({ ctx, input }) => {
+      console.log(input)
       const repo = await ctx.github.GetRepo(input.repoName);
 
       return (
@@ -30,7 +32,7 @@ export const portfolioRouter = createTRPCRouter({
       )[0]!;
     }),
   update: protectedProcedure
-    .input(z.intersection(IdInputSchema, PortfolioProjectInputSchema))
+    .input(z.intersection(IdInputSchema, PortfolioProjectSchema))
     .mutation(async () => {
       // TODO: Update когда макс сделает кнопку
       return null;
@@ -70,8 +72,10 @@ export const portfolioRouter = createTRPCRouter({
       });
 
       if (!user) {
-        console.log("юзер ненайден");
-        return;
+        throw new TRPCError({
+          code:"NOT_FOUND",
+          message:"Пользователь ненайден"
+        })
       }
 
       const github = new Github({
@@ -112,9 +116,11 @@ export const portfolioRouter = createTRPCRouter({
         },
       });
 
-      if (!user || !user.projects[0]) {
-        // console.log(user);
-        return;
+      if (!user?.projects?.[0]) {
+        throw new TRPCError({
+          code:"NOT_FOUND",
+          message:"Проект ненайден"
+        })
       }
 
       const project = user.projects[0];

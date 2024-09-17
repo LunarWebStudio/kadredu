@@ -266,9 +266,9 @@ export const projects = createTable("projects", {
     .notNull()
     .primaryKey(),
 
-  name: varchar("name", { length: 255 }).notNull(),
-  emoji: varchar("emoji", { length: 15 }).notNull(),
-  description: varchar("description", { length: 255 }).notNull(),
+  name: text("name").notNull(),
+  emoji: text("emoji").notNull(),
+  description: text("description").notNull(),
 
   userId: text("userId")
     .notNull()
