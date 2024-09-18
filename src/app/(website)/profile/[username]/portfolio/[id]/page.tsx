@@ -1,7 +1,6 @@
 import { File, Folder } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import EditorText from "~/components/Editor";
 import { Button } from "~/components/ui/button";
 import {
   Tooltip,
@@ -16,6 +15,7 @@ import { api } from "~/trpc/server";
 import CreateUpdatePortfolioProject from "../create_update";
 import DeleteProject from "../delete";
 import LikeProject from "../like";
+import { Markdown } from "~/components/markdown";
 export default async function Project({
   params,
 }: {
@@ -129,7 +129,7 @@ export default async function Project({
           О проекте
         </div>
         {project.readme ? (
-          <EditorText disabled text={project.readme} />
+          <Markdown text={project.readme} />
         ) : (
           <h2 className="prose whitespace-pre-wrap p-6">
             Описание отсутствует :(
