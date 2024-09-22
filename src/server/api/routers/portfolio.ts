@@ -16,7 +16,6 @@ export const portfolioRouter = createTRPCRouter({
   create: githubProcedure
     .input(PortfolioProjectSchema)
     .mutation(async ({ ctx, input }) => {
-      console.log(input)
       const repo = await ctx.github.GetRepo(input.repoName);
 
       return (

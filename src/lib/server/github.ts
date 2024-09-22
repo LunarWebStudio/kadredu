@@ -95,7 +95,6 @@ export class Github {
       per_page:100,
       page:1
     })
-    console.log(data)
     return data.map((event) =>({
       type: event.type,
       created_at: event.created_at,

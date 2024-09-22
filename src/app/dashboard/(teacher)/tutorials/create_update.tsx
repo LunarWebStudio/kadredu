@@ -179,6 +179,19 @@ export default function CreateUpdateTutorial({
 
               <FormField
                 control={form.control}
+                name="url"
+                render={({field}) => (
+                  <FormItem>
+                    <FormControl>
+                        <Input placeholder="https://www.youtube.com"  {...field}/>
+                    </FormControl>
+                    <FormDescription>Ссылка на видео (необязательно)</FormDescription>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="timeRead"
                 render={({ field }) => (
                   <FormItem>
@@ -236,7 +249,6 @@ export default function CreateUpdateTutorial({
                         empty: "Предмет не найден",
                       }}
                       onChange={(v) => {
-                        console.log(v);
                         field.onChange(v?.id);
                       }}
                     >

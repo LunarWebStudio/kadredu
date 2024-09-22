@@ -115,7 +115,7 @@ export const tutorials = createTable("tutorials", {
     .references(() => topics.id)
     .notNull(),
   subjectId: text("subjectId").references(() => subjects.id),
-
+  url: text("url"),
   createdAt: timestamp("createdAt", {
     mode: "date",
     withTimezone: true,
