@@ -9,3 +9,8 @@ export const IdInputSchema = z.object({
     .min(1, "ID не заполнен")
     .max(255, "ID слишком длинный"),
 });
+
+export const DateSchema = z.object({
+  from: z.string().optional(),
+  to: z.string().optional()
+}).optional();

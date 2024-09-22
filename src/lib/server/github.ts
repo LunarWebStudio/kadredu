@@ -88,4 +88,17 @@ export class Github {
         type: r.type,
       }));
   }
+
+  public async GetUserEvents(username:string){
+    const {data} = await this.octokit.rest.activity.listEventsForAuthenticatedUser({
+      username,
+      per_page:100,
+      page:1
+    })
+    console.log(data)
+    return data.map((event) =>({
+      type: event.type,
+      created_at: event.created_at,
+    }))
+  }
 }
