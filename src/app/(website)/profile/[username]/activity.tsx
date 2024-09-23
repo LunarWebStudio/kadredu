@@ -1,5 +1,4 @@
 'use client'
-import {  Heatmap } from "~/components/heatmap";
 import { api } from "~/trpc/react";
 
 
@@ -7,7 +6,7 @@ import { api } from "~/trpc/react";
 export function ActivityWiget({ username }: {
   username: string;
 }) {
-  const [activity] = api.github.getUserEvents.useSuspenseQuery({
+  const [] = api.github.getUserEvents.useSuspenseQuery({
     username
   })
 

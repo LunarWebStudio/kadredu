@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { Github } from "~/lib/server/github";
-import { monthAgo, today } from "~/lib/shared/time";
+import { ago, day, today } from "~/lib/shared/time";
 import { DateSchema } from "~/lib/shared/types";
 import { UsernameSchema } from "~/lib/shared/types/user";
 import { createTRPCRouter, githubProcedure, protectedProcedure } from "~/server/api/trpc";
@@ -35,10 +35,39 @@ export const githubRouter = createTRPCRouter({
         username:user.githubUsername
       })
 
-      return (await github.GetUserEvents(user.githubUsername))
-        .filter((event) => new Date(input?.time?.from || monthAgo).getTime() < new Date(event.created_at!).getTime() && new Date(input?.time?.to || today).getTime() > new Date(event.created_at!).getTime())
+      const to = new Date(input?.time?.to || today())
+      const from = new Date(input?.time?.from || ago(12))
+      const days = Math.ceil((to.getTime() - from.getTime()) / day)
+
+      const daily = Array.from({length:days} ,
+        (_, i) => {
+        const date = from.getTime() + (i + 1) * day
+        return{
+          day:{
+            date,
+            start: new Date(date).setHours(0,0,0,0),
+            end: new Date(date).setHours(23,59,59,999)
+          },
+          count:0
+        }
+      })
+
+      const events = (await github.GetUserEvents(user.githubUsername))
+        .filter((event) => from.getTime() < new Date(event.created_at!).getTime() && to.getTime() > new Date(event.created_at!).getTime())
         .sort((a, b) => {
             return new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime();
         }).reverse()
+
+      daily.forEach((day) => {
+        events.forEach((event) => {
+          const eventDate = new Date(event.created_at!).getTime();
+          if (day.day.start <= eventDate && eventDate <= day.day.end) {
+            day.count++;
+          }
+        });
+      });
+      console.log(daily)
+
+      return daily
     })
 });
