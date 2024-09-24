@@ -131,8 +131,10 @@ export default function EditorText({
   setText,
   options,
   disabled,
+  className
 }: {
   text: string;
+  className?:string;
   setText?: (text: string) => void;
   options?: Options;
   disabled?: boolean;
@@ -187,7 +189,7 @@ export default function EditorText({
       )}
       <EditorContent
         editor={editor}
-        className="p-4 border border-input rounded-xl tiptap dark:bg-neutral-800 bg-white tiptap"
+        className={"p-4 border border-input rounded-xl tiptap dark:bg-neutral-800 bg-white tiptap " + className}
       />
     </div>
   );

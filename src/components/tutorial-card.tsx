@@ -3,37 +3,16 @@
 import { formatDistance } from "date-fns";
 import { ru } from "date-fns/locale";
 import { BookHeart, Clock, CoinsIcon, Heart } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { Button } from "~/components/ui/button";
-import { useToast } from "~/components/ui/use-toast";
-import type { Tutorial } from "~/lib/shared/types";
-import { api } from "~/trpc/react";
+import { Tutorial } from "~/lib/shared/types/tutorial";
 
 export default function TutorialCard({
   tutorial,
+  isBuy
 }: {
   tutorial: Tutorial;
+  isBuy?: boolean;
 }) {
-  const { toast } = useToast();
-  const router = useRouter();
-  const buyMutation = api.tutorial.buyOne.useMutation({
-    onSuccess: () => {
-      router.push(`/tutorial/${tutorial.id}`);
-    },
-    onError: (err) => {
-      toast({
-        title: "Ошибка",
-        description: err.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const onSubmit = () => {
-    buyMutation.mutate({
-      id: tutorial.id,
-    });
-  };
 
   return (
     <div className="w-full space-y-4 p-6 rounded-2xl bg-secondary">
@@ -62,15 +41,21 @@ export default function TutorialCard({
           {0}
         </div>
       </div>
-      <Button
-        className="gap-3 min-w-32 text-lg"
-        onClick={() => {
-          onSubmit();
-        }}
-      >
-        <CoinsIcon />
-        {tutorial.price}
-      </Button>
+      {
+        isBuy ?
+          null
+        : 
+        (
+          <Button
+            className="gap-3 min-w-32 text-lg"
+            // onClick={() => {
+            //   onSubmit();
+            // }}
+          >
+            <CoinsIcon />
+          </Button>
+        )
+      }
     </div>
   );
 }

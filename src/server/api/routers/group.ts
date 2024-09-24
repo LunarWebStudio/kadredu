@@ -5,7 +5,6 @@ import { IdSchema } from "~/lib/shared/types/utils";
 import {
   adminProcedure,
   createTRPCRouter,
-  protectedProcedure,
   teacherProcedure,
 } from "~/server/api/trpc";
 import { groups } from "~/server/db/schema";

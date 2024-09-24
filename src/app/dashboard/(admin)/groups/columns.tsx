@@ -39,11 +39,11 @@ export const columns: ColumnDef<Group>[] = [
     header: "СП",
   },
   {
-    accessorKey: "users",
+    accessorKey: "students",
     header: "Люди",
     cell({ cell }) {
       const users = cell.getValue() as Group["students"];
-      return users.length.toString();
+      return users?.length.toString();
     },
   },
   {

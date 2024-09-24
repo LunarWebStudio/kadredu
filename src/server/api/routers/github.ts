@@ -36,7 +36,7 @@ export const githubRouter = createTRPCRouter({
       })
 
       const to = new Date(input?.time?.to || today())
-      const from = new Date(input?.time?.from || ago(12))
+      const from = new Date(input?.time?.from || ago(1))
       const days = Math.ceil((to.getTime() - from.getTime()) / day)
 
       const daily = Array.from({length:days} ,
@@ -66,7 +66,6 @@ export const githubRouter = createTRPCRouter({
           }
         });
       });
-      console.log(daily)
 
       return daily
     })
