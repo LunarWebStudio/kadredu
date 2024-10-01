@@ -27,7 +27,6 @@ export function TaskForm(){
         </div>
       </div>
       <div className="border-t-2 flex flex-col gap-2 px-6 py-4">
-        <p className="flex flex-row"><Coins/>{111} Монет за решение</p>
         <Button className="max-w-32">Отправить</Button>
       </div>
     </div>

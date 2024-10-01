@@ -35,7 +35,7 @@ export default async function TaskPage({ params }:
       {
         task.tutorial ? (
         <>
-          <TutorialCard tutorial={task.tutorial} isBuy />
+          <TutorialCard tutorial={task.tutorial}/>
         </>
         ) : null
       }
@@ -43,7 +43,7 @@ export default async function TaskPage({ params }:
         <div className="w-full border-b-2 px-6 py-4 text-lg font-bold text-muted-foreground">
           Описание
         </div>
-        <EditorText disabled className="border-none" text={task.description} />
+        <EditorText disabled className="border-none p-6 bg-secondary" text={task.description} />
       </div>
       <TaskForm />
     </ProfileContent>

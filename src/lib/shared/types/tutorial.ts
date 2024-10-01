@@ -35,7 +35,7 @@ export const TutorialInputShema = z.object({
       message: "Время не указано",
     })
     .min(1, "Время не указано"),
-  url: z.string().url({
+  youtubeUrl: z.string().url({
     message: "Неверный URL",
   }).optional(),
   subjectId: z.string({

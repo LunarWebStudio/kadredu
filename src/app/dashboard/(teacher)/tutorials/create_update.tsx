@@ -179,7 +179,7 @@ export default function CreateUpdateTutorial({
 
               <FormField
                 control={form.control}
-                name="url"
+                name="youtubeUrl"
                 render={({field}) => (
                   <FormItem>
                     <FormControl>

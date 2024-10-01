@@ -33,5 +33,5 @@ export type S3File = inferProcedureOutput<AppRouter["file"]["get"]>;
 
 export const EditFileSchema = FileSchema.extend({
   id: z.string().optional(),
-  b64: z.string({}),
+  b64: z.string({}).optional(),
 });

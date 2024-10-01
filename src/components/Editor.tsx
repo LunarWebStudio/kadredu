@@ -62,6 +62,7 @@ import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Skeleton } from "~/components/ui/skeleton";
 import { toast } from "sonner";
+import { cn } from "~/lib/utils";
 
 lowlight.registerLanguage("html", html);
 lowlight.registerLanguage("css", css);
@@ -189,7 +190,7 @@ export default function EditorText({
       )}
       <EditorContent
         editor={editor}
-        className={"p-4 border border-input rounded-xl tiptap dark:bg-neutral-800 bg-white tiptap " + className}
+        className={ cn("p-4 border border-input rounded-xl tiptap bg-secondary tiptap" , className)}
       />
     </div>
   );

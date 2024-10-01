@@ -21,10 +21,9 @@ export default async function ProfilePage({
   return (
     <ProfileContent className="mt-4 space-y-4">
       <ProfileHeader>
-        <ProfileTitle className="bg-slate-400 block">Профиль</ProfileTitle>
+        <ProfileTitle className="bg-slate-400">Профиль</ProfileTitle>
       </ProfileHeader>
       <ActivityWiget username={user.username!} />
-
     </ProfileContent>
   )
 }

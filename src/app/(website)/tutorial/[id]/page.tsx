@@ -3,6 +3,7 @@ import { ru } from "date-fns/locale";
 import { BookHeart, Clock, Heart } from "lucide-react";
 import { notFound } from "next/navigation";
 import Editor from "~/components/Editor";
+import { YtPlayer } from "~/components/YtPlayer";
 import { api } from "~/trpc/server";
 
 export default async function TutorialReadPage({
@@ -48,8 +49,9 @@ export default async function TutorialReadPage({
             {0}
           </div>
         </div>
+        <YtPlayer url={tutorial.youtubeUrl} />
         <Editor
-          text={tutorial.text}
+          text={tutorial.content}
           disabled
         />
       </div>
