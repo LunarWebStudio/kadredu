@@ -37,7 +37,10 @@ export const TutorialInputShema = z.object({
     .min(1, "Время не указано"),
   youtubeUrl: z.string().url({
     message: "Неверный URL",
-  }).optional(),
+  }).regex(
+    /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/,
+    "Неверный формат ссылки на видео"
+  ).optional(),
   subjectId: z.string({
     message: "Предмет не является строкой",
   }),

@@ -63,6 +63,7 @@ import { Input } from "~/components/ui/input";
 import { Skeleton } from "~/components/ui/skeleton";
 import { toast } from "sonner";
 import { cn } from "~/lib/utils";
+import Youtube from "@tiptap/extension-youtube";
 
 lowlight.registerLanguage("html", html);
 lowlight.registerLanguage("css", css);
@@ -132,14 +133,19 @@ export default function EditorText({
   setText,
   options,
   disabled,
-  className
+  className,
+  video
 }: {
   text: string;
   className?:string;
   setText?: (text: string) => void;
   options?: Options;
   disabled?: boolean;
+  video?:string;
 }) {
+  Youtube.options.HTMLAttributes = {
+    class:"w-full mt-4 rounded-md"
+  }
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -149,6 +155,10 @@ export default function EditorText({
       Blockquote,
       Link,
       CodeBlock,
+      Youtube.configure({
+        controls:true,
+        nocookie:true,
+      }),
       CodeBlockLowlight.extend({
         addNodeView() {
           return ReactNodeViewRenderer(CodeBlockComponent);
@@ -158,8 +168,14 @@ export default function EditorText({
     onUpdate: ({ editor }) => {
       setText ? setText(editor.getHTML()) : "";
     },
-    content: text,
+    content: `
+      ${text}
+
+      ${video ?  `<div data-youtube-video><iframe src="${video}"/></div>` : ""}
+    `,
   });
+
+
   if (disabled) {
     editor?.setEditable(false);
   }
