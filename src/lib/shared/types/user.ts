@@ -5,6 +5,9 @@ import type { AppRouter } from "~/server/api/root";
 import { EditFileSchema } from "./file";
 
 export type User = inferProcedureOutput<AppRouter["user"]["getAll"]>[number];
+export type ProfileUser = NonNullable<
+  inferProcedureOutput<AppRouter["user"]["getOne"]>
+>;
 
 export const UsernameSchema = z.object({
   username: z

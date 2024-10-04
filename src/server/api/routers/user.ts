@@ -158,7 +158,20 @@ export const userRouter = createTRPCRouter({
     return ctx.db.query.users.findFirst({
       where: and(eq(users.username, input.username), eq(users.verified, true)),
       with: {
-        group: true,
+        group: {
+          columns: {
+            id: true,
+            imageId: true,
+            name: true,
+          },
+          with: {
+            building: {
+              columns: {
+                name: true,
+              },
+            },
+          },
+        },
       },
       columns: {
         id: true,
@@ -168,6 +181,7 @@ export const userRouter = createTRPCRouter({
         githubUsername: true,
         imageId: true,
         experiencePoints: true,
+        coins: true,
       },
     });
   }),

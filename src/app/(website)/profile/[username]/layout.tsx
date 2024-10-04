@@ -15,8 +15,37 @@ import { HIGH_LEVEL_THRESHOLD } from "~/server/api/trpc";
 import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
 import SidebarItem from "./sidebar_item";
+import Coin from "~/components/icons/coin";
+import { ProfileUser } from "~/lib/shared/types/user";
+import { cn } from "~/lib/utils";
 
 const iconClassName = "size-6";
+
+function SidebarContainer({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("space-y-6 rounded-2xl bg-secondary p-6", className)}>
+      {children}
+    </div>
+  );
+}
+
+function SidebarSectionTitle({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <p className={cn("text-muted-foreground/70", className)}>{children}</p>
+  );
+}
 
 export default async function ProfileLayout({
   children,
@@ -36,8 +65,8 @@ export default async function ProfileLayout({
 
   return (
     <div className="container flex flex-row gap-4 p-4">
-      <aside className="flex w-[350px] flex-col gap-4 px-6 py-4">
-        <div className="space-y-6 rounded-xl bg-secondary p-6">
+      <aside className="flex w-[350px] flex-col gap-4 px-6 py-4 shrink-0">
+        <SidebarContainer>
           <div className="flex flex-col items-center justify-center gap-4">
             <UserAvatar
               image={user.imageId ?? ""}
@@ -46,9 +75,13 @@ export default async function ProfileLayout({
             />
             <h4>{user.username}</h4>
             <p className="text-center text-muted-foreground">{user.name}</p>
-            <LevelBar />
+            <LevelBar experience={user.experiencePoints} />
+            <div className="flex items-center gap-2 justify-center">
+              <Coin />
+              <p className="font-bold text-lg">{user.coins}</p>
+            </div>
           </div>
-          <p className="text-muted-foreground/70">Меню</p>
+          <SidebarSectionTitle>Меню</SidebarSectionTitle>
           <div className="flex flex-col gap-4">
             <SidebarItem
               title="Профиль"
@@ -114,26 +147,42 @@ export default async function ProfileLayout({
               </>
             )}
           </div>
-        </div>
-        <div className="space-y-6 rounded-xl bg-secondary p-6">
-          <p className="text-muted-foreground/70">Группа</p>
-          <div className="flex flex-row items-center gap-4">
+        </SidebarContainer>
+        <Group user={user} />
+      </aside>
+      <div className="shrink grow">{children}</div>
+    </div>
+  );
+}
+
+function Group({
+  user,
+}: {
+  user: ProfileUser;
+}) {
+  return (
+    <SidebarContainer>
+      <SidebarSectionTitle>Группа</SidebarSectionTitle>
+      <div className="flex flex-row items-center gap-4">
+        {user.group ? (
+          <>
             <div className="size-16">
               <Image
                 className="size-full object-contain"
                 width={1000}
                 height={1000}
-                src={session?.user.group?.image?.id ?? ""}
-                alt={session?.user.group?.name ?? ""}
+                src={user.group?.imageId ?? ""}
+                alt={user.group?.name ?? ""}
               />
             </div>
             <p className="font-bold tracking-tighter">
-              {session?.user.group?.building.name} / {session?.user.group?.name}
+              {user.group?.building.name} / {user.group?.name}
             </p>
-          </div>
-        </div>
-      </aside>
-      <div className="shrink grow">{children}</div>
-    </div>
+          </>
+        ) : (
+          <p className="font-semibold text-xl">Не в группе</p>
+        )}
+      </div>
+    </SidebarContainer>
   );
 }
