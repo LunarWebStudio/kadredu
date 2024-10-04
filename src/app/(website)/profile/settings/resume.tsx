@@ -73,7 +73,7 @@ export default function Resume({
                   <FormLabel>Роль</FormLabel>
                   <Combobox
                     values={roles ?? []}
-                    value={selectedRole}
+                    value={selectedRole ?? null}
                     onChange={(v) => field.onChange(v?.id)}
                     placeholder={{
                       default: "Выберите роль",

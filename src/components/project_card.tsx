@@ -1,7 +1,7 @@
 import { Folder, Heart } from "lucide-react";
 import Link from "next/link";
 import LanguageToColor from "~/lib/shared/languages";
-import type { PortfolioProject } from "~/lib/shared/types";
+import { PortfolioProject } from "~/lib/shared/types/portfolio";
 import { cn } from "~/lib/utils";
 
 export default function ProjectCard({
@@ -11,7 +11,7 @@ export default function ProjectCard({
 }) {
   return (
     <Link
-      href={`/project/${project.id}`}
+      href={`/profile/${project.username}/portfolio/${project.id}`}
       className="block space-y-4 rounded-xl bg-secondary p-6 transition-all duration-300 ease-in-out hover:shadow-xl "
     >
       <div className="space-y-2">
@@ -27,7 +27,7 @@ export default function ProjectCard({
             <p
               className={cn(
                 LanguageToColor(project.languages[0].name),
-                "font-bold",
+                "font-bold"
               )}
             >
               {project.languages[0].name}

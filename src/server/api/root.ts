@@ -1,8 +1,8 @@
 import { buildingRouter } from "~/server/api/routers/building";
 import { fileRouter } from "~/server/api/routers/file";
-// import { githubRouter } from "~/server/api/routers/github";
+import { githubRouter } from "~/server/api/routers/github";
 import { groupRouter } from "~/server/api/routers/group";
-// import { portfolioRouter } from "~/server/api/routers/portfolio";
+import { portfolioRouter } from "~/server/api/routers/portfolio";
 import { resumeRouter } from "~/server/api/routers/resume";
 import { teamRolesRouter } from "~/server/api/routers/roles";
 import { subjectsRouter } from "~/server/api/routers/subjects";
@@ -22,8 +22,8 @@ export const appRouter = createTRPCRouter({
   subject: subjectsRouter,
   resume: resumeRouter,
   task: tasksRouter,
-  // portfolio: portfolioRouter,
-  // github: githubRouter,
+  portfolio: portfolioRouter,
+  github: githubRouter,
   file: fileRouter,
 });
 

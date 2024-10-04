@@ -29,14 +29,10 @@ import {
 import { Skeleton } from "~/components/ui/skeleton";
 import { OnError } from "~/lib/shared/onError";
 import type { Building } from "~/lib/shared/types/building";
-import { type Group, GroupSchema } from "~/lib/shared/types/group";
+import { GroupSchema, type Group } from "~/lib/shared/types/group";
 import { api } from "~/trpc/react";
 
-export default function CreateUpdateGroup({
-  group,
-}: {
-  group?: Group;
-}) {
+export default function CreateUpdateGroup({ group }: { group?: Group }) {
   const [buildings] = api.building.getAll.useSuspenseQuery();
 
   const [open, setOpen] = useState(false);
@@ -97,15 +93,12 @@ export default function CreateUpdateGroup({
 
   useEffect(() => {
     setSelectedBuilding(
-      buildings.find((b) => b.id === form.watch("buildingId")),
+      buildings.find((b) => b.id === form.watch("buildingId"))
     );
   }, [form.watch("buildingId")]);
 
   return (
-    <Sheet
-      open={open}
-      onOpenChange={setOpen}
-    >
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         {group ? (
           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
@@ -153,7 +146,7 @@ export default function CreateUpdateGroup({
                 <div className="font-bold gap-1 flex flex-row">
                   <p>
                     {buildings.find(
-                      (building) => building.id === form.watch("buildingId"),
+                      (building) => building.id === form.watch("buildingId")
                     )?.name ?? "Не выбрано"}
                   </p>
                   / {form.watch("name") ?? "Не указано"}
@@ -197,11 +190,7 @@ export default function CreateUpdateGroup({
                       empty: "СП не найдено",
                     }}
                   >
-                    <Button
-                      variant="secondary"
-                      className="w-full"
-                      chevron
-                    >
+                    <Button variant="secondary" className="w-full" chevron>
                       {selectedBuilding?.name ?? "Выберите СП"}
                     </Button>
                   </Combobox>
@@ -215,10 +204,7 @@ export default function CreateUpdateGroup({
                 <FormItem>
                   <FormDescription>Название группы</FormDescription>
                   <FormControl>
-                    <Input
-                      placeholder="ИС-10"
-                      {...field}
-                    />
+                    <Input placeholder="ИС-10" {...field} />
                   </FormControl>
                 </FormItem>
               )}

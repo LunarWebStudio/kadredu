@@ -7,14 +7,6 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
 import { Button } from "~/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "~/components/ui/sheet";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import {
   Form,
@@ -24,13 +16,23 @@ import {
   FormItem,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import {
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "~/components/ui/sheet";
 import { OnError } from "~/lib/shared/onError";
-import { type Building, BuildingSchema } from "~/lib/shared/types/building";
+import { BuildingSchema, type Building } from "~/lib/shared/types/building";
 import { api } from "~/trpc/react";
 
 export default function CreateUpdateBuilding({
   building,
-}: { building?: Building }) {
+}: {
+  building?: Building;
+}) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
@@ -68,17 +70,13 @@ export default function CreateUpdateBuilding({
 
   const onSubmit = (data: z.infer<typeof BuildingSchema>) => {
     if (building) {
-      updateBuildingMutation.mutate({ ...data, id: building.id });
-    } else {
-      createBuildingMutation.mutate(data);
+      return updateBuildingMutation.mutate({ ...data, id: building.id });
     }
+    return createBuildingMutation.mutate(data);
   };
 
   return (
-    <Sheet
-      open={open}
-      onOpenChange={setOpen}
-    >
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         {building ? (
           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
@@ -104,10 +102,7 @@ export default function CreateUpdateBuilding({
                 <FormItem>
                   <FormDescription>Название СП</FormDescription>
                   <FormControl>
-                    <Input
-                      placeholder="СП-10"
-                      {...field}
-                    />
+                    <Input placeholder="СП-10" {...field} />
                   </FormControl>
                 </FormItem>
               )}

@@ -1,7 +1,11 @@
-import CreateUpdatePortfolioProject from "~/app/(website)/profile/[username]/portfolio/create_update";
-import ProfileTemplate from "~/app/(website)/profile/[username]/templ";
 import ProjectCard from "~/components/project_card";
+import {
+  ProfileContent,
+  ProfileHeader,
+  ProfileTitle,
+} from "~/components/ui/profile";
 import { api } from "~/trpc/server";
+import CreateUpdatePortfolioProject from "./create_update";
 
 export default async function Portfolio({
   params,
@@ -14,22 +18,22 @@ export default async function Portfolio({
     username: params.username ?? "",
   });
 
-  const repos = await api.github.getOwnedRepos();
-
   return (
-    <ProfileTemplate
-      title="Портфолио"
-      navbar={<CreateUpdatePortfolioProject repos={repos} />}
-      className="bg-red-400"
-    >
-      <div className="space-y-4">
-        {projects.map((project) => (
-          <ProjectCard
-            project={project}
-            key={project.id}
-          />
-        ))}
+    <ProfileContent className="mt-4">
+      <ProfileHeader className="flex flex-row justify-between">
+        <ProfileTitle className="bg-slate-400 block">Портфолио</ProfileTitle>
+        <CreateUpdatePortfolioProject />
+      </ProfileHeader>
+
+      <div className="space-y-4 mt-4">
+        {projects ? (
+          projects.map((project) => (
+            <ProjectCard project={project} key={project.id} />
+          ))
+        ) : (
+          <h1>Тут пока пусто :(</h1>
+        )}
       </div>
-    </ProfileTemplate>
+    </ProfileContent>
   );
 }

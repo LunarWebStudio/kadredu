@@ -105,6 +105,19 @@ export const tasksRouter = createTRPCRouter({
             groupId: true,
           },
         },
+        subject:{
+          columns:{
+            name:true
+          }
+        },
+        tutorial:{
+          with:{
+            author:true,
+            image:true,
+            topic:true,
+            subject:true
+          }
+        },
       },
     });
 

@@ -4,13 +4,7 @@ export class Github {
   private octokit: Octokit;
   private username: string;
 
-  constructor({
-    token,
-    username,
-  }: {
-    token: string;
-    username: string;
-  }) {
+  constructor({ token, username }: { token: string; username: string }) {
     this.octokit = new Octokit({ auth: token });
     this.username = username;
   }
@@ -45,13 +39,17 @@ export class Github {
   }
 
   public async GetReadme(repo: string) {
-    const { data } = await this.octokit.rest.repos.getReadme({
-      owner: this.username,
-      repo,
-    });
+    try {
+      const { data } = await this.octokit.rest.repos.getReadme({
+        owner: this.username,
+        repo,
+      });
 
-    const b64 = Buffer.from(data.content, "base64").toString("utf-8");
-    return b64;
+      const b64 = Buffer.from(data.content, "base64").toString("utf-8");
+      return b64;
+    } catch (err) {
+      return "";
+    }
   }
 
   public async GetLanguages(repo: string) {
@@ -89,5 +87,17 @@ export class Github {
         url: r.url,
         type: r.type,
       }));
+  }
+
+  public async GetUserEvents(username:string){
+    const {data} = await this.octokit.rest.activity.listEventsForAuthenticatedUser({
+      username,
+      per_page:100,
+      page:1
+    })
+    return data.map((event) =>({
+      type: event.type,
+      created_at: event.created_at,
+    }))
   }
 }

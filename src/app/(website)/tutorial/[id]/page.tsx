@@ -49,8 +49,9 @@ export default async function TutorialReadPage({
           </div>
         </div>
         <Editor
-          text={tutorial.text}
+          text={tutorial.content}
           disabled
+          video={tutorial.youtubeUrl}
         />
       </div>
     </div>

@@ -2,7 +2,6 @@ import type { inferProcedureOutput } from "@trpc/server";
 import { z } from "zod";
 import {
   DESCRIPTION_LIMIT,
-  MAX_PROFILE_PICTURE_SIZE,
   NAME_LIMIT,
 } from "~/lib/shared/const";
 import type { AppRouter } from "~/server/api/root";

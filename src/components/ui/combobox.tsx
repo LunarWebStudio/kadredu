@@ -1,7 +1,7 @@
 "use client";
 
 import { Check } from "lucide-react";
-import { type ReactNode, useState } from "react";
+import { useState, type ReactNode } from "react";
 import { cn } from "~/lib/utils";
 import {
   Command,
@@ -39,10 +39,7 @@ export default function Combobox<T extends Item>({
   const [open, setOpen] = useState(false);
 
   return (
-    <Popover
-      open={open}
-      onOpenChange={setOpen}
-    >
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent>
         <Command>
@@ -64,7 +61,7 @@ export default function Combobox<T extends Item>({
                   <Check
                     className={cn(
                       "size-4 mr-2",
-                      !value ? "opacity-50" : "opacity-0",
+                      !value ? "opacity-50" : "opacity-0"
                     )}
                   />
                   Все
@@ -82,7 +79,7 @@ export default function Combobox<T extends Item>({
                   <Check
                     className={cn(
                       "size-4 mr-2",
-                      v.id === value?.id ? "opacity-50" : "opacity-0",
+                      v.id === value?.id ? "opacity-50" : "opacity-0"
                     )}
                   />
                   {v.name}

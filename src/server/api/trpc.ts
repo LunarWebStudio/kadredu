@@ -166,7 +166,7 @@ export const leadCycleComissionProcedure = protectedProcedure.use(
         session: { ...ctx.session, user: ctx.session.user },
       },
     });
-  },
+  }
 );
 
 export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {

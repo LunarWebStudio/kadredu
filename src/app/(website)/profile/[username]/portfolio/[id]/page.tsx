@@ -1,7 +1,6 @@
 import { File, Folder } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import LikeProject from "~/app/(website)/project/[id]/like";
 import { Button } from "~/components/ui/button";
 import {
   Tooltip,
@@ -10,47 +9,53 @@ import {
   TooltipTrigger,
 } from "~/components/ui/tooltip";
 import LanguageToColor from "~/lib/shared/languages";
-import type { OnePortfolioProject } from "~/lib/shared/types";
 import { cn } from "~/lib/utils";
 import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
+import CreateUpdatePortfolioProject from "../create_update";
+import DeleteProject from "../delete";
+import LikeProject from "../like";
+import { Markdown } from "~/components/markdown";
 export default async function Project({
   params,
 }: {
   params: {
-    id?: string;
+    id: string;
   };
 }) {
-  let project: OnePortfolioProject | null = null;
+  const project = await api.portfolio.getOne({ id: params.id });
 
-  try {
-    project = await api.portfolio.getOne({
-      id: params.id ?? "",
-    });
-  } catch (_error) {
-    notFound();
-  }
+  if (!project) return notFound();
 
   const session = await getServerAuthSession();
 
   return (
-    <div className="container space-y-6 py-20">
+    <div className="container space-y-6 mt-4">
       <div className="flex items-center justify-between rounded-xl bg-secondary p-6">
         <h3>
           {project.emoji} {project.name}
         </h3>
         <div className="flex gap-4">
-          <Link
-            href={project.url}
-            className="flex items-center gap-1 transition-all duration-300 ease-in-out hover:text-primary hover:underline"
-          >
-            <Folder className="size-4" />
-            Github
-          </Link>
-          <LikeProject
-            projectId={project.id}
-            isLiked={project.likes.some((l) => l.userId === session?.user.id)}
-          />
+          <Button variant="ghost">
+            <Link
+              href={project.url}
+              className="flex items-center gap-1"
+            >
+              <Folder className="size-4" />
+              Github
+            </Link>
+          </Button>
+          {session?.user.id === project.userId ? (
+            <>
+              <CreateUpdatePortfolioProject project={project} />
+              <DeleteProject project={project} />
+            </>
+          ) : session ? (
+            <LikeProject
+              projectId={project.id}
+              isLiked={project.likes.some((l) => l.userId === session?.user.id)}
+            />
+          ) : undefined}
         </div>
       </div>
       <div className="grid grid-cols-3 gap-4">
@@ -61,14 +66,8 @@ export default async function Project({
           <div className="p-6">
             {project.tree.map((file) => (
               // TODO: Сделать ссылки на файлы
-              <Link
-                href={file.url ?? "#"}
-                key={file.path}
-              >
-                <Button
-                  variant="ghost"
-                  className="flex items-center gap-2"
-                >
+              <Link href={file.url ?? "#"} key={file.path}>
+                <Button variant="ghost" className="flex items-center gap-2">
                   {file.type === "tree" ? (
                     <Folder className="size-5" />
                   ) : (
@@ -93,7 +92,7 @@ export default async function Project({
                       <div
                         className={cn(
                           "h-1 w-fit",
-                          LanguageToColor(l.name).background,
+                          LanguageToColor(l.name).background
                         )}
                         style={{
                           width: `${l.percent}%`,
@@ -110,7 +109,7 @@ export default async function Project({
                 <div
                   className={cn(
                     LanguageToColor(l.name).text,
-                    "flex justify-between",
+                    "flex justify-between"
                   )}
                   key={index + l.name}
                 >
@@ -122,15 +121,21 @@ export default async function Project({
           </div>
         </div>
       </div>
-      {project.readme !== "" && (
-        // TODO: сделать вывод Readme в markdown
-        <div className="rounded-xl bg-secondary">
-          <div className="w-full border-b p-6 text-lg font-bold text-muted-foreground">
-            О проекте
-          </div>
-          <p className="prose whitespace-pre-wrap p-6">{project.readme}</p>
+      {
+        //TODO: сделать вывод Readme в markdown
+      }
+      <div className="rounded-xl bg-secondary">
+        <div className="w-full border-b p-6 text-lg font-bold text-muted-foreground">
+          О проекте
         </div>
-      )}
+        {project.readme ? (
+          <Markdown text={project.readme} />
+        ) : (
+          <h2 className="prose whitespace-pre-wrap p-6">
+            Описание отсутствует :(
+          </h2>
+        )}
+      </div>
     </div>
   );
 }
