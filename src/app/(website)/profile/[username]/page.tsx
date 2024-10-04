@@ -1,5 +1,9 @@
 import { notFound } from "next/navigation";
-import { ProfileContent, ProfileHeader, ProfileTitle } from "~/components/ui/profile";
+import {
+  ProfileContent,
+  ProfileHeader,
+  ProfileTitle,
+} from "~/components/ui/profile";
 import { api } from "~/trpc/server";
 import { ActivityWiget } from "./activity";
 
@@ -23,7 +27,9 @@ export default async function ProfilePage({
       <ProfileHeader>
         <ProfileTitle className="bg-slate-400">Профиль</ProfileTitle>
       </ProfileHeader>
-      <ActivityWiget username={user.username!} />
+      <div className="max-w-full overflow-hidden flex flex-col">
+        <ActivityWiget username={user.githubUsername} />
+      </div>
     </ProfileContent>
-  )
+  );
 }

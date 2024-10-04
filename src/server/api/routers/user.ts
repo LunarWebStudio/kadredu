@@ -164,6 +164,7 @@ export const userRouter = createTRPCRouter({
         id: true,
         name: true,
         username: true,
+        githubUsername: true,
       },
     });
   }),
