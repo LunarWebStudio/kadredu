@@ -1,9 +1,6 @@
 import type { inferProcedureOutput } from "@trpc/server";
 import { z } from "zod";
-import {
-  DESCRIPTION_LIMIT,
-  NAME_LIMIT,
-} from "~/lib/shared/const";
+import { DESCRIPTION_LIMIT, NAME_LIMIT } from "~/lib/shared/const";
 import type { AppRouter } from "~/server/api/root";
 import { EditFileSchema } from "./file";
 
@@ -47,7 +44,7 @@ export const UserUpdateSchema = z.intersection(
       })
       .max(DESCRIPTION_LIMIT)
       .optional(),
-    image: EditFileSchema.optional(),
+    image: EditFileSchema.nullish(),
   }),
   UsernameSchema,
 );

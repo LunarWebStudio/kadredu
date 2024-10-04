@@ -6,6 +6,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "~/components/ui/hover-card";
+import { ProfileSection, ProfileSectionHeader } from "~/components/ui/profile";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/server";
 
@@ -15,10 +16,8 @@ export async function ActivityWiget({
   username: string | null;
 }) {
   return (
-    <div className="w-full rounded-xl bg-secondary min-h-64 flex flex-col">
-      <div className="w-full px-6 py-4 border-b-2 text-lg font-bold text-muted-foreground">
-        Активность
-      </div>
+    <ProfileSection className="min-h-64">
+      <ProfileSectionHeader>Активность</ProfileSectionHeader>
       <div className="grow w-full flex">
         {username ? (
           <ActivityWigetBody username={username} />
@@ -34,7 +33,7 @@ export async function ActivityWiget({
           </div>
         )}
       </div>
-    </div>
+    </ProfileSection>
   );
 }
 
@@ -71,11 +70,16 @@ async function ActivityWigetBody({
         let color = colorMap[event?.color ?? "default"];
 
         return (
-          <HoverCard key={date.toISOString()}>
+          <HoverCard
+            key={date.toISOString()}
+            openDelay={100}
+          >
             <HoverCardTrigger
               className={cn("size-4 rounded", color)}
             ></HoverCardTrigger>
-            <HoverCardContent>{event?.date}</HoverCardContent>
+            <HoverCardContent className="size-fit p-2 font-medium">
+              {event?.date}
+            </HoverCardContent>
           </HoverCard>
         );
       })}

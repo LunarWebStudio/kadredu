@@ -38,3 +38,35 @@ export function ProfileTitle({ children, className, ...props }: ProfileProps) {
     </div>
   );
 }
+
+export function ProfileSection({
+  children,
+  className,
+  ...props
+}: ProfileProps) {
+  return (
+    <div
+      className={cn("w-full rounded-2xl bg-secondary flex flex-col", className)}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
+
+export function ProfileSectionHeader({
+  children,
+  className,
+  ...props
+}: ProfileProps) {
+  return (
+    <div
+      className={cn(
+        "w-full px-6 py-4 border-b-2 text-lg font-bold text-muted-foreground",
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+}

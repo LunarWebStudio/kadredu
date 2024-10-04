@@ -6,6 +6,7 @@ import {
 } from "~/components/ui/profile";
 import { api } from "~/trpc/server";
 import { ActivityWiget } from "./activity";
+import AboutSection from "./about";
 
 export default async function ProfilePage({
   params,
@@ -23,11 +24,12 @@ export default async function ProfilePage({
   }
 
   return (
-    <ProfileContent className="mt-4 space-y-4">
+    <ProfileContent className="mt-4 space-y-6">
       <ProfileHeader>
         <ProfileTitle className="bg-slate-400">Профиль</ProfileTitle>
       </ProfileHeader>
-      <div className="max-w-full overflow-hidden flex flex-col">
+      <div className="max-w-full overflow-hidden flex flex-col gap-6">
+        <AboutSection text={user.description ?? ""} />
         <ActivityWiget username={user.githubUsername} />
       </div>
     </ProfileContent>
