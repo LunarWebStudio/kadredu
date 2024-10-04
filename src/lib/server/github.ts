@@ -1,4 +1,3 @@
-import { TRPCError } from "@trpc/server";
 import { Octokit } from "octokit";
 
 export class Github {
