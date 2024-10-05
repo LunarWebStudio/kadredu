@@ -36,9 +36,9 @@ export default function SidebarItem({
           !locked &&
             cn(
               color.text_hover,
-              `z-10 hover:scale-[1.02] hover:font-bold hover:shadow-xl`,
+              `z-10 hover:scale-[1.02] hover:font-bold hover:shadow-lg`,
             ),
-          active && cn("scale-[1.02] font-bold shadow-lg", color.text),
+          active && cn("scale-[1.02] font-bold shadow-md", color.text),
           locked && "cursor-not-allowed opacity-80",
         )}
       >

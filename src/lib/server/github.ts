@@ -89,15 +89,51 @@ export class Github {
       }));
   }
 
-  public async GetUserEvents(username:string){
-    const {data} = await this.octokit.rest.activity.listEventsForAuthenticatedUser({
-      username,
-      per_page:100,
-      page:1
-    })
-    return data.map((event) =>({
-      type: event.type,
-      created_at: event.created_at,
-    }))
+  public async GetUserEvents(username: string) {
+    type Response = {
+      user: {
+        contributionsCollection: {
+          contributionCalendar: {
+            totalContributions: number;
+            weeks: {
+              contributionDays: {
+                color:
+                  | "#216e39"
+                  | "#30a14e"
+                  | "#40c463"
+                  | "#9be9a8"
+                  | "#ebedf0";
+                contributionCount: number;
+                date: string;
+              }[];
+            }[];
+          };
+        };
+      };
+    };
+
+    const query = `
+    query ($username: String!) {
+      user(login: $username) {
+        contributionsCollection {
+          contributionCalendar {
+            totalContributions
+            weeks {
+              contributionDays {
+                color
+                contributionCount
+                date
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+    const graphql = await this.octokit.graphql<Response>(query, { username });
+
+    return graphql.user.contributionsCollection.contributionCalendar.weeks.flatMap(
+      (w) => w.contributionDays,
+    );
   }
 }
