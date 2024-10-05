@@ -261,9 +261,9 @@ export default function CreateUpdateAwards({achievement}:
                           {form.watch("rewardType") ? <Coins/> : <ExpandIcon/>}
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent className="flex w-full items-center">
-                        <DropdownMenuItem onSelect={() => field.onChange("COINS")}><Coins/></DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => field.onChange("EXPERIENCE")}><ExpandIcon/></DropdownMenuItem>
+                      <DropdownMenuContent align="end" className="flex flex-col gap-2 w-full items-center">
+                        <DropdownMenuItem className="w-full" onSelect={() => field.onChange("COINS")}><Coins/> Монеты </DropdownMenuItem>
+                        <DropdownMenuItem className="w-full" onSelect={() => field.onChange("EXPERIENCE")}><ExpandIcon/> Опыт </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </FormItem>
