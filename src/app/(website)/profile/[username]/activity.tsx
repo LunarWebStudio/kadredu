@@ -51,7 +51,7 @@ async function ActivityWigetBody({
     eventsMap.set(event.date, event);
   }
 
-  let colorMap = {
+  const colorMap = {
     "#216e39": "bg-primary",
     "#30a14e": "bg-primary/80",
     "#40c463": "bg-primary/60",
