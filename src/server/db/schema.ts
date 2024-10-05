@@ -258,6 +258,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   image: one(files, { fields: [users.imageId], references: [files.id] }),
   subjects: many(subjects),
   projects: many(projects),
+  achievements: many(achievements),
 }));
 
 export const projects = createTable("projects", {
@@ -436,4 +437,81 @@ export const resume = createTable("resumes", {
 export const resumeRelations = relations(resume, ({ one }) => ({
   role: one(teamRoles, { fields: [resume.roleId], references: [teamRoles.id] }),
   user: one(users, { fields: [resume.userId], references: [users.id] }),
+}));
+
+
+export const rewardTypeEnum = pgEnum("rewardType", ["COINS", "EXPERIENCE"]);
+export const rewardTypeSchema = z.enum(rewardTypeEnum.enumValues, {
+  message: "Недопустимый тип награды",
+});
+export type RewardType = z.infer<typeof rewardTypeSchema>;
+
+export const eventTypeEnum = pgEnum("eventType", [
+  "REGISTRATION",
+  "CREATE_TUTORIAL",
+  "CREATE_PROJECT",
+  "CREATE_RESUME",
+  "PUT_LIKE",
+  "GET_LIKE",
+  "COMPLITED_TASK",
+  "RECEIVED_COINS",
+  "RECEIVED_COINS_AMOUNT",
+]);
+export const eventTypeSchema = z.enum(eventTypeEnum.enumValues, {
+  message: "Недопустимый тип события",
+});
+export type EventType = z.infer<typeof eventTypeSchema>;
+
+export const achievements = createTable("achievements", {
+  id: text("id")
+    .$defaultFn(() => createId())
+    .primaryKey()
+    .notNull(),
+  name:text("name")
+    .notNull(),
+  imageId: text("imageId")
+    .references(() => files.id, { onDelete: "cascade" })
+    .notNull(),
+
+  rewardType: rewardTypeEnum("rewardType")
+    .notNull(),
+  rewardAmount: integer("rewardAmount")
+    .notNull(),
+
+  eventAmount: integer("amountEvent")
+    .notNull(),
+  eventType: eventTypeEnum("eventType")
+    .notNull(),
+
+  description: text("description")
+    .notNull(),
+})
+
+export const achievementsRelations = relations(achievements, ({ one, many }) => ({
+  image: one(files, { fields: [achievements.imageId], references: [files.id] }),
+  receved: many(recevedAchievements)
+}));
+
+export const recevedAchievements = createTable("recevedAchievements", {
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id),
+  achievementId: text("achievementId")
+    .notNull()
+    .references(() => achievements.id),
+  createdAt: timestamp("createdAt", {
+    mode: "date",
+    withTimezone: true,
+  }).defaultNow(),
+},
+  (t) => ({
+    compoundKey: primaryKey({
+      columns: [t.userId, t.achievementId],
+    }),
+  })
+);
+
+export const recevedAchievementsRelations = relations(recevedAchievements, ({ one }) => ({
+  user: one(users, { fields: [recevedAchievements.userId], references: [users.id] }),
+  achievement: one(achievements, { fields: [recevedAchievements.achievementId], references: [achievements.id] }),
 }));

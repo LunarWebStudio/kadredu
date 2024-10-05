@@ -11,6 +11,7 @@ import { topicsRouter } from "~/server/api/routers/topics";
 import { tutorialsRouter } from "~/server/api/routers/tutorial";
 import { userRouter } from "~/server/api/routers/user";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
+import { achievementsRouter } from "./routers/achievements";
 
 export const appRouter = createTRPCRouter({
   user: userRouter,
@@ -25,6 +26,7 @@ export const appRouter = createTRPCRouter({
   portfolio: portfolioRouter,
   github: githubRouter,
   file: fileRouter,
+  achievements:achievementsRouter
 });
 
 export type AppRouter = typeof appRouter;

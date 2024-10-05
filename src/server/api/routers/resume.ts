@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { ResumeSchema } from "~/lib/shared/types/resume";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { resume } from "~/server/db/schema";
+import { recevedAchievements, resume } from "~/server/db/schema";
 
 export const resumeRouter = createTRPCRouter({
   updateSelf: protectedProcedure
@@ -20,6 +20,14 @@ export const resumeRouter = createTRPCRouter({
             userId: ctx.session.user.id,
           },
         });
+
+      ctx.redis.countEvent(ctx.session.user.id, "CREATE_RESUME", (id) =>{
+        ctx.db.insert(recevedAchievements)
+          .values({
+            userId: ctx.session.user.id,
+            achievementId: id,
+          })
+      })
     }),
 
   getSelf: protectedProcedure.query(async ({ ctx }) => {
