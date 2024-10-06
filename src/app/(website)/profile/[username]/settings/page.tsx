@@ -3,12 +3,12 @@ import {
   ProfileHeader,
   ProfileTitle,
 } from "~/components/ui/profile";
-import GithubConnect from "~/app/(website)/profile/settings/github";
-import ThemeSwitcher from "~/app/(website)/profile/settings/themeSwitcher";
 import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
 import PersonalInformation from "./personal_information";
 import Resume from "./resume";
+import GithubConnect from "./github";
+import ThemeSwitcher from "./themeSwitcher";
 
 export default async function SettingsPage() {
   const session = await getServerAuthSession();

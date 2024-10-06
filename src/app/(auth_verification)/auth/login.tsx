@@ -15,10 +15,12 @@ import {
   FormField,
   FormItem,
 } from "~/components/ui/form";
-import { useToast } from "~/components/ui/use-toast";
 import { OnError } from "~/lib/shared/onError";
+import { toast } from "sonner";
+import { useState } from "react";
 
 export default function LoginForm() {
+  const [loading, setLoading] = useState(false);
   const formSchema = z.object({
     email: z
       .string({
@@ -35,23 +37,29 @@ export default function LoginForm() {
     },
   });
 
-  const { toast } = useToast();
   const router = useRouter();
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    signIn("email", { email: data.email, callbackUrl: "/", redirect: false })
-      .then(() => {
-        const searchParams = new URLSearchParams();
-        searchParams.set("complete", "true");
-
-        router.push(`?${searchParams.toString()}`);
-        router.refresh();
-      })
-      .catch(() => {
-        toast({
-          title: "Не удалось отправить письмо",
-          variant: "destructive",
-        });
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    setLoading(true);
+    try {
+      const res = await signIn("email", {
+        email: data.email,
+        callbackUrl: "/",
+        redirect: false,
       });
+
+      if (res?.status !== 200) {
+        throw new Error(res?.error ?? "Не удалось отправить письмо");
+      }
+      const searchParams = new URLSearchParams();
+      searchParams.set("complete", "true");
+
+      router.push(`?${searchParams.toString()}`);
+    } catch (err) {
+      toast.error("Не удалось отправить письмо", {
+        description: (err as Error).message,
+      });
+    }
+    setLoading(false);
   };
 
   return (
@@ -80,7 +88,7 @@ export default function LoginForm() {
               </FormItem>
             )}
           />
-          <Button>Получить письмо</Button>
+          <Button loading={loading}>Получить письмо</Button>
         </form>
       </Form>
     </div>
