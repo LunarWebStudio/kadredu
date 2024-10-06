@@ -1,15 +1,13 @@
 'use client'
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Coins, ExpandIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
 import { Button } from "~/components/ui/button"
 import Combobox from "~/components/ui/combobox"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "~/components/ui/dropdown-menu"
+import { DropdownMenuItem } from "~/components/ui/dropdown-menu"
 import { Form, FormControl, FormDescription, FormField, FormItem } from "~/components/ui/form"
 import Image from "~/components/ui/image"
 import { Input } from "~/components/ui/input"
@@ -19,6 +17,7 @@ import { OnError } from "~/lib/shared/onError"
 import { Achievement, AchievementSchema } from "~/lib/shared/types/achievements"
 import { api } from "~/trpc/react"
 import { eventTypes } from "~/lib/shared/types/achievements"
+import { useState } from "react"
 
 
 
@@ -35,12 +34,6 @@ export default function CreateUpdateAwards({achievement}:
     resolver: zodResolver(AchievementSchema),
     defaultValues: achievement as unknown as z.infer<typeof AchievementSchema>
   })
-
-  const selectedEvent = useMemo(
-    () => eventTypes.find(e => e.code === form.watch("eventType")),
-    [form.watch("eventType")]
-  )
-
 
   const createAchievementMutation = api.achievements.create.useMutation({
     onSuccess: () => {
@@ -71,6 +64,7 @@ export default function CreateUpdateAwards({achievement}:
   })
 
   const onSubmit = ( data: z.infer<typeof AchievementSchema>) => {
+    console.log(data)
     if(achievement){
       return updateAchievementMutation.mutate({
         ...data,
@@ -188,15 +182,18 @@ export default function CreateUpdateAwards({achievement}:
                 <FormItem>
                   <FormDescription>Тип события</FormDescription>
                   <Combobox
-                    values={eventTypes.map(event => ({
-                      id: event.code,
-                      name: event.name
-                    }))}
+                    values={
+                      Object.entries(eventTypes)
+                        .map((element) => ({
+                          id:element[0],
+                          name:element[1]
+                        }))
+                    }
                     value={
-                      selectedEvent
+                      field.value
                         ? {
-                          id:selectedEvent.code,
-                          name:selectedEvent.name
+                          id: field.value,
+                          name: eventTypes[field.value]
                         }
                       : null
                     }
@@ -207,7 +204,7 @@ export default function CreateUpdateAwards({achievement}:
                     }}
                   >
                     <Button className="w-full" variant="outline" chevron>
-                      {selectedEvent?.name ?? "Выберите тип события"}
+                      {eventTypes[field.value] ?? "Выберите тип события"}
                     </Button>
                   </Combobox>
                 </FormItem>
@@ -234,41 +231,40 @@ export default function CreateUpdateAwards({achievement}:
             <div className="flex flex-row gap-4 justify-between">
               <FormField
                 control={form.control}
-                name="rewardAmount"
+                name="experience"
                 render={({ field }) => (
                   <FormItem className="grow">
-                    <FormDescription>Сумма награды</FormDescription>
+                    <FormDescription>Опыт</FormDescription>
                     <FormControl>
                       <Input
                         className= "grow border border-input bg-secondary hover:bg-background hover:text-accent-foreground"
                         type="number"
-                        min={1}
+                        min={0}
                         {...field}
                       />
                     </FormControl>
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
-                name="rewardType"
+                name="coins"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormDescription>Тип</FormDescription>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline">
-                          {form.watch("rewardType") ? <Coins/> : <ExpandIcon/>}
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="flex flex-col gap-2 w-full items-center">
-                        <DropdownMenuItem className="w-full" onSelect={() => field.onChange("COINS")}><Coins/> Монеты </DropdownMenuItem>
-                        <DropdownMenuItem className="w-full" onSelect={() => field.onChange("EXPERIENCE")}><ExpandIcon/> Опыт </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                  <FormItem className="grow">
+                    <FormDescription>Монеты</FormDescription>
+                    <FormControl>
+                      <Input
+                        className= "grow border border-input bg-secondary hover:bg-background hover:text-accent-foreground"
+                        type="number"
+                        min={0}
+                        {...field}
+                      />
+                    </FormControl>
                   </FormItem>
                 )}
               />
+
             </div>
             
             <FormField

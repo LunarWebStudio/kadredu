@@ -22,15 +22,10 @@ export const tutorialsRouter = createTRPCRouter({
         imageId: id,
         authorId: ctx.session.user.id,
       });
-
-      ctx.redis.countEvent(ctx.session.user.id, "CREATE_TUTORIAL", (id) =>{
-        ctx.db.insert(recevedAchievements)
-          .values({
-            userId: ctx.session.user.id,
-            achievementId: id,
-          })
-      })
-
+      
+      await ctx.managers
+        .achievement
+        .countEvent(ctx.session.user.id, "CREATE_TUTORIAL");
     }),
   update: highLevelProcedure
     .input(TutorialInputShema.merge(IdSchema))

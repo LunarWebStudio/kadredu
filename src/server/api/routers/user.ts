@@ -16,8 +16,9 @@ import {
   protectedProcedure,
   teacherProcedure,
 } from "~/server/api/trpc";
-import { roleSchema, users } from "~/server/db/schema";
+import { recevedAchievements, roleSchema, users } from "~/server/db/schema";
 import { createCaller } from "../root";
+import { GrantAchievementSchema } from "~/lib/shared/types/achievements";
 
 export const userRouter = createTRPCRouter({
   session: protectedProcedure.query(async ({ ctx }) => ({
@@ -233,4 +234,14 @@ export const userRouter = createTRPCRouter({
         })
         .where(eq(users.id, ctx.session.user.id));
     }),
+  grantAward: adminProcedure
+    .input(GrantAchievementSchema)
+    .mutation(async ({ctx, input}) =>{
+
+      await ctx.db.insert(recevedAchievements)
+        .values({
+          userId: input.id,
+          achievementId: input.awardId,
+        })
+    })
 });

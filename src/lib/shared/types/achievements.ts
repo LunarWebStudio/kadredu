@@ -1,55 +1,34 @@
 import { z } from "zod";
 import { EditFileSchema } from "./file";
-import { eventTypeSchema, rewardTypeSchema } from "~/server/db/schema";
+import { eventTypeSchema } from "~/server/db/schema";
 import { inferProcedureOutput } from "@trpc/server";
 import { AppRouter } from "~/server/api/root";
 import { EventType } from "~/server/db/schema"
+import { IdInputSchema } from "../types";
 
 
 
-export type event = {
-  code:EventType,
-  name:string
+export type event = Record<EventType, string>
+
+export const eventTypes:event = {
+  "REGISTRATION":"Регистрация",
+  "CREATE_TUTORIAL":"Создание урока",
+  "CREATE_PROJECT":"Создание проекта",
+  "CREATE_RESUME":"Создание резюме",
+  "PUT_LIKE":"Поставить лайк",
+  "GET_LIKE":"Получить лайк",
+  "COMPLETED_TASK":"Завершить задание",
+  "RECEIVED_COINS":"Получить монеты",
+  "RECEIVED_COINS_AMOUNT":"Получить количество монет",
+  "CUSTOM":"Уникальное",
 }
 
-export const eventTypes:event[] = [
-  {
-    code:"PUT_LIKE",
-    name:"Поставить лайк"
-  },
-  {
-    code:"GET_LIKE",
-    name:"Получить лайк"
-  },
-  {
-    code:"REGISTRATION",
-    name:"Регистрация"
-  },
-  {
-    code:"CREATE_RESUME",
-    name:"Создать резюме"
-  },
-  {
-    code:"CREATE_PROJECT",
-    name:"Создать проект"
-  },
-  {
-    code:"COMPLITED_TASK",
-    name:"Завершить задание",
-  },
-  {
-    code:"RECEIVED_COINS",
-    name:"Получить монеты"
-  },
-  {
-    code:"CREATE_TUTORIAL",
-    name:"Создать туториал"
-  },
-  {
-    code:"RECEIVED_COINS_AMOUNT",
-    name:"Получить определенную сумму монет",
-  }
-]
+export const GrantAchievementSchema = z.intersection(
+  IdInputSchema,
+  z.object({
+    awardId: z.string(),
+  })
+)
 
 export const AchievementSchema = z.object({
   name: z.string({
@@ -61,12 +40,17 @@ export const AchievementSchema = z.object({
 
   image: EditFileSchema,
 
-  rewardType: rewardTypeSchema,
-  rewardAmount: z.coerce.number({
-    required_error: "Награда не заполнена",
-    invalid_type_error: "Количество не является числом",
+  coins: z.coerce.number({
+    required_error: "Количество монет не заполнено",
+    invalid_type_error: "Количество монет не является числом",
   })
-  .min(1, "Награда не заполнена"),
+  .min(0, "Количество не может быть отрицательным"),
+
+  experience: z.coerce.number({
+    required_error: "Количество опыта не заполнено",
+    invalid_type_error: "Количество опыта не является числом",
+  })
+  .min(0, "Количество не может быть отрицательным"),
 
   eventType: eventTypeSchema,
   eventAmount: z.coerce.number({

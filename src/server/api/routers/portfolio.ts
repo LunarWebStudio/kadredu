@@ -18,13 +18,9 @@ export const portfolioRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const repo = await ctx.github.GetRepo(input.repoName);
 
-    ctx.redis.countEvent(ctx.session.user.id, "CREATE_PROJECT", (id) =>{
-      ctx.db.insert(recevedAchievements)
-        .values({
-          userId: ctx.session.user.id,
-          achievementId: id,
-        })
-    })
+      await ctx.managers
+        .achievement
+        .countEvent(ctx.session.user.id, "CREATE_PROJECT");
 
       return (
         await ctx.db
@@ -155,13 +151,9 @@ export const portfolioRouter = createTRPCRouter({
         eq(projectLike.userId, ctx.session.user.id)
       );
 
-      ctx.redis.countEvent(ctx.session.user.id, "PUT_LIKE", (id) =>{
-        ctx.db.insert(recevedAchievements)
-          .values({
-            userId: ctx.session.user.id,
-            achievementId: id,
-          })
-      })
+      await ctx.managers
+        .achievement
+        .countEvent(ctx.session.user.id, "PUT_LIKE")
 
       const like = await ctx.db.query.projectLike.findFirst({
         where: condition,
@@ -184,12 +176,8 @@ export const portfolioRouter = createTRPCRouter({
         }
       }))!
 
-      ctx.redis.countEvent(project.user.id, "GET_LIKE", (id) =>{
-        ctx.db.insert(recevedAchievements)
-          .values({
-            userId: project.user.id,
-            achievementId: id,
-        })
-      })
+      await ctx.managers
+        .achievement
+        .countEvent(project.user.id, "GET_LIKE")
     }),
 });

@@ -39,7 +39,7 @@ export const columns: ColumnDef<Achievement>[] = [
     cell({ cell }) {
       const event = cell.getValue() as Achievement["eventType"];
       return (
-        <p>{eventTypes.find(e => e.code === event)?.name}</p>
+        <p>{eventTypes[event]}</p>
       )
     }
   },
@@ -48,23 +48,12 @@ export const columns: ColumnDef<Achievement>[] = [
     header: "Количество событий",
   },
   {
-    accessorKey:"rewardAmount",
-    header: "Награда",
-    cell({ cell, row }) {
-      const amount = cell.getValue() as Achievement["rewardAmount"];
-      return (
-        <div className="flex items-center  gap-2">
-          <p>{amount}</p>
-          {
-            row.original.rewardType === "COINS" ? (
-              <Coins className="h-4 w-4" />
-            ) : (
-              <ExpandIcon className="h-4 w-4" />
-            )
-          }
-        </div>
-      )
-    }
+    accessorKey:"experience",
+    header: "Опыт",
+  },
+  {
+    accessorKey:"coins",
+    header: "Монеты",
   },
   {
     id:"actions",

@@ -1,9 +1,11 @@
 import { AchievementSchema } from "~/lib/shared/types/achievements";
 import { createTRPCRouter, leadCycleComissionProcedure, protectedProcedure } from "../trpc";
-import { achievements } from "~/server/db/schema";
+import { achievements, recevedAchievements, users } from "~/server/db/schema";
 import { createCaller } from "../root";
 import { eq } from "drizzle-orm";
 import { IdSchema } from "~/lib/shared/types/utils";
+import { UsernameSchema } from "~/lib/shared/types/user";
+import { TRPCError } from "@trpc/server";
 
 
 
@@ -19,14 +21,12 @@ export const achievementsRouter = createTRPCRouter({
         b64: input.image.b64!,
       })
 
-       const achievement = (await ctx.db
-        .insert(achievements)
-        .values({
+      await ctx.managers
+        .achievement
+        .createAchievement({
+          ...input,
           imageId: id,
-          ...input
-        }).returning())[0]!
-
-      ctx.redis.createAchievement(achievement)
+        })
 
     }),
   update: leadCycleComissionProcedure
@@ -52,10 +52,24 @@ export const achievementsRouter = createTRPCRouter({
   delete: leadCycleComissionProcedure
     .input(IdSchema)
     .mutation(async ({ ctx, input }) => {
-      const achievement = (await ctx.db.delete(achievements).where(eq(achievements.id, input.id)).returning())[0]!
-      ctx.redis.deleteAchievement(achievement.id, achievement.eventType)
+      await ctx.managers
+        .achievement
+        .deleteAchievement(input.id)
     }),
-  getAll: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db.query.achievements.findMany()
+  getAll: leadCycleComissionProcedure
+    .query(async ({ ctx }) => {
+      return await ctx.db.query.achievements.findMany()
   }),
+  getById: protectedProcedure
+    .input(IdSchema)
+    .query(async ({ctx,input}) =>{
+      const receved = await ctx.db.query.recevedAchievements.findMany({
+        where:eq(recevedAchievements.userId, input.id),
+        with:{
+          achievement:true,
+        }
+      })
+
+      return receved
+    })
 })

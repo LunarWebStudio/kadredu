@@ -21,6 +21,7 @@ import GrantCoins from "./grant_coins";
 import GrantExperience from "./grant_experience";
 import UpdateGroup from "./update_group";
 import UpdateRole from "./update_role";
+import GrantAward from "./grant_award";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -87,7 +88,7 @@ export const columns: ColumnDef<User>[] = [
                 <>
                   <GrantCoins userId={user.id} />
                   <GrantExperience userId={user.id} />
-                  <DropdownMenuItem>Выдать награду</DropdownMenuItem>
+                  <GrantAward userId={user.id} />
                 </>
               )}
               <DropdownMenuSeparator />

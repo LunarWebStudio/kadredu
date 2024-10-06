@@ -258,7 +258,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   image: one(files, { fields: [users.imageId], references: [files.id] }),
   subjects: many(subjects),
   projects: many(projects),
-  achievements: many(achievements),
+  achievements: many(recevedAchievements),
 }));
 
 export const projects = createTable("projects", {
@@ -439,13 +439,6 @@ export const resumeRelations = relations(resume, ({ one }) => ({
   user: one(users, { fields: [resume.userId], references: [users.id] }),
 }));
 
-
-export const rewardTypeEnum = pgEnum("rewardType", ["COINS", "EXPERIENCE"]);
-export const rewardTypeSchema = z.enum(rewardTypeEnum.enumValues, {
-  message: "Недопустимый тип награды",
-});
-export type RewardType = z.infer<typeof rewardTypeSchema>;
-
 export const eventTypeEnum = pgEnum("eventType", [
   "REGISTRATION",
   "CREATE_TUTORIAL",
@@ -453,10 +446,12 @@ export const eventTypeEnum = pgEnum("eventType", [
   "CREATE_RESUME",
   "PUT_LIKE",
   "GET_LIKE",
-  "COMPLITED_TASK",
+  "COMPLETED_TASK",
   "RECEIVED_COINS",
   "RECEIVED_COINS_AMOUNT",
+  "CUSTOM",
 ]);
+
 export const eventTypeSchema = z.enum(eventTypeEnum.enumValues, {
   message: "Недопустимый тип события",
 });
@@ -473,10 +468,12 @@ export const achievements = createTable("achievements", {
     .references(() => files.id, { onDelete: "cascade" })
     .notNull(),
 
-  rewardType: rewardTypeEnum("rewardType")
-    .notNull(),
-  rewardAmount: integer("rewardAmount")
-    .notNull(),
+  coins: integer("coins").notNull(),
+  experience: integer("experience").notNull(),
+
+  isDeleted: boolean("isDeleted")
+    .notNull()
+    .default(false),
 
   eventAmount: integer("amountEvent")
     .notNull(),
@@ -493,23 +490,18 @@ export const achievementsRelations = relations(achievements, ({ one, many }) => 
 }));
 
 export const recevedAchievements = createTable("recevedAchievements", {
+  id: text("id")
+    .$defaultFn(() => createId())
+    .primaryKey(),
   userId: text("userId")
-    .notNull()
-    .references(() => users.id),
+    .notNull(),
   achievementId: text("achievementId")
-    .notNull()
-    .references(() => achievements.id),
+    .notNull(),
   createdAt: timestamp("createdAt", {
     mode: "date",
     withTimezone: true,
   }).defaultNow(),
-},
-  (t) => ({
-    compoundKey: primaryKey({
-      columns: [t.userId, t.achievementId],
-    }),
-  })
-);
+});
 
 export const recevedAchievementsRelations = relations(recevedAchievements, ({ one }) => ({
   user: one(users, { fields: [recevedAchievements.userId], references: [users.id] }),
