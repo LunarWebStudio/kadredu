@@ -1,13 +1,13 @@
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
-import { TutorialInputShema } from "~/lib/shared/types/tutorial";
+import { and, eq } from "drizzle-orm";
+import { TutorialFilterSchema, TutorialInputShema } from "~/lib/shared/types/tutorial";
 import {
   createTRPCRouter,
   highLevelProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
 import { createCaller } from "../root";
-import { recevedAchievements, tutorials } from "~/server/db/schema";
+import { recevedAchievements, topics, tutorials, users } from "~/server/db/schema";
 import { IdSchema } from "~/lib/shared/types/utils";
 
 export const tutorialsRouter = createTRPCRouter({
@@ -85,13 +85,23 @@ export const tutorialsRouter = createTRPCRouter({
       },
     });
   }),
-  getAll: highLevelProcedure.query(async ({ ctx }) => {
+
+  getAll: highLevelProcedure
+  .input(TutorialFilterSchema)
+  .query(async ({ ctx, input }) => {
     return await ctx.db.query.tutorials.findMany({
       with: {
-        author: true,
+        author:{
+          where: and(
+            input?.username ? eq(users.username, input.username) : undefined,
+            input?.userId ? eq(users.id, input.userId) : undefined
+          ),
+        },
         subject: true,
         image: true,
-        topic: true,
+        topic:{
+          where: input?.topicName ? eq(topics.name, input.topicName) : undefined
+        },
       },
     });
   }),

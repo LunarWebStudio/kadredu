@@ -1,8 +1,15 @@
 import TutorialCard from "~/components/tutorial-card";
 import { api } from "~/trpc/server";
 
-export default async function TutorialsPage() {
-  const tutorials = await api.tutorial.getAll();
+export default async function TutorialsPage({searchParams}:{
+  searchParams:{
+    username:string
+  }
+}) {
+  const tutorials = await api.tutorial.getAll({
+    username: searchParams.username
+  });
+
   return (
     <>
       <div className="mt-4 space-y-5 w-full">

@@ -45,3 +45,11 @@ export const TutorialInputShema = z.object({
     message: "Предмет не является строкой",
   }),
 });
+
+
+export const TutorialFilterSchema = z.object({
+  userId: z.string().optional(),
+  username: z.string().optional(),
+  topicName: z.string().optional()
+}).optional()
+
