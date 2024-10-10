@@ -36,3 +36,6 @@ export type PortfolioProject = inferProcedureOutput<
 export type OnePortfolioProject = inferProcedureOutput<
   AppRouter["portfolio"]["getOne"]
 >;
+
+
+export type Like = inferProcedureOutput<AppRouter["portfolio"]["getLikesUser"]>[number];

@@ -180,4 +180,29 @@ export const portfolioRouter = createTRPCRouter({
         .achievement
         .countEvent(project.user.id, "GET_LIKE")
     }),
+    getLikesUser: protectedProcedure
+    .input(UsernameSchema)
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.db.query.users.findFirst({
+        where: eq(users.username, input.username),
+      })
+
+      if(!user){
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Пользователь не найден",
+        })
+      }
+
+      return await ctx.db.query.projectLike.findMany({
+        with:{
+          project:{
+            where: eq(projects.userId, user.id ),
+            columns:{
+              id:true
+            }
+          }
+        }
+      })
+    })
 });
