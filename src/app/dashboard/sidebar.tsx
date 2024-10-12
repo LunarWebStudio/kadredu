@@ -61,8 +61,8 @@ export const sidebarItems: SidebarItem[] = [
     items: [
       {
         icon: <Award className={iconClassName} />,
-        href: "/dashboard/awards",
-        title: "Награды",
+        href: "/dashboard/achievements",
+        title: "Достижения",
       },
       {
         icon: <Calendar className={iconClassName} />,

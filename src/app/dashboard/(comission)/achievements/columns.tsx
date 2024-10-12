@@ -1,10 +1,10 @@
 'use client'
 import { ColumnDef } from "@tanstack/react-table";
-import { Coins, ExpandIcon, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuTrigger } from "~/components/ui/dropdown-menu";
 import { Achievement } from "~/lib/shared/types/achievements";
-import CreateUpdateAwards from "./create_update";
+import CreateUpdateAchievement from "./create_update";
 import DeleteAchievement from "./delete";
 import Image from "~/components/ui/image";
 import { eventTypes } from "~/lib/shared/types/achievements";
@@ -74,7 +74,7 @@ export const columns: ColumnDef<Achievement>[] = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Действия</DropdownMenuLabel>
-              <CreateUpdateAwards achievement={achievement} />
+              <CreateUpdateAchievement achievement={achievement} />
               <DeleteAchievement achievement={achievement} />
             </DropdownMenuContent>
           </DropdownMenu>

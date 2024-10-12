@@ -26,7 +26,7 @@ export const eventTypes:event = {
 export const GrantAchievementSchema = z.intersection(
   IdInputSchema,
   z.object({
-    awardId: z.string(),
+    achievementId: z.string(),
   })
 )
 

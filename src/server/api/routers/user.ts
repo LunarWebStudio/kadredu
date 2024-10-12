@@ -234,7 +234,7 @@ export const userRouter = createTRPCRouter({
         })
         .where(eq(users.id, ctx.session.user.id));
     }),
-  grantAward: adminProcedure
+  grantAchievement: adminProcedure
     .input(GrantAchievementSchema)
     .mutation(async ({ctx, input}) =>{
 

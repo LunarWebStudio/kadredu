@@ -8,7 +8,7 @@ const globalForRedis = globalThis as unknown as {
 const conn = globalForRedis.url ?? env.REDIS_URL
 if (env.NODE_ENV !== "production") globalForRedis.url = conn
 
-const redis = createClient({ url: conn})
+const redis = createClient({ url: conn })
 redis.connect()
 
 

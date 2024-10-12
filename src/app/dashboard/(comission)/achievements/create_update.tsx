@@ -21,7 +21,7 @@ import { useState } from "react"
 
 
 
-export default function CreateUpdateAwards({achievement}:
+export default function CreateUpdateAchievement({achievement}:
   {
     achievement?: Achievement
   }) {

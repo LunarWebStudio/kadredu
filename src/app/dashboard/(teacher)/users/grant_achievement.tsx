@@ -23,7 +23,7 @@ import { OnError } from "~/lib/shared/onError";
 import { GrantAchievementSchema } from "~/lib/shared/types/achievements";
 import { api } from "~/trpc/react";
 
-export default function GrantAward({
+export default function GrantAchievement({
   userId,
 }: {
   userId: string;
@@ -46,7 +46,7 @@ export default function GrantAward({
     [achievements, form.watch("awardId")]
   )
 
-  const grantAchievementMutation = api.user.grantAward.useMutation({
+  const grantAchievementMutation = api.user.grantAchievement.useMutation({
     onSuccess: () => {
       setIsOpen(false);
       form.reset();
@@ -59,7 +59,7 @@ export default function GrantAward({
   });
 
   const onSubmit = (data: z.infer<typeof GrantAchievementSchema>) => {
-    grantAchievementMutation.mutate({ id: userId, awardId: data.awardId });
+    grantAchievementMutation.mutate({ id: userId, achievementId: data.achievementId });
   };
 
   return (

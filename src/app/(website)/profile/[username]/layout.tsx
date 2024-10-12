@@ -150,7 +150,7 @@ export default async function ProfileLayout({
           </div>
         </SidebarContainer>
         <Group user={user} />
-        <Awards user={user} />
+        <Achievements user={user} />
       </aside>
       <div className="shrink grow">{children}</div>
     </div>
@@ -189,7 +189,7 @@ function Group({
   );
 }
 
-async function Awards({user}:
+async function Achievements({user}:
   {
     user:ProfileUser
   }){
