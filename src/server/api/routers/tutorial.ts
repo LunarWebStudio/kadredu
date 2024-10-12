@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, eq } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 import { TutorialFilterSchema, TutorialInputShema } from "~/lib/shared/types/tutorial";
 import {
   createTRPCRouter,
@@ -9,6 +9,7 @@ import {
 import { createCaller } from "../root";
 import { recevedAchievements, topics, tutorials, users } from "~/server/db/schema";
 import { IdSchema } from "~/lib/shared/types/utils";
+import { UsernameSchema } from "~/lib/shared/types/user";
 
 export const tutorialsRouter = createTRPCRouter({
   create: highLevelProcedure
@@ -93,14 +94,14 @@ export const tutorialsRouter = createTRPCRouter({
       with: {
         author:{
           where: and(
-            input?.username ? eq(users.username, input.username) : undefined,
-            input?.userId ? eq(users.id, input.userId) : undefined
+            eq(users.username, input!.username!).if(input?.username),
+            eq(users.id, input!.userId!).if(input?.userId)
           ),
         },
         subject: true,
         image: true,
         topic:{
-          where: input?.topicName ? eq(topics.name, input.topicName) : undefined
+          where:eq(topics.name, input!.topicName!).if(input?.topicName)
         },
       },
     });
@@ -122,4 +123,24 @@ export const tutorialsRouter = createTRPCRouter({
       },
     });
   }),
+
+  getCount: protectedProcedure
+  .input(UsernameSchema)
+  .query(async ({ ctx, input }) =>{
+    const user = await ctx.db.query.users.findFirst({
+      where: eq(users.username, input.username),
+    })
+
+    if(!user){
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Пользователь не найден",
+      });
+    }
+
+    return (await ctx.db
+      .select({ count: count() })
+      .from(tutorials)
+      .where(eq(tutorials.authorId, user.id)))[0]!
+  })
 });

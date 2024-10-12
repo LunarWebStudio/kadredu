@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
@@ -10,12 +10,10 @@ import Combobox from "~/components/ui/combobox";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 import {
   Form,
-  FormControl,
   FormDescription,
   FormField,
   FormItem,
 } from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
 import {
   Popover,
   PopoverContent,
@@ -23,7 +21,6 @@ import {
 } from "~/components/ui/popover";
 import { OnError } from "~/lib/shared/onError";
 import { GrantAchievementSchema } from "~/lib/shared/types/achievements";
-import { ExperienceInputSchema } from "~/lib/shared/types/utils";
 import { api } from "~/trpc/react";
 
 export default function GrantAward({
@@ -35,6 +32,7 @@ export default function GrantAward({
 
   const [achievements] = api.achievements.getAll.useSuspenseQuery()
 
+
   const form = useForm({
     resolver: zodResolver(GrantAchievementSchema),
     defaultValues:{
@@ -42,6 +40,11 @@ export default function GrantAward({
       awardId: null
     }
   });
+
+  const selectedAchievement = useMemo(
+    () => achievements.find(el => el.id === form.watch("awardId")),
+    [achievements, form.watch("awardId")]
+  )
 
   const grantAchievementMutation = api.user.grantAward.useMutation({
     onSuccess: () => {
@@ -94,7 +97,7 @@ export default function GrantAward({
                         ?
                           {
                             id: field.value as string,
-                            name:achievements.find(el => el.id === field.value)!.name
+                            name:selectedAchievement?.name ?? "Награда..."
                           }
                           :
                         null
@@ -106,7 +109,7 @@ export default function GrantAward({
                     onChange={(t) => field.onChange(t?.id)}
                   >
                     <Button className="w-full" variant="outline" chevron>
-                      {achievements.find(el => el.id === field.value)?.name ?? "Выберите награду"}
+                      {selectedAchievement?.name ?? "Выберите награду..."}
                     </Button>
                   </Combobox>
 

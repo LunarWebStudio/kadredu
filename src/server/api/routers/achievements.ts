@@ -4,8 +4,6 @@ import { achievements, recevedAchievements, users } from "~/server/db/schema";
 import { createCaller } from "../root";
 import { eq } from "drizzle-orm";
 import { IdSchema } from "~/lib/shared/types/utils";
-import { UsernameSchema } from "~/lib/shared/types/user";
-import { TRPCError } from "@trpc/server";
 
 
 
@@ -63,13 +61,11 @@ export const achievementsRouter = createTRPCRouter({
   getById: protectedProcedure
     .input(IdSchema)
     .query(async ({ctx,input}) =>{
-      const receved = await ctx.db.query.recevedAchievements.findMany({
+      return await ctx.db.query.recevedAchievements.findMany({
         where:eq(recevedAchievements.userId, input.id),
         with:{
           achievement:true,
         }
       })
-
-      return receved
     })
 })

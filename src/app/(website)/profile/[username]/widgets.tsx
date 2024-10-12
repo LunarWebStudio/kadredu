@@ -7,27 +7,25 @@ export async function Widgets({username}:{
   username: string
 }){
 
-  const projects = await api.portfolio.getByUsername({
+  const projects = await api.portfolio.getCountProjects({
     username
   });
 
-  const likes = await api.portfolio.getLikesUser({
+  const likes = await api.portfolio.getCountLikes({
     username
   })
 
-
-  const tutorials = await api.tutorial.getAll({
+  const tutorials = await api.tutorial.getCount({
     username
   })
-
 
   return(
     <ProfileSection>
       <ProfileSectionHeader>Виджеты</ProfileSectionHeader>
       <ProfileContent className="p-6 flex flex-row flex-nowrap items-center gap-10 w-full min-h-32">
-        <Widget sum={projects.length} message="Проекты" />
-        <Widget sum={tutorials.length} message="Туториалы" />
-        <Widget sum={likes.length} message="Лайки" />
+        <Widget sum={projects.count} message="Проекты" />
+        <Widget sum={tutorials.count} message="Туториалы" />
+        <Widget sum={likes.count} message="Лайки" />
       </ProfileContent>
     </ProfileSection>
   )
@@ -43,7 +41,7 @@ export function Widget({ sum, message }:
   
   return(
     <HoverCard>
-      <HoverCardTrigger className="w-1/3 hover:bg-violet-500 transition-colors min-h-32 rounded-3xl p-6 shadow-2xl space-y-2">
+      <HoverCardTrigger className="w-1/3 hover:bg-primary transition-colors min-h-32 rounded-3xl p-6 shadow-2xl space-y-2">
         <h1>{sum}</h1>
         <p>{message}</p>
       </HoverCardTrigger>

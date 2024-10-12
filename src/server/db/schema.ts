@@ -389,12 +389,10 @@ export const projectLike = createTable(
   {
     userId: text("userId")
       .notNull()
-      .unique()
       .references(() => users.id),
 
     projectId: text("projectId")
       .notNull()
-      .unique()
       .references(() => projects.id),
   },
   (t) => ({

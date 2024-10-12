@@ -64,7 +64,6 @@ export default function CreateUpdateAwards({achievement}:
   })
 
   const onSubmit = ( data: z.infer<typeof AchievementSchema>) => {
-    console.log(data)
     if(achievement){
       return updateAchievementMutation.mutate({
         ...data,
