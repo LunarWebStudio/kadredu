@@ -20,6 +20,11 @@ export const resumeRouter = createTRPCRouter({
             userId: ctx.session.user.id,
           },
         });
+
+      await ctx.managers
+        .achievement
+        .countEvent(ctx.session.user.id, "CREATE_RESUME");
+
     }),
 
   getSelf: protectedProcedure.query(async ({ ctx }) => {

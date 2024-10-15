@@ -18,6 +18,7 @@ import SidebarItem from "./sidebar_item";
 import Coin from "~/components/icons/coin";
 import { ProfileUser } from "~/lib/shared/types/user";
 import { cn } from "~/lib/utils";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "~/components/ui/carousel";
 
 const iconClassName = "size-6";
 
@@ -125,7 +126,7 @@ export default async function ProfileLayout({
                 text: "text-green-400",
                 text_hover: "hover:text-green-400",
               }}
-              href={`/tutorials/${user.username}`}
+              href={`/profile/${user.username}/tutorials`}
               icon={<GraduationCap className={iconClassName} />}
               locked={
                 GetLevel(user.experiencePoints ?? 0).level <
@@ -149,6 +150,7 @@ export default async function ProfileLayout({
           </div>
         </SidebarContainer>
         <Group user={user} />
+        <Achievements user={user} />
       </aside>
       <div className="shrink grow">{children}</div>
     </div>
@@ -185,4 +187,41 @@ function Group({
       </div>
     </SidebarContainer>
   );
+}
+
+async function Achievements({user}:
+  {
+    user:ProfileUser
+  }){
+  const awards = await api.achievements.getById({id:user.id})
+
+  return (
+    <SidebarContainer>
+      <SidebarSectionTitle>Достижения</SidebarSectionTitle>
+      <Carousel
+        opts={{
+          align:"end"
+        }}
+      >
+        <CarouselContent>
+        {
+          awards.map((el) =>{
+            return (
+              <CarouselItem className="md:basis-1/3 basis-1/2 flex items-center justify-center" key={el.id}>
+                <Image
+                  src={el.achievement.imageId}
+                  width={64}
+                  height={64}
+                  alt={el.achievement.name}
+                />
+              </CarouselItem>
+            )
+          })
+        }
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
+    </SidebarContainer>
+  )
 }

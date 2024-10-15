@@ -9,6 +9,8 @@ import { s3 } from "~/lib/server/s3";
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
 import { users } from "~/server/db/schema";
+import { redis } from "~/lib/server/redis";
+import { AchievementManager } from "~/lib/server/achievementManager";
 
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   const session = await getServerAuthSession();
@@ -16,7 +18,11 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
   return {
     db,
     s3,
+    redis,
     session,
+    managers:{
+      achievement: new AchievementManager(),
+    },
     ...opts,
   };
 };

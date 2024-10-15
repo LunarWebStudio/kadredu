@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, eq } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 import { z } from "zod";
 import { Github } from "~/lib/server/github";
 import { IdInputSchema } from "~/lib/shared/types";
@@ -10,13 +10,17 @@ import {
   githubProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
-import { projectLike, projects, users } from "~/server/db/schema";
+import { projectLike, projects, recevedAchievements, users } from "~/server/db/schema";
 
 export const portfolioRouter = createTRPCRouter({
   create: githubProcedure
     .input(PortfolioProjectSchema)
     .mutation(async ({ ctx, input }) => {
       const repo = await ctx.github.GetRepo(input.repoName);
+
+      await ctx.managers
+        .achievement
+        .countEvent(ctx.session.user.id, "CREATE_PROJECT");
 
       return (
         await ctx.db
@@ -147,6 +151,10 @@ export const portfolioRouter = createTRPCRouter({
         eq(projectLike.userId, ctx.session.user.id)
       );
 
+      await ctx.managers
+        .achievement
+        .countEvent(ctx.session.user.id, "PUT_LIKE")
+
       const like = await ctx.db.query.projectLike.findFirst({
         where: condition,
       });
@@ -159,6 +167,61 @@ export const portfolioRouter = createTRPCRouter({
       await ctx.db.insert(projectLike).values({
         projectId: input.id,
         userId: ctx.session.user.id,
-      });
+      })
+
+      const project = (await ctx.db.query.projects.findFirst({
+        where: eq(projects.id, input.id),
+        with:{
+          user:true
+        }
+      }))!
+
+      await ctx.managers
+        .achievement
+        .countEvent(project.user.id, "GET_LIKE")
     }),
+    getCountLikes: protectedProcedure
+    .input(UsernameSchema)
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.db.query.users.findFirst({
+        where: eq(users.username, input.username),
+      })
+
+      if(!user){
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Пользователь не найден",
+        })
+      }
+
+
+      return  (await ctx.db
+        .select({ count: count(projectLike.projectId)})
+        .from(projectLike)
+        .leftJoin(projects, and(
+          eq(projectLike.projectId, projects.id),
+          eq(projects.userId, user.id)
+        )))[0]!
+    }),
+
+    getCountProjects: protectedProcedure
+    .input(UsernameSchema)
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.db.query.users.findFirst({
+        where: eq(users.username, input.username),
+      })
+
+      if(!user){
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Пользователь не найден",
+        })
+      }
+
+      return (await ctx.db
+        .select({ count: count()})
+        .from(projects)
+        .where(eq(projects.userId, user.id)))[0]!
+  })
+    
 });

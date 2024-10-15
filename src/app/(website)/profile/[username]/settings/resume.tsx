@@ -34,6 +34,7 @@ export default function Resume({
 
   const { data: roles, isLoading: isRolesLoading } =
     api.teamRoles.getAll.useQuery();
+
   const selectedRole = useMemo(
     () => roles?.find((r) => r.id === form.watch("roleId")),
     [roles, form.watch("roleId")],
@@ -50,6 +51,7 @@ export default function Resume({
       });
     },
   });
+
   const onSubmit = (data: z.infer<typeof ResumeSchema>) => {
     updateSelfResumeMutation.mutate(data);
   };
