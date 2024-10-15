@@ -4,10 +4,12 @@ import { AchievementSchema } from "~/lib/shared/types/achievements"
 import { db } from "~/server/db"
 import { EventType, achievements, recevedAchievements } from "~/server/db/schema"
 import { eq } from "drizzle-orm"
+import { IdSchema } from "../shared/types/utils"
 
 
 
 const t = z.intersection(AchievementSchema.omit({image:true}), z.object({imageId:z.string()}))
+const UpdateSchema = z.intersection(AchievementSchema.merge(IdSchema).omit({image:true}), z.object({imageId:z.string().optional()}))
 
 export class AchievementManager {
   async createAchievement(input: z.infer<typeof t>){
@@ -23,6 +25,21 @@ export class AchievementManager {
           achievement.id, achievement.eventAmount,
         ]
       )
+  }
+
+  async updateAchievement(input: z.infer<typeof UpdateSchema>){
+    await db
+      .update(achievements)
+      .set({
+        ...input,
+      })
+      .where(eq(achievements.id, input.id))
+
+    await redis.HSET(
+      `achievements:${input.eventType}`,
+      input.id,
+      input.eventAmount
+    )
   }
 
   async countEvent(id:string, event:EventType){

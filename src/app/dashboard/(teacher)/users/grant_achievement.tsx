@@ -20,7 +20,7 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import { OnError } from "~/lib/shared/onError";
-import { GrantAchievementSchema } from "~/lib/shared/types/achievements";
+import { AchievementInputSchema, GrantAchievementSchema } from "~/lib/shared/types/achievements";
 import { api } from "~/trpc/react";
 
 export default function GrantAchievement({
@@ -34,22 +34,22 @@ export default function GrantAchievement({
 
 
   const form = useForm({
-    resolver: zodResolver(GrantAchievementSchema),
+    resolver: zodResolver(AchievementInputSchema),
     defaultValues:{
-      id:userId,
-      awardId: null
+      achievementId: undefined
     }
   });
 
   const selectedAchievement = useMemo(
-    () => achievements.find(el => el.id === form.watch("awardId")),
-    [achievements, form.watch("awardId")]
+    () => achievements.find(el => el.id === form.watch("achievementId")),
+    [achievements, form.watch("achievementId")]
   )
 
   const grantAchievementMutation = api.user.grantAchievement.useMutation({
     onSuccess: () => {
       setIsOpen(false);
       form.reset();
+      toast.success("Достижение выдано");
     },
     onError: (err) => {
       toast.error("Ошибка", {
@@ -58,7 +58,7 @@ export default function GrantAchievement({
     },
   });
 
-  const onSubmit = (data: z.infer<typeof GrantAchievementSchema>) => {
+  const onSubmit = (data: z.infer<typeof AchievementInputSchema>) => {
     grantAchievementMutation.mutate({ id: userId, achievementId: data.achievementId });
   };
 
@@ -81,7 +81,7 @@ export default function GrantAchievement({
           >
             <FormField
               control={form.control}
-              name="awardId"
+              name="achievementId"
               render={({ field }) => (
                 <FormItem>
                   <FormDescription>Награда</FormDescription>

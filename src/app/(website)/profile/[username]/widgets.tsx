@@ -41,7 +41,7 @@ export function Widget({ sum, message }:
   
   return(
     <HoverCard>
-      <HoverCardTrigger className="w-1/3 hover:bg-primary transition-colors min-h-32 rounded-3xl p-6 shadow-2xl space-y-2">
+      <HoverCardTrigger className="w-1/3 hover:bg-primary transition-colors min-h-32 rounded-3xl p-6 shadow-md space-y-2">
         <h1>{sum}</h1>
         <p>{message}</p>
       </HoverCardTrigger>

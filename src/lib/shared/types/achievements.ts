@@ -23,12 +23,9 @@ export const eventTypes:event = {
   "CUSTOM":"Уникальное",
 }
 
-export const GrantAchievementSchema = z.intersection(
-  IdInputSchema,
-  z.object({
-    achievementId: z.string(),
-  })
-)
+export const AchievementInputSchema = z.object({
+  achievementId: z.string()
+})
 
 export const AchievementSchema = z.object({
   name: z.string({

@@ -39,13 +39,12 @@ export const achievementsRouter = createTRPCRouter({
         }));
       }
 
-       await ctx.db
-        .update(achievements)
-        .set({
+      ctx.managers
+        .achievement
+        .updateAchievement({
           ...input,
-          imageId: id,
+          imageId: id
         })
-        .where(eq(achievements.id, input.id))
   }),
   delete: leadCycleComissionProcedure
     .input(IdSchema)
@@ -56,7 +55,9 @@ export const achievementsRouter = createTRPCRouter({
     }),
   getAll: leadCycleComissionProcedure
     .query(async ({ ctx }) => {
-      return await ctx.db.query.achievements.findMany()
+      return await ctx.db.query.achievements.findMany({
+        where: eq(achievements.isDeleted, false)
+      })
   }),
   getById: protectedProcedure
     .input(IdSchema)
